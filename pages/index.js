@@ -1,5 +1,7 @@
-function About() {
-  return <div>About</div>
+class Home extends React.Component {
+  render() {
+    return <div>test</div>;
+  }
 }
 
-export default About;
+export default Home;
