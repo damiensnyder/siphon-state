@@ -1,0 +1,55 @@
+#root {
+  top: 8px;
+  left: 8px;
+  bottom: 8px;
+  right: 8px;
+  position: fixed;
+
+  display: grid;
+  grid-gap: 8px;
+
+  background-color: #444;
+}
+
+.containerLevel2 {
+  margin: 0;
+}
+
+#gameContainer {
+  grid-row-start: 1;
+  grid-row-end: 4;
+  grid-column-start: 1;
+  grid-column-end: 6;
+
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 8px;
+}
+
+#eventLog {
+  grid-row-start: 4;
+  grid-row-end: 4;
+  grid-column-start: 1;
+  grid-column-end: 3;
+
+  background-color: #555;
+}
+
+#controlPanel {
+  grid-row-start: 4;
+  grid-row-end: 4;
+  grid-column-start: 3;
+  grid-column-end: 7;
+
+  background-color: #555;
+}
+
+#otherPlayers {
+  grid-row-start: 1;
+  grid-row-end: 4;
+  grid-column-start: 6;
+  grid-column-end: 7;
+
+  display: grid;
+  grid-gap: 8px;
+}
