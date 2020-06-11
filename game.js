@@ -64,8 +64,9 @@ const playerNames = ["idiot 1", "johson", "bkjbkjbkj", "0"];
 const provinceNames = ["Jermany 4", "Kanzas", "wilfred", "NO NO NO", "ian"];
 
 class Game {
-  constructor(io) {
+  constructor(io, gameCode) {
     this.io = io;
+    this.gameCode = gameCode;
 
     this.politicians = politicianNames.map(name => new Politician(name));
     this.players = playerNames.map(
@@ -81,7 +82,7 @@ class Game {
       this.politicians[i].player = this.players[i % numPlayers];
     }
 
-    var sympIndex = 0;
+    this.ympIndex = 0;
 
     while (sympIndex < numPlayers) {
       this.players[(i + 1) % numPlayers].symps.push(this.politicians[i]);
@@ -95,11 +96,11 @@ class Game {
     this.ended = false;
   }
 
-  handleAction(action) {
+  handleAction(action, playerName) {
 
   }
 
-  handleMsg(msg) {
+  handleMsg(msg, playerName) {
 
   }
 }
@@ -127,8 +128,8 @@ class Player {
     this.symps = [];
 
     this.socket = socket;
-    this.socket.on('action', (action) => actionHandler(action));
-    this.socket.on('msg', (msg) => msgHandler(msg));
+    this.socket.on('action', (action) => actionHandler(action, this.name));
+    this.socket.on('msg', (msg) => msgHandler(msg, this.name));
   }
 }
 
@@ -144,6 +145,12 @@ class Province {
     this.officials = [];
     this.candidates = [];
     this.dropouts = [];
+  }
+}
+
+class GameState {
+  constructor(game, pointOfView) {
+
   }
 }
 

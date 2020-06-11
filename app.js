@@ -16,8 +16,9 @@ io.on('connect', (socket) => {
   });
 });
 
-roomIo = io.of('/game/oaxm');
-const newGame = new Game(roomIo);
+const gameCode = 'oaxm';
+roomIo = io.of('/game/' + gameCode);
+const newGame = new Game(roomIo, gameCode);
 
 nextApp.prepare().then(() => {
   app.get('*', (req, res) => {
