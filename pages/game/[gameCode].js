@@ -8,11 +8,16 @@ import OtherPlayer from '../../components/other-player';
 const Game = () => {
   const router = useRouter();
   const { gameCode } = router.query;
+  const socket = io.connect('/game/' + gameCode);
 
   const numPlayers = 4;
-  const gameState = {
+  var gameState = {
     activeProvince: 2
   };
+
+  socket.on('update', (newGameState) => {
+    gameState = newGameState;
+  });
 
   const provinces = Array(5);
   for (var i = 0; i < 5; i++) {
