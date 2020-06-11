@@ -1,5 +1,7 @@
 .province {
   height: 100%;
+  
+  border-radius: 4px;
 }
 
 .inactiveProvince {

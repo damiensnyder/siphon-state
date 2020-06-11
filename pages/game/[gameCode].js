@@ -6,10 +6,6 @@ import Province from '../../components/province';
 import OtherPlayer from '../../components/other-player';
 import Chat from '../../components/chat';
 
-function chatHandler(msg) {
-
-}
-
 const Game = () => {
   const router = useRouter();
   const { gameCode } = router.query;
@@ -49,7 +45,7 @@ const Game = () => {
       <div id={styles.gameContainer} className={styles.containerLevel2}>
         {provinces}
       </div>
-      <Chat handler={chatHandler} />
+      <Chat socket={socket} />
       <div id={styles.otherPlayers} className={styles.containerLevel2}>
         {otherPlayers}
       </div>

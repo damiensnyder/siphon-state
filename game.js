@@ -90,6 +90,13 @@ class Game {
     this.io.on('connect', (socket) => {
       this.viewers.push(socket);
       socket.on('join', (data) => addPlayer(socket, data));
+      socket.on('msg', (msg) => {
+        socket.broadcast.emit('msg', msg);
+      });
+      socket.emit('msg', {
+        sender: 'Game',
+        text: "Connected to chat."
+      });
     });
   }
 

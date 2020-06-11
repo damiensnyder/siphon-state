@@ -13,6 +13,7 @@
   flex-grow: 1;
 
   background-color: #333;
+  border-radius: 4px;
 }
 
 #messagesInner {
@@ -24,8 +25,7 @@
 
   overflow-y: scroll;
 
-  border: 8px solid #333;
-  background-color: #333;
+  border: 8px solid transparent;
 }
 
 #bottomMessage {
@@ -44,7 +44,7 @@
   background-color: inherit;
 }
 
-#inputText {
+#inputBox {
   height: 100%;
   flex-grow: 1;
   margin-right: 8px;
@@ -55,6 +55,7 @@
   color: inherit;
   background-color: #333;
   border: none;
+  border-radius: 4px;
 }
 
 #inputText::-webkit-input-placeholder {
@@ -75,6 +76,7 @@
   color: #cc9;
   background-color: #333;
   border: none;
+  border-radius: 4px;
 }
 
 #sendBtn:hover {

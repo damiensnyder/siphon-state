@@ -11,6 +11,9 @@ class Chat extends React.Component {
       messages: []
     }
 
+    this.socket = this.props.socket;
+    this.socket.on('msg', (msg) => addMsg(msg));
+
     this.textInput = React.createRef();
     this.messagesInner = React.createRef();
     this.bottomMessage = React.createRef();
@@ -39,25 +42,36 @@ class Chat extends React.Component {
   }
 
   sendMsg() {
-    if (this.state.currentMsg.trim().length > 0) {
-      const newMsgs = this.state.messages;
-      newMsgs.push({
+    const newMsg = this.state.currentMsg.trim();
+    if (newMsg.length > 0) {
+      // Add the message to the list of messages
+      const messages = this.state.messages;
+      messages.push({
         sender: 'You',
-        text: this.state.currentMsg.trim()
+        text: newMsg
       });
+
+      // Update the message box and scroll to the bottom of the chat log
       this.setState(state => ({
         currentMsg: "",
-        messages: newMsgs
+        messages: messages
       }));
-
       this.messageJustSent = true;
+
+      // Send the message to the server
+      this.socket.emit('msg', newMsg);
     }
   }
 
+  addMsg(msg) {
+    messages.push(msg);
+    scrollToBottom();
+  }
+
   scrollToBottom() {
-    var mi = this.messagesInner.current;
+    var e = this.messagesInner.current;
     if (this.messageJustSent ||
-        mi.scrollHeight - mi.scrollTop === mi.clientHeight) {
+        e.scrollHeight - e.scrollTop === e.clientHeight) {
       this.bottomMessage.current.scrollIntoView(false);
       this.messageJustSent = false;
     }
@@ -77,7 +91,7 @@ class Chat extends React.Component {
           </div>
         </div>
         <div id={styles.inputRow}>
-          <input name="msgText" id={styles.inputText} placeholder="Chat here"
+          <input name="msgText" id={styles.inputBox} placeholder="Chat here"
             value={this.state.currentMsg} onChange={this.handleTyping}
             onKeyDown={this.checkIfEnterPressed} ref={this.textInput} />
           <button id={styles.sendBtn} onClick={this.sendMsg}>
