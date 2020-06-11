@@ -81,9 +81,6 @@ class Game {
       this.politicians[i].player = this.players[i % numPlayers];
     }
 
-    this.activeProvince = 0;
-    this.activePlayer = 0;
-
     var sympIndex = 0;
 
     while (sympIndex < numPlayers) {
@@ -91,6 +88,11 @@ class Game {
       this.politicians[i].sympTo = this.players[(i + 1) % numPlayers];
       sympIndex++;
     }
+
+    this.activeProvince = 0;
+    this.activePlayer = 0;
+    this.started = false;
+    this.ended = false;
   }
 
   handleAction(action) {
