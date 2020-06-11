@@ -84,18 +84,24 @@ class Game {
       this.politicians[i].player = this.players[i % numPlayers];
     }
 
-    this.ympIndex = 0;
-
-    while (sympIndex < numPlayers) {
-      this.players[(i + 1) % numPlayers].symps.push(this.politicians[i]);
-      this.politicians[i].sympTo = this.players[(i + 1) % numPlayers];
-      sympIndex++;
+    // assign each player one random symp and their player index
+    this.sympIndex = 0;
+    shuffle(this.politicians);
+    while (this.sympIndex < numPlayers) {
+      this.giveSymp(this.sympIndex);
+      this.players[this.sympIndex].index = this.sympIndex;
     }
 
     this.activeProvince = 0;
     this.activePlayer = 0;
     this.started = false;
     this.ended = false;
+  }
+
+  giveSymp(playerIndex) {
+    this.players[playerIndex].symps.push(this.politicians[this.sympIndex]);
+    this.politicians[this.sympIndex].sympTo = this.players[playerIndex];
+    this.sympIndex++;
   }
 
   handleAction(action, playerName) {
@@ -123,6 +129,7 @@ class Politician {
 class Player {
   constructor(name, socket, actionHandler, msgHandler) {
     this.name = name;
+    this.index = null;
 
     this.isTurn = false;
 
@@ -163,11 +170,20 @@ function generateGameState(gameObj, pov) {
     }
   }
   for (var i = 0; i < game.politicians.length; i++) {
-    game.politicians[i].sympToSelf = game.politicians[i].sympTo === pov;
+    game.politicians[i].isSymp = game.politicians[i].sympTo === pov;
     delete game.politicians[i].sympTo;
   }
+  shuffle(game.politicians);
 
   return game;
+}
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 module.exports = Game;
