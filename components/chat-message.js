@@ -10,7 +10,7 @@ class ChatMessage extends React.Component {
     return (
       <div>
         <span class={styles.sender}>{this.props.sender}:</span>&nbsp;&nbsp;
-        {this.props.msg}
+        {this.props.text}
       </div>
     );
   }

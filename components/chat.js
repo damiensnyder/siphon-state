@@ -7,15 +7,23 @@ class Chat extends React.Component {
     super(props);
 
     this.state = {
-      messages: []
+      msgs: [
+        { sender: "Player", text: "Message" }
+      ]
     }
+  }
+
+  msgsToJsx() {
+    return this.state.msgs.map(msg => (
+      <ChatMessage sender={msg.sender} text={msg.text} />
+    ));
   }
 
   render() {
     return (
       <div id={styles.chatLog}>
         <div id={styles.messages}>
-          <ChatMessage sender="adf" msg="asdfgjsn" />
+          {this.msgsToJsx()}
         </div>
         <div id={styles.inputRow}>
           <input id={styles.inputText} placeholder="Chat here" />
