@@ -7,16 +7,25 @@ class Chat extends React.Component {
     super(props);
 
     this.state = {
-      msgs: [
-        { sender: "Player", text: "Message" }
-      ]
+      messages: []
     }
   }
 
   msgsToJsx() {
-    return this.state.msgs.map(msg => (
+    return this.state.messages.map(msg => (
       <ChatMessage sender={msg.sender} text={msg.text} />
     ));
+  }
+
+  sendMsg() {
+    const newMsgs = this.state.messages;
+    newMsgs.push({
+      sender: 'You',
+      text: 'placeholder'
+    });
+    this.setState(state => ({
+      messages: newMsgs
+    }));
   }
 
   render() {
@@ -26,8 +35,10 @@ class Chat extends React.Component {
           {this.msgsToJsx()}
         </div>
         <div id={styles.inputRow}>
-          <input id={styles.inputText} placeholder="Chat here" />
-          <button id={styles.sendBtn}>Send</button>
+          <input name="msgText" id={styles.inputText} placeholder="Chat here" />
+          <button id={styles.sendBtn} onClick={this.sendMsg.bind(this)}>
+            Send
+          </button>
         </div>
       </div>
     );
