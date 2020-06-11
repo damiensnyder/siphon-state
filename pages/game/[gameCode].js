@@ -16,12 +16,16 @@ const Game = () => {
 
   const provinces = Array(5);
   for (var i = 0; i < 5; i++) {
-    provinces[i] = (<Province gameState={gameState} index={i}></Province>);
+    provinces[i] = (
+      <Province gameState={gameState} index={i} key={i}></Province>
+    );
   }
 
   const otherPlayers = Array(numPlayers - 1);
   for (var i = 0; i < numPlayers - 1; i++) {
-    otherPlayers[i] = (<OtherPlayer index={i}></OtherPlayer>);
+    otherPlayers[i] = (
+      <OtherPlayer gameState={gameState} index={i} key={i}></OtherPlayer>
+    );
   }
 
   return (
