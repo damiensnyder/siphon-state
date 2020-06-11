@@ -9,21 +9,27 @@ const Game = () => {
   const router = useRouter();
   const { gameCode } = router.query;
 
+  const numPlayers = 4;
+
+  const provinces = Array(5);
+  for (var i = 0; i < 5; i++) {
+    provinces[i] = (<Province index={i}></Province>);
+  }
+
+  const otherPlayers = Array(numPlayers - 1);
+  for (var i = 0; i < numPlayers - 1; i++) {
+    otherPlayers[i] = (<OtherPlayer index={i}></OtherPlayer>);
+  }
+
   return (
     <div id={styles.root}>
       <div id={styles.gameContainer} className={styles.containerLevel2}>
-        <Province></Province>
-        <Province></Province>
-        <Province></Province>
-        <Province></Province>
-        <Province></Province>
+        {provinces}
       </div>
       <div id={styles.eventLog} className={styles.containerLevel2}>
       </div>
       <div id={styles.otherPlayers} className={styles.containerLevel2}>
-        <OtherPlayer></OtherPlayer>
-        <OtherPlayer></OtherPlayer>
-        <OtherPlayer></OtherPlayer>
+        {otherPlayers}
       </div>
       <div id={styles.controlPanel} className={styles.containerLevel2}>
         {gameCode}

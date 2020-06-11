@@ -1,5 +1,10 @@
 .province {
   height: 100%;
-
   background-color: #666;
+}
+
+.provinceName {
+  margin: 8px;
+  text-align: center;
+  font-size: 32px;
 }
