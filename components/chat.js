@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './chat.module.css';
+import ChatMessage from './chat-message';
 
 class Chat extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class Chat extends React.Component {
     return (
       <div id={styles.chatLog}>
         <div id={styles.messages}>
-          msg
+          <ChatMessage sender="adf" msg="asdfgjsn" />
         </div>
         <div id={styles.inputRow}>
           <input id={styles.inputText} placeholder="Chat here" />
