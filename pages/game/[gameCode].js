@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import styles from './[gameCode].module.css';
 import Province from '../../components/province';
 import OtherPlayer from '../../components/other-player';
+import Chat from '../../components/chat';
 
 function chatHandler(msg) {
 

@@ -4,6 +4,10 @@ import styles from './chat.module.css';
 class Chat extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      messages: []
+    }
   }
 
   render() {
@@ -13,7 +17,8 @@ class Chat extends React.Component {
           msg
         </div>
         <div id={styles.inputRow}>
-          input
+          <input id={styles.inputText} placeholder="Chat here" />
+          <button id={styles.sendBtn}>Send</button>
         </div>
       </div>
     );
