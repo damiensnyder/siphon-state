@@ -10,10 +10,13 @@ const Game = () => {
   const { gameCode } = router.query;
 
   const numPlayers = 4;
+  const gameState = {
+    activeProvince: 2
+  };
 
   const provinces = Array(5);
   for (var i = 0; i < 5; i++) {
-    provinces[i] = (<Province index={i}></Province>);
+    provinces[i] = (<Province gameState={gameState} index={i}></Province>);
   }
 
   const otherPlayers = Array(numPlayers - 1);
