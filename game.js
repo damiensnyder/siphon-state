@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const politicianNames = [
   "Olive Bass",
   "Amber Melendez",
@@ -60,7 +62,7 @@ const politicianNames = [
   "Reid Buckley",
   "Shannon Morse"
 ];
-const playerNames = ["idiot 1", "johson", "bkjbkjbkj", "0"];
+const playerNames = ["idiot 1", "johson", "Bkjbkjbkj", "0"];
 const provinceNames = ["Jermany 4", "Kanzas", "wilfred", "NO NO NO", "ian"];
 
 class Game {
@@ -74,7 +76,7 @@ class Game {
     );
     this.provinces = provinceNames.map(name => new Province(name));
 
-    var numPlayers = this.players.length;
+    this.numPlayers = this.players.length;
 
     // assign each player an equal amount of politicians
     for (var i = 0; i < politicianNames.length; i++) {
@@ -148,10 +150,24 @@ class Province {
   }
 }
 
-class GameState {
-  constructor(game, pointOfView) {
+function generateGameState(gameObj, pov) {
+  var game = _.cloneDeep(gameObj);
 
+  game.self = game.players[pov];
+  game.selfIndex = pov;
+
+  // remove knowledge of other players' symps
+  for (var i = 0; i < game.numPlayers; i++) {
+    if (i !== pov) {
+      delete game.players[i].symps;
+    }
   }
+  for (var i = 0; i < game.politicians.length; i++) {
+    game.politicians[i].sympToSelf = game.politicians[i].sympTo === pov;
+    delete game.politicians[i].sympTo;
+  }
+
+  return game;
 }
 
 module.exports = Game;
