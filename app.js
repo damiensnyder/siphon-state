@@ -2,6 +2,7 @@ const app = require('express')();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const next = require('next');
+const Game = require('./game.js');
 
 const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
 const nextHandler = nextApp.getRequestHandler();
@@ -14,6 +15,9 @@ io.on('connect', (socket) => {
     msg: "test"
   });
 });
+
+roomIo = io.of('/game/oaxm');
+const newGame = new Game(roomIo);
 
 nextApp.prepare().then(() => {
   app.get('*', (req, res) => {
