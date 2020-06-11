@@ -70,19 +70,34 @@ class Game {
     this.io = io;
     this.gameCode = gameCode;
 
-    this.politicians = politicianNames.map(name => new Politician(name));
-    this.players = playerNames.map(
-      name => new Player(name, null, this.handleAction, this.handleMsg)
-    );
-    this.provinces = provinceNames.map(name => new Province(name));
+    this.viewers = [];
+    this.players = [];
 
-    this.numPlayers = this.players.length;
+    this.politicians = politicianNames.map(name => new Politician(name));
+    this.provinces = provinceNames.map(name => new Province(name));
 
     this.activeProvince = 0;
     this.activePlayer = 0;
     this.started = false;
     this.ended = false;
-    this.sympOrder = null;
+    this.sympOrder = undefined;
+    this.numPlayers = 0;
+
+    addJoinHandlers();
+  }
+
+  addJoinHandlers() {
+    this.io.on('connect', (socket) => {
+      this.viewers.push(socket);
+      socket.on('join', (data) => addPlayer(socket, data));
+    });
+  }
+
+  addPlayer(socket, data) {
+    this.viewers.splice(this.viewers.indexOf(socket), 1);
+    this.players.push(new Player(data.name, data.abbr, socket, numPlayers,
+                                 this.handleAction, this.handleMsg));
+    numPlayers++;
   }
 
   begin() {
@@ -97,7 +112,6 @@ class Game {
     this.sympOrder = shuffle(this.politicians.slice());
     for (var i = 0; i < numPlayers; i++) {
       this.giveSymp(i);
-      this.players[i].index = i;
     }
   }
 
@@ -120,9 +134,9 @@ class Politician {
   constructor(name) {
     this.name = name;
 
-    this.isAvailable = null;
+    this.isAvailable = true;
+    this.usedThisTurn = false;
     this.position = null;
-
     this.player = null;
     this.province = null;
     this.sympTo = null;
@@ -130,12 +144,13 @@ class Politician {
 }
 
 class Player {
-  constructor(name, socket, actionHandler, msgHandler) {
+  constructor(name, abbr, socket, index, actionHandler, msgHandler) {
     this.name = name;
-    this.index = null;
+    this.abbr = abbr;
+    this.index = index;
 
     this.isTurn = false;
-
+    this.money = 10;
     this.politicians = [];
     this.symps = [];
 
@@ -163,8 +178,11 @@ class Province {
 function generateGameState(gameObj, pov) {
   var game = _.cloneDeep(gameObj);
 
-  game.self = game.players[pov];
-  game.selfIndex = pov;
+  // send which player the client is, if they are a player
+  if (pov >= 0) {
+    game.self = game.players[pov];
+    game.selfIndex = pov;
+  }
 
   // remove knowledge of other players' symps
   for (var i = 0; i < game.numPlayers; i++) {
