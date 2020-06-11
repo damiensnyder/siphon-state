@@ -18,10 +18,8 @@
 }
 
 #gameContainer {
-  grid-row-start: 1;
-  grid-row-end: 4;
-  grid-column-start: 1;
-  grid-column-end: 6;
+  grid-row: 1 / 4;
+  grid-column: 1 / 6;
 
   display: grid;
   grid-auto-flow: column;
@@ -30,19 +28,15 @@
 }
 
 #controlPanel {
-  grid-row-start: 4;
-  grid-row-end: 4;
-  grid-column-start: 3;
-  grid-column-end: 7;
+  grid-row: 4 / 4;
+  grid-column: 3 / 7;
 
   background-color: #555;
 }
 
 #otherPlayers {
-  grid-row-start: 1;
-  grid-row-end: 4;
-  grid-column-start: 6;
-  grid-column-end: 7;
+  grid-row: 1 / 4;
+  grid-column: 6 / 7;
 
   display: grid;
   grid-gap: 8px;
