@@ -29,15 +29,6 @@
   grid-gap: 8px;
 }
 
-#eventLog {
-  grid-row-start: 4;
-  grid-row-end: 4;
-  grid-column-start: 1;
-  grid-column-end: 3;
-
-  background-color: #555;
-}
-
 #controlPanel {
   grid-row-start: 4;
   grid-row-end: 4;

@@ -5,6 +5,10 @@ import styles from './[gameCode].module.css';
 import Province from '../../components/province';
 import OtherPlayer from '../../components/other-player';
 
+function chatHandler(msg) {
+
+}
+
 const Game = () => {
   const router = useRouter();
   const { gameCode } = router.query;
@@ -44,8 +48,7 @@ const Game = () => {
       <div id={styles.gameContainer} className={styles.containerLevel2}>
         {provinces}
       </div>
-      <div id={styles.eventLog} className={styles.containerLevel2}>
-      </div>
+      <Chat handler={chatHandler} />
       <div id={styles.otherPlayers} className={styles.containerLevel2}>
         {otherPlayers}
       </div>

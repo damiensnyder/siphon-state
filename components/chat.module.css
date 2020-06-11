@@ -1,0 +1,27 @@
+#chatLog {
+  grid-row-start: 4;
+  grid-row-end: 4;
+  grid-column-start: 1;
+  grid-column-end: 3;
+
+  display: flex;
+  flex-flow: column;
+  padding: 8px;
+
+  background-color: #555;
+}
+
+#messages {
+  width: 100%
+  flex-grow: 1;
+
+  background-color: #444;
+}
+
+#inputRow {
+  width: 100%
+  height: 32px;
+  flex-grow: 0;
+
+  background-color: #444;
+}
