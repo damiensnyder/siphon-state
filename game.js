@@ -78,24 +78,28 @@ class Game {
 
     this.numPlayers = this.players.length;
 
+    this.sympIndex = 0;
+
+    this.activeProvince = 0;
+    this.activePlayer = 0;
+    this.started = false;
+    this.ended = false;
+  }
+
+  begin() {
     // assign each player an equal amount of politicians
+    shuffle(this.politicians);
     for (var i = 0; i < politicianNames.length; i++) {
       this.players[i % numPlayers].politicians.push(this.politicians[i]);
       this.politicians[i].player = this.players[i % numPlayers];
     }
 
     // assign each player one random symp and their player index
-    this.sympIndex = 0;
     shuffle(this.politicians);
     while (this.sympIndex < numPlayers) {
       this.giveSymp(this.sympIndex);
       this.players[this.sympIndex].index = this.sympIndex;
     }
-
-    this.activeProvince = 0;
-    this.activePlayer = 0;
-    this.started = false;
-    this.ended = false;
   }
 
   giveSymp(playerIndex) {
@@ -104,11 +108,11 @@ class Game {
     this.sympIndex++;
   }
 
-  handleAction(action, playerName) {
+  handleAction(action, playerIndex) {
 
   }
 
-  handleMsg(msg, playerName) {
+  handleMsg(msg, playerIndex) {
 
   }
 }
@@ -137,8 +141,8 @@ class Player {
     this.symps = [];
 
     this.socket = socket;
-    this.socket.on('action', (action) => actionHandler(action, this.name));
-    this.socket.on('msg', (msg) => msgHandler(msg, this.name));
+    this.socket.on('action', (action) => actionHandler(action, this.index));
+    this.socket.on('msg', (msg) => msgHandler(msg, this.index));
   }
 }
 
