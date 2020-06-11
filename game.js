@@ -68,7 +68,9 @@ class Game {
     this.io = io;
 
     this.politicians = politicianNames.map(name => new Politician(name));
-    this.players = playerNames.map(name => new Player(name));
+    this.players = playerNames.map(
+      name => new Player(name, null, this.handleAction, this.handleMsg)
+    );
     this.provinces = provinceNames.map(name => new Province(name));
 
     var numPlayers = this.players.length;
@@ -79,8 +81,8 @@ class Game {
       this.politicians[i].player = this.players[i % numPlayers];
     }
 
-    this.currentProvince = 0;
-    this.currentPlayer = 0;
+    this.activeProvince = 0;
+    this.activePlayer = 0;
 
     var sympIndex = 0;
 
@@ -90,11 +92,23 @@ class Game {
       sympIndex++;
     }
   }
+
+  handleAction(action) {
+
+  }
+
+  handleMsg(msg) {
+
+  }
 }
 
 class Politician {
   constructor(name) {
-    this.name = name
+    this.name = name;
+
+    this.isAvailable = null;
+    this.position = null;
+
     this.player = null;
     this.province = null;
     this.sympTo = null;
@@ -102,18 +116,32 @@ class Politician {
 }
 
 class Player {
-  constructor(name) {
-    this.name = name
+  constructor(name, socket, actionHandler, msgHandler) {
+    this.name = name;
+
+    this.isTurn = false;
+
     this.politicians = [];
     this.symps = [];
+
+    this.socket = socket;
+    this.socket.on('action', (action) => actionHandler(action));
+    this.socket.on('msg', (msg) => msgHandler(msg));
   }
 }
 
 class Province {
   constructor(name) {
-    this.name = name
+    this.name = name;
+
     this.isStarted = false;
     this.isActive = false;
+    this.stage = 0;
+
+    this.governor = [];
+    this.officials = [];
+    this.candidates = [];
+    this.dropouts = [];
   }
 }
 
