@@ -7,6 +7,7 @@ class Chat extends React.Component {
     super(props);
 
     this.state = {
+      currentMsg: "",
       messages: []
     }
   }
@@ -17,15 +18,22 @@ class Chat extends React.Component {
     ));
   }
 
+  handleTyping() {
+    this.setState({currentMsg: event.target.value});
+  }
+
   sendMsg() {
-    const newMsgs = this.state.messages;
-    newMsgs.push({
-      sender: 'You',
-      text: 'placeholder'
-    });
-    this.setState(state => ({
-      messages: newMsgs
-    }));
+    if (this.state.currentMsg.trim().length > 0) {
+      const newMsgs = this.state.messages;
+      newMsgs.push({
+        sender: 'You',
+        text: this.state.currentMsg.trim()
+      });
+      this.setState(state => ({
+        currentMsg: "",
+        messages: newMsgs
+      }));
+    }
   }
 
   render() {
@@ -35,7 +43,9 @@ class Chat extends React.Component {
           {this.msgsToJsx()}
         </div>
         <div id={styles.inputRow}>
-          <input name="msgText" id={styles.inputText} placeholder="Chat here" />
+          <input name="msgText" id={styles.inputText} placeholder="Chat here"
+            value={this.state.currentMsg}
+            onChange={this.handleTyping.bind(this)} />
           <button id={styles.sendBtn} onClick={this.sendMsg.bind(this)}>
             Send
           </button>
