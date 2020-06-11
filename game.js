@@ -78,12 +78,11 @@ class Game {
 
     this.numPlayers = this.players.length;
 
-    this.sympIndex = 0;
-
     this.activeProvince = 0;
     this.activePlayer = 0;
     this.started = false;
     this.ended = false;
+    this.sympOrder = null;
   }
 
   begin() {
@@ -95,17 +94,17 @@ class Game {
     }
 
     // assign each player one random symp and their player index
-    shuffle(this.politicians);
-    while (this.sympIndex < numPlayers) {
-      this.giveSymp(this.sympIndex);
-      this.players[this.sympIndex].index = this.sympIndex;
+    this.sympOrder = shuffle(this.politicians.slice());
+    for (var i = 0; i < numPlayers; i++) {
+      this.giveSymp(i);
+      this.players[i].index = i;
     }
   }
 
   giveSymp(playerIndex) {
-    this.players[playerIndex].symps.push(this.politicians[this.sympIndex]);
-    this.politicians[this.sympIndex].sympTo = this.players[playerIndex];
-    this.sympIndex++;
+    this.players[playerIndex].symps.push(this.politicians[0]);
+    this.politicians[0].sympTo = this.players[playerIndex];
+    this.politicians.splice(0, 1);
   }
 
   handleAction(action, playerIndex) {
@@ -177,7 +176,14 @@ function generateGameState(gameObj, pov) {
     game.politicians[i].isSymp = game.politicians[i].sympTo === pov;
     delete game.politicians[i].sympTo;
   }
-  shuffle(game.politicians);
+  delete game.sympOrder;
+
+  // remove socket.io information
+  delete game.viewers;
+  delete game.io;
+  for (var i = 0; i < game.numPlayers; i++) {
+    delete game.players[i].socket;
+  }
 
   return game;
 }
