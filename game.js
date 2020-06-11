@@ -83,7 +83,7 @@ class Game {
     this.sympOrder = undefined;
     this.numPlayers = 0;
 
-    addJoinHandlers();
+    this.addJoinHandlers();
   }
 
   addJoinHandlers() {

@@ -12,7 +12,13 @@ const Game = () => {
 
   const numPlayers = 4;
   var gameState = {
-    activeProvince: 2
+    provinces: [
+      { name: 'texum', isActive: false },
+      { name: 'TikManDoo', isActive: false },
+      { name: 'Starf', isActive: false },
+      { name: '1', isActive: false },
+      { name: 'Cancelr', isActive: false }
+    ]
   };
 
   socket.on('update', (newGameState) => {

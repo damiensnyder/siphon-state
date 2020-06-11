@@ -4,17 +4,18 @@ import styles from './province.module.css';
 class Province extends React.Component {
   constructor(props) {
     super(props);
-    this.isActive = props.index === props.gameState.activeProvince;
+    this.gs = props.gameState;
+    this.self = this.gs.provinces[props.index];
   }
 
   activityStyle() {
-    return this.isActive ? styles.activeProvince : styles.inactiveProvince;
+    return this.self.isActive ? styles.activeProvince : styles.inactiveProvince;
   }
 
   render() {
     return (
       <div className={styles.province + " " + this.activityStyle()}>
-        <h2 className={styles.provinceName}>{this.props.index}</h2>
+        <h2 className={styles.provinceName}>{this.self.name}</h2>
       </div>
     );
   }
