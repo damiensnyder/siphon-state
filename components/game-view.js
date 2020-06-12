@@ -11,6 +11,7 @@ class GameView extends React.Component {
     super(props);
 
     this.socket = undefined;
+    this.gameCode = '';
 
     this.numPlayers = 4;
     this.state = {
@@ -44,6 +45,7 @@ class GameView extends React.Component {
       var checkForRouter = setInterval(() => {
         if (this.props.gameCode !== undefined) {
           clearInterval(checkForRouter);
+          this.gameCode = this.props.gameCode;
           this.initializeSocket();
         }
         timesChecked++;
@@ -110,6 +112,7 @@ class GameView extends React.Component {
 
   joinHandler(userInfo) {
     this.socket.emit('join', userInfo);
+    console.log('attempted to join');
   }
 
   render() {
@@ -127,7 +130,8 @@ class GameView extends React.Component {
         </div>
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
-          <ControlPanel joinHandler={this.joinHandler} />
+          <ControlPanel joinHandler={this.joinHandler}
+                        gameCode={this.props.gameCode} />
         </div>
       </div>
     );
