@@ -5,12 +5,24 @@ class ControlPanel extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      abbrPlaceholder: ''
+    }
+
     this.inviteLink = 'https://filter-state.herokuapp.com/game/' +
                       this.props.gameCode;
 
     this.linkArea = React.createRef();
 
     this.copyInviteLink = this.copyInviteLink.bind(this);
+    this.updateAbbr = this.updateAbbr.bind(this);
+  }
+
+  updateAbbr(e) {
+    const partyName = e.target.value;
+    this.setState({
+      abbrPlaceholder: partyName.trim().substring(0, 4).toUpperCase()
+    });
   }
 
   copyInviteLink() {
@@ -24,11 +36,14 @@ class ControlPanel extends React.Component {
         <div className={styles.containerLevel5}>
           <div className={styles.sameLine}>
             <div className={styles.joinLabel}>Party:</div>
-            <input className={styles.joinInput} />
+            <input className={styles.joinInput}
+                   onChange={this.updateAbbr} />
           </div>
           <div className={styles.sameLine}>
             <div className={styles.joinLabel}>Abbreviation:</div>
-            <input className={styles.joinInput} />
+            <input className={styles.joinInput}
+                   placeholder={this.state.abbrPlaceholder}
+                   maxLength={4} />
           </div>
           <div className={styles.sameLine}>
             <button className={styles.actionBtn}
