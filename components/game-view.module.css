@@ -27,18 +27,18 @@
   grid-gap: 8px;
 }
 
-#controlPanel {
-  grid-row: 4 / 4;
-  grid-column: 3 / 7;
-
-  background-color: #555;
-  border-radius: 4px;
-}
-
 #otherPlayers {
   grid-row: 1 / 4;
   grid-column: 6 / 7;
 
   display: grid;
   grid-gap: 8px;
+}
+
+#controlPanel {
+  grid-row: 4 / 4;
+  grid-column: 3 / 7;
+
+  background-color: #555;
+  border-radius: 4px;
 }

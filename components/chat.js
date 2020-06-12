@@ -80,7 +80,7 @@ class Chat extends React.Component {
           </div>
         </div>
         <div id={styles.inputRow}>
-          <input name="msgText" id={styles.inputBox} placeholder="Chat here"
+          <input id={styles.inputBox} placeholder="Chat here"
             value={this.state.currentMsg} onChange={this.handleTyping}
             onKeyDown={this.checkIfEnterPressed} ref={this.textInput} />
           <button id={styles.sendBtn} onClick={this.sendMsg}>

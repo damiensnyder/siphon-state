@@ -1,8 +1,9 @@
 import React from 'react';
 import io from 'socket.io-client';
-import styles from './game.module.css';
+import styles from './game-view.module.css';
 import Province from './province';
 import OtherPlayer from './other-player';
+import ControlPanel from './control-panel';
 import Chat from './chat';
 
 class GameView extends React.Component {
@@ -26,6 +27,7 @@ class GameView extends React.Component {
     };
 
     this.chatHandler = this.chatHandler.bind(this);
+    this.joinHandler = this.joinHandler.bind(this);
   }
 
   componentDidMount() {
@@ -55,7 +57,6 @@ class GameView extends React.Component {
 
   initializeSocket() {
     this.socket = io.connect('/game/' + this.props.gameCode);
-    console.log('in cdm: ' + this.props.gameCode);
 
     this.socket.on('msg', (msg) => {
       this.addMsg(msg);
@@ -86,6 +87,8 @@ class GameView extends React.Component {
     return otherPlayersJsx;
   }
 
+  // Handler passed to the Chat component, called whenever the user sends a chat
+  // message.
   chatHandler(msgText) {
     this.addMsg({
       sender: 'You',
@@ -96,12 +99,17 @@ class GameView extends React.Component {
     this.socket.emit('msg', msgText);
   }
 
+  // Adds a message to the Chat component.
   addMsg(msg) {
     const messages = this.state.messages;
     messages.push(msg);
     this.setState({
       messages: messages
     });
+  }
+
+  joinHandler(userInfo) {
+    this.socket.emit('join', userInfo);
   }
 
   render() {
@@ -119,7 +127,7 @@ class GameView extends React.Component {
         </div>
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
-          {this.props.gameCode}
+          <ControlPanel joinHandler={this.joinHandler} />
         </div>
       </div>
     );
