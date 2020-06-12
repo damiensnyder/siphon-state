@@ -7,10 +7,18 @@ class ChatMessage extends React.Component {
   }
 
   render() {
+    if (this.props.msg.isSystem) {
+      return (
+        <div>
+          <span className={styles.systemMsg}>{this.props.msg.text}</span>
+        </div>
+      );
+    }
+
     return (
       <div>
-        <span className={styles.sender}>{this.props.sender}:</span>&nbsp;&nbsp;
-        {this.props.text}
+        <span className={styles.sender}>{this.props.msg.sender}:</span>
+        &nbsp;&nbsp;{this.props.msg.text}
       </div>
     );
   }

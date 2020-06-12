@@ -10,12 +10,6 @@ const nextHandler = nextApp.getRequestHandler();
 var envPort = parseInt(process.env.PORT);
 const port = envPort >= 0 ? envPort : 3000;
 
-io.on('connect', (socket) => {
-  socket.emit('connected', {
-    msg: "test"
-  });
-});
-
 const gameCode = 'oaxm';
 roomIo = io.of('/game/' + gameCode);
 const newGame = new Game(roomIo, gameCode);

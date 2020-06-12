@@ -83,19 +83,27 @@ class Game {
     this.sympOrder = undefined;
     this.numPlayers = 0;
 
-    this.addJoinHandlers();
+    this.io.on('connect', (socket) => {
+      console.log("Adding socket handlers");
+      console.log('in socket: ' + gameCode);
+      this.addSocketHandlers(socket);
+    });
   }
 
-  addJoinHandlers() {
-    this.io.on('connect', (socket) => {
-      this.viewers.push(socket);
-      socket.on('join', (data) => addPlayer(socket, data));
-      socket.on('msg', (msg) => {
-        socket.broadcast.emit('msg', msg);
-      });
-      socket.emit('msg', {
-        sender: 'Game',
-        text: "Connected to chat."
+  addSocketHandlers(socket) {
+    socket.emit('msg', {
+      sender: 'Game',
+      text: "Connected to chat.",
+      isSelf: false,
+      isSystem: true
+    });
+
+    socket.on('msg', (msgText) => {
+      socket.broadcast.emit('msg', {
+        sender: 'Them',
+        text: msgText,
+        isSelf: false,
+        isSystem: false
       });
     });
   }
@@ -129,10 +137,6 @@ class Game {
   }
 
   handleAction(action, playerIndex) {
-
-  }
-
-  handleMsg(msg, playerIndex) {
 
   }
 }

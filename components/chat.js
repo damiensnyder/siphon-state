@@ -7,12 +7,8 @@ class Chat extends React.Component {
     super(props);
 
     this.state = {
-      currentMsg: "",
-      messages: []
+      currentMsg: ""
     }
-
-    this.socket = this.props.socket;
-    this.socket.on('msg', (msg) => addMsg(msg));
 
     this.textInput = React.createRef();
     this.messagesInner = React.createRef();
@@ -25,9 +21,13 @@ class Chat extends React.Component {
   }
 
   msgsToJsx() {
-    return this.state.messages.map(msg => (
-      <ChatMessage sender={msg.sender} text={msg.text} />
-    ));
+    var msgsJsx = [];
+    for (var i = 0; i < this.props.messages.length; i++) {
+      msgsJsx.push(
+        <ChatMessage msg={this.props.messages[i]} key={i} />
+      );
+    }
+    return msgsJsx;
   }
 
   handleTyping(event) {
@@ -44,34 +44,23 @@ class Chat extends React.Component {
   sendMsg() {
     const newMsg = this.state.currentMsg.trim();
     if (newMsg.length > 0) {
-      // Add the message to the list of messages
-      const messages = this.state.messages;
-      messages.push({
-        sender: 'You',
-        text: newMsg
-      });
+      this.props.chatHandler(newMsg);
 
       // Update the message box and scroll to the bottom of the chat log
       this.setState(state => ({
-        currentMsg: "",
-        messages: messages
+        currentMsg: ""
       }));
       this.messageJustSent = true;
-
-      // Send the message to the server
-      this.socket.emit('msg', newMsg);
     }
   }
 
-  addMsg(msg) {
-    messages.push(msg);
-    scrollToBottom();
-  }
-
+  // Scroll to the bottom of the chat log, only if the user just sent a message
+  // themselves or they are already scrolled to within 50 pixels of the bottom
+  // of the chat log.
   scrollToBottom() {
     var e = this.messagesInner.current;
     if (this.messageJustSent ||
-        e.scrollHeight - e.scrollTop === e.clientHeight) {
+        e.scrollHeight - e.scrollTop > e.clientHeight - 50) {
       this.bottomMessage.current.scrollIntoView(false);
       this.messageJustSent = false;
     }
@@ -86,7 +75,7 @@ class Chat extends React.Component {
       <div id={styles.chatLog}>
         <div id={styles.messagesOuter}>
           <div id={styles.messagesInner} ref={this.messagesInner}>
-            {this.msgsToJsx()}
+            {this.msgsToJsx(this.props.messages)}
             <div id={styles.bottomMessage} ref={this.bottomMessage} />
           </div>
         </div>
