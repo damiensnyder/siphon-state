@@ -10,8 +10,7 @@ class ControlPanel extends React.Component {
     return (
       <div>
         Party name: <input className={styles.joinInputBox} />
-        Abbreviation: <input className={styles.joinInputBox}
-                             placeholder="Must be 4 letters or less" />
+        Abbreviation: <input className={styles.joinInputBox} />
         <button className={styles.actionBtn}
                 onClick={this.props.joinHandler}>Join Game</button>
       </div>
