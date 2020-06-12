@@ -52,7 +52,7 @@ class ControlPanel extends React.Component {
             <input className={styles.joinInput}
                    onChange={this.updatePartyName}
                    value={this.state.partyName}
-                   maxLength={40} />
+                   maxLength={30} />
           </div>
           <div className={styles.sameLine}>
             <div className={styles.joinLabel}>Abbreviation:</div>

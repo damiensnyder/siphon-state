@@ -90,14 +90,14 @@ class Game {
 
   addViewerHandlers(socket) {
     this.viewers.push(socket);
-    
-    this.sendGameState(socket, -1);
+
     socket.emit('msg', {
       sender: 'Game',
       text: "Connected to chat.",
       isSelf: false,
       isSystem: true
     });
+
     socket.on('join', (data) => {
       const player = new Player(data.name, data.abbr, socket,
                                 this.players.length, this.handleAction,
@@ -126,37 +126,6 @@ class Game {
     this.players[playerIndex].symps.push(this.politicians[0]);
     this.politicians[0].sympTo = this.players[playerIndex];
     this.politicians.splice(0, 1);
-  }
-
-  sendGameState(socket, pov) {
-    var gs = _.cloneDeep(this);
-
-    // send which player the client is, if they are a player
-    if (pov >= 0) {
-      gs.self = gs.players[pov];
-      gs.selfIndex = pov;
-    }
-
-    // remove knowledge of other players' symps
-    for (var i = 0; i < gs.numPlayers; i++) {
-      if (i !== pov) {
-        delete gs.players[i].symps;
-      }
-    }
-    for (var i = 0; i < gs.politicians.length; i++) {
-      gs.politicians[i].isSymp = gs.politicians[i].sympTo === pov;
-      delete gs.politicians[i].sympTo;
-    }
-    delete gs.sympOrder;
-
-    // remove socket.io information
-    delete gs.viewers;
-    delete gs.io;
-    for (var i = 0; i < gs.numPlayers; i++) {
-      delete gs.players[i].socket;
-    }
-
-    socket.emit('update', gs);
   }
 
   handleAction(action, player) {
