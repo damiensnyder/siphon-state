@@ -9,13 +9,11 @@ class InviteLink extends React.Component {
       copied: false
     }
 
-    this.inviteLink = 'https://filter-state.herokuapp.com/game/' +
-                      this.props.gameCode;
-
     this.linkArea = React.createRef();
     this.copyInviteLink = this.copyInviteLink.bind(this);
   }
 
+  // Selects the textarea with the invite link and copies it to clipboard.
   copyInviteLink() {
     this.linkArea.current.select();
     document.execCommand('copy');
@@ -33,19 +31,20 @@ class InviteLink extends React.Component {
 
   render() {
     return (
-        <div className={styles.sameLine}>
-          <textarea rows={1}
-                    ref={this.linkArea}
-                    className={styles.gameLink}
-                    onChange={() => {}} //suppress warning
-                    value={this.inviteLink}>
-          </textarea>
-          <button className={styles.actionBtn}
-                  id={styles.copyBtn}
-                  onClick={this.copyInviteLink}>
-            {this.state.copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
+      <div className={styles.sameLine}>
+        <textarea rows={1}
+                  ref={this.linkArea}
+                  className={styles.gameLink}
+                  onChange={() => {}} // suppresses warning
+                  value={'https://filter-state.herokuapp.com/game/' +
+                         this.props.gameCode}>
+        </textarea>
+        <button className={styles.actionBtn}
+                id={styles.copyBtn}
+                onClick={this.copyInviteLink}>
+          {this.state.copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
     );
   }
 }
