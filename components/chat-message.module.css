@@ -1,5 +1,9 @@
 .sender {
-  color: #aad;
+  color: #cc9;
+}
+
+.selfSender {
+  color: #aac;
 }
 
 .systemMsg {

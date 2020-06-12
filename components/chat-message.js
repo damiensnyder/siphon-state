@@ -6,6 +6,10 @@ class ChatMessage extends React.Component {
     super(props);
   }
 
+  senderStyle() {
+    return this.props.msg.isSelf ? styles.selfSender : styles.sender;
+  }
+
   render() {
     if (this.props.msg.isSystem) {
       return (
@@ -17,7 +21,7 @@ class ChatMessage extends React.Component {
 
     return (
       <div>
-        <span className={styles.sender}>{this.props.msg.sender}:</span>
+        <span className={this.senderStyle()}>{this.props.msg.sender}:</span>
         &nbsp;&nbsp;{this.props.msg.text}
       </div>
     );
