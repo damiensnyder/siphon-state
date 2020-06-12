@@ -14,7 +14,7 @@ class ControlPanel extends React.Component {
   }
 
   copyInviteLink() {
-    this.linkArea.select();
+    this.linkArea.current.select();
     document.execCommand('copy');
   }
 
@@ -22,31 +22,32 @@ class ControlPanel extends React.Component {
     return (
       <div className={styles.outerWrapper}>
         <div className={styles.containerLevel5}>
-          <div className={styles.joinInputDiv}>
+          <div className={styles.sameLine}>
             <div className={styles.joinLabel}>Party:</div>
             <input className={styles.joinInput} />
           </div>
-          <div className={styles.joinInputDiv}>
+          <div className={styles.sameLine}>
             <div className={styles.joinLabel}>Abbreviation:</div>
             <input className={styles.joinInput} />
           </div>
-          <div className={styles.joinInputDiv}>
+          <div className={styles.sameLine}>
             <button className={styles.actionBtn}
                     onClick={this.props.joinHandler}>Join Game</button>
           </div>
         </div>
         <div id={styles.orDiv}>or</div>
         <div className={styles.containerLevel5}>
-          <div>
+          <div className={styles.sameLine}>
             <textarea rows={1}
                       ref={this.linkArea}
                       className={styles.gameLink}
                       value={this.inviteLink}>
             </textarea>
             <button className={styles.actionBtn}
+                    id={styles.copyBtn}
                     onClick={this.copyInviteLink}>Copy</button>
           </div>
-          <div>invite a friend</div>
+          <span id={styles.inviteFriend}>invite a friend</span>
         </div>
       </div>
     );
