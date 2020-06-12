@@ -74,16 +74,22 @@ class Chat extends React.Component {
     return (
       <div id={styles.chatLog}>
         <div id={styles.messagesOuter}>
-          <div id={styles.messagesInner} ref={this.messagesInner}>
+          <div id={styles.messagesInner}
+               ref={this.messagesInner}>
             {this.msgsToJsx(this.props.messages)}
-            <div id={styles.bottomMessage} ref={this.bottomMessage} />
+            <div id={styles.bottomMessage}
+                 ref={this.bottomMessage} />
           </div>
         </div>
         <div id={styles.inputRow}>
-          <input id={styles.inputBox} placeholder="Chat here"
-            value={this.state.currentMsg} onChange={this.handleTyping}
-            onKeyDown={this.checkIfEnterPressed} ref={this.textInput} />
-          <button id={styles.sendBtn} onClick={this.sendMsg}>
+          <input id={styles.inputBox}
+                 placeholder="Chat here"
+                 value={this.state.currentMsg}
+                 onChange={this.handleTyping}
+                 onKeyDown={this.checkIfEnterPressed}
+                 ref={this.textInput} />
+          <button id={styles.sendBtn}
+                  onClick={this.sendMsg}>
             Send
           </button>
         </div>

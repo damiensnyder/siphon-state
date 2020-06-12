@@ -37,6 +37,7 @@ class InviteLink extends React.Component {
           <textarea rows={1}
                     ref={this.linkArea}
                     className={styles.gameLink}
+                    onChange={() => {}} //suppress warning
                     value={this.inviteLink}>
           </textarea>
           <button className={styles.actionBtn}
