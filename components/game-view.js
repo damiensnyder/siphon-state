@@ -35,10 +35,13 @@ class GameView extends React.Component {
     this.waitForGameCode();
   }
 
+  // The game code mysteriously does not load immediately, so this waits for
+  // another function that checks until it gets it.
   async waitForGameCode() {
     await this.retryUntilGameCode();
   }
 
+  // Checks every 20 ms until the game code is set by the router.
   retryUntilGameCode() {
     return new Promise((resolve) => {
       var timesChecked = 0;
@@ -65,6 +68,7 @@ class GameView extends React.Component {
     });
   }
 
+  // Converts the array of provinces in the game to an array of JSX objects.
   provincesToJsx() {
     const provincesJsx = [];
     for (var i = 0; i < 5; i++) {
@@ -77,6 +81,7 @@ class GameView extends React.Component {
     return provincesJsx;
   }
 
+  // Converts the array of other players in the game to an array of JSX objects.
   otherPlayersToJsx() {
     const otherPlayersJsx = [];
     for (var i = 0; i < this.numPlayers - 1; i++) {
@@ -90,7 +95,8 @@ class GameView extends React.Component {
   }
 
   // Handler passed to the Chat component, called whenever the user sends a chat
-  // message.
+  // message. Shows the message client-side instantly and sends the message to
+  // the server to be broadcasted to everyone else.
   chatHandler(msgText) {
     this.addMsg({
       sender: 'You',
@@ -110,14 +116,17 @@ class GameView extends React.Component {
     });
   }
 
+  // Passed to the control panel and called when the player joins the game.
+  // Sends the player's info to the server and shows a system chat message to
+  // the player.
   joinHandler(partyInfo) {
-    this.socket.emit('join', partyInfo);
     this.addMsg({
       sender: 'Game',
       text: 'You have joined the game as \'' + partyInfo.name + '\'',
       isSelf: false,
       isSystem: true
     });
+    this.socket.emit('join', partyInfo);
   }
 
   render() {
@@ -136,7 +145,7 @@ class GameView extends React.Component {
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
           <ControlPanel joinHandler={this.joinHandler}
-                        gameCode={this.props.gameCode} />
+                        gameCode={this.gameCode} />
         </div>
       </div>
     );
