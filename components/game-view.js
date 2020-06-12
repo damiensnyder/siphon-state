@@ -110,9 +110,14 @@ class GameView extends React.Component {
     });
   }
 
-  joinHandler(userInfo) {
-    this.socket.emit('join', userInfo);
-    console.log('attempted to join');
+  joinHandler(partyInfo) {
+    this.socket.emit('join', partyInfo);
+    this.addMsg({
+      sender: 'Game',
+      text: 'You have joined the game as \'' + partyInfo.name + '\'',
+      isSelf: false,
+      isSystem: true
+    });
   }
 
   render() {

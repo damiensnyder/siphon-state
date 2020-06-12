@@ -84,13 +84,13 @@ class Game {
     this.numPlayers = 0;
 
     this.io.on('connect', (socket) => {
-      console.log("Adding socket handlers");
-      console.log('in socket: ' + gameCode);
-      this.addSocketHandlers(socket);
+      this.addViewerHandlers(socket);
     });
   }
 
-  addSocketHandlers(socket) {
+  addViewerHandlers(socket) {
+    this.viewers.push(socket);
+
     socket.emit('msg', {
       sender: 'Game',
       text: "Connected to chat.",
@@ -98,21 +98,13 @@ class Game {
       isSystem: true
     });
 
-    socket.on('msg', (msgText) => {
-      socket.broadcast.emit('msg', {
-        sender: 'Them',
-        text: msgText,
-        isSelf: false,
-        isSystem: false
-      });
+    socket.on('join', (data) => {
+      const player = new Player(data.name, data.abbr, socket,
+                                this.players.length, this.handleAction,
+                                this.handleMsg);
+      this.players.push(player);
+      socket.removeAllListeners('join');
     });
-  }
-
-  addPlayer(socket, data) {
-    this.viewers.splice(this.viewers.indexOf(socket), 1);
-    this.players.push(new Player(data.name, data.abbr, socket, numPlayers,
-                                 this.handleAction, this.handleMsg));
-    numPlayers++;
   }
 
   begin() {
@@ -136,8 +128,19 @@ class Game {
     this.politicians.splice(0, 1);
   }
 
-  handleAction(action, playerIndex) {
+  handleAction(action, player) {
 
+  }
+
+  handleMsg(msg, player) {
+    if (typeof(msg) == 'string' && msg.trim().length > 0) {
+      player.socket.broadcast.emit('msg', {
+        sender: player.name,
+        text: msg.trim(),
+        isSelf: false,
+        isSystem: false
+      });
+    }
   }
 }
 
@@ -166,8 +169,14 @@ class Player {
     this.symps = [];
 
     this.socket = socket;
-    this.socket.on('action', (action) => actionHandler(action, this.index));
-    this.socket.on('msg', (msg) => msgHandler(msg, this.index));
+    this.socket.broadcast.emit('msg', {
+      sender: 'Game',
+      text: `Player '${this.name}' (${this.abbr}) has joined the chat`,
+      isSelf: false,
+      isSystem: true
+    });
+    this.socket.on('action', (action) => actionHandler(action, this));
+    this.socket.on('msg', (msg) => msgHandler(msg, this));
   }
 }
 
