@@ -73,20 +73,59 @@ class GameManager {
     this.viewers = [];
     this.players = [];
 
-    this.io.on('connect', (socket) => this.handleConnect(socket));
+    this.io.on('connect', (socket) => {
+      const viewer = new Viewer(socket,
+                                this.viewers.length,
+                                this.enqueueAction);
+      this.enqueueAction(viewer, 'connect', null);
+    });
 
-    this.handleJoin = this.handleJoin.bind(this);
-    this.handleMsg = this.handleMsg.bind(this);
-    this.handleAction = this.handleAction.bind(this);
-    this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.actionQueue = [];
+    this.handlingAction = false;
+
+    this.enqueueAction = this.enqueueAction.bind(this);
   }
 
-  handleConnect(socket) {
-    const viewer = new Viewer(socket, this.viewers.length, this.handleJoin,
-                              this.handleMsg, this.handleAction,
-                              this.handleDisconnect);
+  // Sends actions to a queue that can be handled one at a time so they don't
+  // interfere with each other.
+  enqueueAction(viewer, type, data) {
+    this.actionQueue.push({
+      viewer: viewer,
+      type: type,
+      data: data
+    });
+
+    if (!this.handlingAction) {
+      this.handlingAction = true;
+      this.handleAction();
+    }
+  }
+
+  // Handle the first action in the queue. If there are no more actions in the
+  // queue, show that it is done. Otherwise, handle the next action.
+  handleAction() {
+    const action = this.actionQueue[0];
+    if (action.type == 'connect') {
+      this.handleConnect(action.viewer);
+    } else if (action.type == 'join') {
+      this.handleJoin(action.viewer, action.data);
+    } else if (action.type == 'msg') {
+      this.handleMsg(action.viewer, action.data);
+    } else if (action.type == 'disconnect') {
+      this.handleDisconnect(action.viewer);
+    }
+
+    this.actionQueue.splice(0, 1);
+    if (this.actionQueue.length > 0) {
+      this.handleAction();
+    } else {
+      this.handlingAction = false;
+    }
+  }
+
+  handleConnect(viewer) {
     this.viewers.push(viewer);
-    socket.emit('msg', {
+    viewer.socket.emit('msg', {
       sender: 'Game',
       text: "Connected to chat.",
       isSelf: false,
@@ -95,24 +134,23 @@ class GameManager {
     viewer.emitGameState(this.gs);
   }
 
-  handleJoin(viewer, name, abbr) {
-    viewer.pov = this.players.length;
+  handleJoin(viewer, data) {
+    viewer.join(this.players.length, data.name);
     this.players.push(viewer);
     this.gs.players.push({
-      name: name,
-      abbr: abbr
+      name: data.name,
+      abbr: data.abbr
     });
 
-    viewer.socket.broadcast.emit('msg', {
-      sender: 'Game',
-      text: `Player '${name}' (${abbr}) has joined the game.`,
-      isSelf: false,
-      isSystem: true
-    });
+    this.broadcastSystemMsg(
+      viewer.socket,
+      `Player '${data.name}' (${data.abbr}) has joined the game.`
+    );
     this.emitGameStateToAll();
   }
 
-  handleMsg(msg, viewer) {
+  handleMsg(viewer, data) {
+    const msg = data.msg;
     if (typeof(msg) == 'string' &&
         msg.trim().length > 0 &&
         viewer.pov >= 0) {
@@ -125,18 +163,13 @@ class GameManager {
     }
   }
 
-  handleAction(action, viewer) {
-
-  }
-
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
   handleDisconnect(viewer) {
     let index = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
-    while (index < this.viewers.length) {
+    for (let i = index; i < this.viewers.length; i++) {
       this.viewers[index].viewerIndex = index;
-      index++;
     }
 
     if (viewer.pov >= 0) {
@@ -149,19 +182,40 @@ class GameManager {
   // TODO: If the game has started, replace them with a bot.
   removePlayer(pov) {
     const name = this.gs.players[pov].name;
+    this.players.splice(pov, 1);
     if (!this.gs.started) {
       this.gs.players.splice(pov, 1);
+
+      for (let i = pov; i < this.players.length; i++) {
+        this.players[i].pov = i;
+      }
     }
 
     this.emitGameStateToAll();
-    this.io.emit('msg', {
+    this.emitSystemMsg(`Player '${name}' has disconnected.`);
+  }
+
+  // Broadcast a system message to all sockets except the one passed in.
+  broadcastSystemMsg(socket, msg) {
+    socket.broadcast.emit('msg', {
       sender: 'Game',
-      text: `Player '${name}' has disconnected.`,
+      text: msg,
       isSelf: false,
       isSystem: true
     });
   }
 
+  // Send a system message to all sockets.
+  emitSystemMsg(msg) {
+    this.io.emit('msg', {
+      sender: 'Game',
+      text: msg,
+      isSelf: false,
+      isSystem: true
+    });
+  }
+
+  // Emit the current game state to all viewers.
   emitGameStateToAll() {
     for (let i = 0; i < this.viewers.length; i++) {
       this.viewers[i].emitGameState(this.gs);
@@ -170,42 +224,28 @@ class GameManager {
 }
 
 class Viewer {
-  constructor(socket, viewerIndex, joinHandler, msgHandler, actionHandler,
-              disconnectHandler) {
+  constructor(socket, viewerIndex, actionHandler) {
     this.socket = socket;
-    this.joinHandler = joinHandler;
     this.actionHandler = actionHandler;
-    this.msgHandler = msgHandler;
-    this.disconnectHandler = disconnectHandler;
 
     this.viewerIndex = viewerIndex;
     this.name = undefined;
     this.pov = -1; // point of view: -1 for spectator, player index for player
 
-    this.socket.on('join', (data) => this.handleJoin(data));
-    this.socket.on('disconnect', () => this.handleDisconnect());
+    this.socket.on('join', (data) =>
+                   this.actionHandler(this, 'join', data));
+    this.socket.on('disconnect', () =>
+                   this.actionHandler(this, 'disconnect', null));
   }
 
-  handleJoin(data) {
-    this.joinHandler(this, data.name, data.abbr);
-    this.name = data.name;
+  join(pov, name) {
+    this.pov = pov;
+    this.name = name;
+    this.socket.on('msg', (msg) =>
+                   this.actionHandler(this, 'msg', { msg: msg }));
 
     // Set up handlers for actions and messages, and remove the join handler.
-    this.socket.on('action', (action) => this.handleAction(action));
-    this.socket.on('msg', (msg) => this.handleMsg(msg));
     this.socket.removeAllListeners('join');
-  }
-
-  handleMsg(msg) {
-    this.msgHandler(msg, this);
-  }
-
-  handleAction(action) {
-    this.actionHandler(action, this);
-  }
-
-  handleDisconnect() {
-    this.disconnectHandler(this);
   }
 
   emitGameState(gs) {
