@@ -78,19 +78,21 @@ class GameManager {
     this.handleJoin = this.handleJoin.bind(this);
     this.handleMsg = this.handleMsg.bind(this);
     this.handleAction = this.handleAction.bind(this);
+    this.handleDisconnect = this.handleDisconnect.bind(this);
   }
 
   handleConnect(socket) {
-    const newViewer = new Viewer(socket, this.viewers.length, this.handleJoin,
-                                 this.handleMsg, this.handleAction);
-    this.viewers.push(newViewer);
+    const viewer = new Viewer(socket, this.viewers.length, this.handleJoin,
+                              this.handleMsg, this.handleAction,
+                              this.handleDisconnect);
+    this.viewers.push(viewer);
     socket.emit('msg', {
       sender: 'Game',
       text: "Connected to chat.",
       isSelf: false,
       isSystem: true
     });
-    newViewer.emitGameState(this.gs);
+    viewer.emitGameState(this.gs);
   }
 
   handleJoin(viewer, name, abbr) {
@@ -103,7 +105,7 @@ class GameManager {
 
     viewer.socket.broadcast.emit('msg', {
       sender: 'Game',
-      text: `Player '${name}' (${abbr}) has joined the chat`,
+      text: `Player '${name}' (${abbr}) has joined the game.`,
       isSelf: false,
       isSystem: true
     });
@@ -127,6 +129,39 @@ class GameManager {
 
   }
 
+  // When a player disconnects, remove them from the list of viewers, fix the
+  // viewer indices of all other viewers, and remove them from the game.
+  handleDisconnect(viewer) {
+    let index = this.viewers.indexOf(viewer);
+    this.viewers.splice(index, 1);
+    while (index < this.viewers.length) {
+      this.viewers[index].viewerIndex = index;
+      index++;
+    }
+
+    if (viewer.pov >= 0) {
+      this.removePlayer(viewer.pov);
+    }
+  }
+
+  // If the game hasn't started, remove the player with the given POV from the
+  // game.
+  // TODO: If the game has started, replace them with a bot.
+  removePlayer(pov) {
+    const name = this.gs.players[pov].name;
+    if (!this.gs.started) {
+      this.gs.players.splice(pov, 1);
+    }
+
+    this.emitGameStateToAll();
+    this.io.emit('msg', {
+      sender: 'Game',
+      text: `Player '${name}' has disconnected.`,
+      isSelf: false,
+      isSystem: true
+    });
+  }
+
   emitGameStateToAll() {
     for (let i = 0; i < this.viewers.length; i++) {
       this.viewers[i].emitGameState(this.gs);
@@ -135,17 +170,20 @@ class GameManager {
 }
 
 class Viewer {
-  constructor(socket, viewerIndex, joinHandler, msgHandler, actionHandler) {
+  constructor(socket, viewerIndex, joinHandler, msgHandler, actionHandler,
+              disconnectHandler) {
     this.socket = socket;
     this.joinHandler = joinHandler;
     this.actionHandler = actionHandler;
-    this.msgHandler = msgHandler
+    this.msgHandler = msgHandler;
+    this.disconnectHandler = disconnectHandler;
 
     this.viewerIndex = viewerIndex;
     this.name = undefined;
     this.pov = -1; // point of view: -1 for spectator, player index for player
 
     this.socket.on('join', (data) => this.handleJoin(data));
+    this.socket.on('disconnect', () => this.handleDisconnect());
   }
 
   handleJoin(data) {
@@ -164,6 +202,10 @@ class Viewer {
 
   handleAction(action) {
     this.actionHandler(action, this);
+  }
+
+  handleDisconnect() {
+    this.disconnectHandler(this);
   }
 
   emitGameState(gs) {

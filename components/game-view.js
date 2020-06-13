@@ -25,7 +25,8 @@ class GameView extends React.Component {
         players: [],
         pov: -1
       },
-      messages: []
+      messages: [],
+      connected: false
     };
 
     this.chatHandler = this.chatHandler.bind(this);
@@ -63,6 +64,25 @@ class GameView extends React.Component {
 
   initializeSocket() {
     this.socket = io.connect('/game/' + this.props.gameCode);
+    this.connected = true;
+
+    this.socket.on('connect', () => {
+      this.setState({
+        connected: true
+      });
+    });
+
+    this.socket.on('disconnect', () => {
+      this.setState({
+        connected: false
+      });
+      this.addMsg({
+        sender: 'Client',
+        msg: 'You have been disconnected.',
+        isSelf: false,
+        isSystem: true
+      });
+    });
 
     this.socket.on('msg', (msg) => {
       this.addMsg(msg);
@@ -72,7 +92,7 @@ class GameView extends React.Component {
       this.setState({
         gs: gs
       });
-    })
+    });
   }
 
   // Converts the array of provinces in the game to an array of JSX objects.
@@ -108,8 +128,8 @@ class GameView extends React.Component {
   // the player.
   joinHandler(partyInfo) {
     this.addMsg({
-      sender: 'Game',
-      text: 'You have joined the game as \'' + partyInfo.name + '\'',
+      sender: 'Client',
+      text: `You have joined the game as '${partyInfo.name}'.`,
       isSelf: false,
       isSystem: true
     });
