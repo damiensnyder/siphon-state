@@ -5,7 +5,7 @@ import styles from './player.module.css';
 class OtherPlayer extends React.Component {
   constructor(props) {
     super(props);
-    this.self = this.props.gs.players[props.index];
+    this.self = this.props.gs.parties[props.index];
   }
 
   render() {

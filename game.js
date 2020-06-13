@@ -137,7 +137,7 @@ class GameManager {
   handleJoin(viewer, data) {
     viewer.join(this.players.length, data.name);
     this.players.push(viewer);
-    this.gs.players.push({
+    this.gs.parties.push({
       name: data.name,
       abbr: data.abbr
     });
@@ -181,10 +181,10 @@ class GameManager {
   // game.
   // TODO: If the game has started, replace them with a bot.
   removePlayer(pov) {
-    const name = this.gs.players[pov].name;
+    const name = this.gs.parties[pov].name;
     this.players.splice(pov, 1);
     if (!this.gs.started) {
-      this.gs.players.splice(pov, 1);
+      this.gs.parties.splice(pov, 1);
 
       for (let i = pov; i < this.players.length; i++) {
         this.players[i].pov = i;
@@ -250,6 +250,7 @@ class Viewer {
 
   emitGameState(gs) {
     const sympInfo = gs.setPov(this.pov);
+    console.log(gs.parties);
     this.socket.emit('update', gs);
     gs.unsetPov(sympInfo);
   }
@@ -261,7 +262,7 @@ class GameState {
     this.ended = false;
     this.pov = -1;
 
-    this.players = [];
+    this.parties = [];
 
     this.politicians = POLITICIAN_NAMES.slice();
     shuffle(this.politicians);
@@ -281,10 +282,10 @@ class GameState {
     this.pov = pov;
     const symps = [];
 
-    for (let i = 0; i < this.players.length; i++) {
-      symps.push(this.players[i].symps);
+    for (let i = 0; i < this.parties.length; i++) {
+      symps.push(this.parties[i].symps);
       if (i !== pov) {
-        this.players[i].symps = undefined;
+        this.parties[i].symps = undefined;
       }
     }
 
@@ -301,8 +302,8 @@ class GameState {
   unsetPov(sympInfo) {
     this.pov = -1;
 
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].symps = sympInfo.symps[i];
+    for (let i = 0; i < this.parties.length; i++) {
+      this.parties[i].symps = sympInfo.symps[i];
     }
 
     this.sympOrder = sympInfo.sympOrder;

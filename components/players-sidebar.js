@@ -12,7 +12,7 @@ class PlayersSidebar extends React.Component {
   // Converts the array of other players in the game to an array of JSX objects.
   playersToJsx() {
     const playersJsx = [];
-    for (var i = 0; i < this.props.gs.players.length; i++) {
+    for (var i = 0; i < this.props.gs.parties.length; i++) {
       if (i === this.props.gs.pov) {
         playersJsx.push(
           <OwnPlayer gs={this.props.gs}
@@ -32,7 +32,7 @@ class PlayersSidebar extends React.Component {
 
   render() {
     // If no other players have joined, display a message.
-    if (this.props.gs.players.length === 0) {
+    if (this.props.gs.parties.length === 0) {
       return (
         <div id={styles.noPlayersWrapper}>
           <div>No other players have joined yet. Be the first!</div>

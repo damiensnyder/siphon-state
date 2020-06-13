@@ -22,7 +22,7 @@ class GameView extends React.Component {
           { name: '', isActive: false },
           { name: '', isActive: false }
         ],
-        players: [],
+        parties: [],
         pov: -1
       },
       messages: [],
