@@ -4,7 +4,7 @@ import styles from './province.module.css';
 class Province extends React.Component {
   constructor(props) {
     super(props);
-    this.self = this.props.gs.provinces[props.index];
+    this.self = props.gs.provinces[props.index];
   }
 
   activityStyle() {
