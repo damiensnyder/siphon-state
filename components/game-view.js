@@ -152,7 +152,7 @@ class GameView extends React.Component {
         </div>
         <Chat messages={this.state.messages}
               chatHandler={this.chatHandler} />
-        <div id={styles.otherPlayers}
+        <div id={styles.playersSidebar}
              className={styles.containerLevel2}>
           <PlayersSidebar gs={this.state.gs} />
         </div>
