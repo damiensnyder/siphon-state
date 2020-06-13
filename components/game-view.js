@@ -66,7 +66,7 @@ class GameView extends React.Component {
     this.socket = io.connect('/game/' + this.props.gameCode);
     this.connected = true;
 
-    this.socket.on('connect', () => {
+    this.socket.on('connection', () => {
       this.setState({
         connected: true
       });
@@ -159,6 +159,7 @@ class GameView extends React.Component {
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
           <ControlPanel joinHandler={this.joinHandler}
+                        gs={this.state.gs}
                         gameCode={this.gameCode} />
         </div>
       </div>

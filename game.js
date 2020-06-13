@@ -73,7 +73,7 @@ class GameManager {
     this.viewers = [];
     this.players = [];
 
-    this.io.on('connect', (socket) => {
+    this.io.on('connection', (socket) => {
       const viewer = new Viewer(socket,
                                 this.viewers.length,
                                 this.enqueueAction);

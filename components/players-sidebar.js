@@ -2,6 +2,7 @@ import React from 'react';
 import io from 'socket.io-client';
 import styles from './players-sidebar.module.css';
 import OtherPlayer from './other-player';
+import OwnPlayer from './own-player';
 
 class PlayersSidebar extends React.Component {
   constructor(props) {
@@ -9,18 +10,24 @@ class PlayersSidebar extends React.Component {
   }
 
   // Converts the array of other players in the game to an array of JSX objects.
-  otherPlayersToJsx() {
-    const otherPlayersJsx = [];
+  playersToJsx() {
+    const playersJsx = [];
     for (var i = 0; i < this.props.gs.players.length; i++) {
-      if (i !== this.props.gs.pov) {
-        otherPlayersJsx.push(
+      if (i === this.props.gs.pov) {
+        playersJsx.push(
+          <OwnPlayer gs={this.props.gs}
+                     index={i}
+                     key={i} />
+        );
+      } else {
+        playersJsx.push(
           <OtherPlayer gs={this.props.gs}
                        index={i}
                        key={i} />
         );
       }
     }
-    return otherPlayersJsx;
+    return playersJsx;
   }
 
   render() {
@@ -31,15 +38,9 @@ class PlayersSidebar extends React.Component {
           <div>No other players have joined yet. Be the first!</div>
         </div>
       );
-    } else if (this.props.gs.pov === 0 && this.props.gs.players.length === 1) {
-      return (
-        <div id={styles.noPlayersWrapper}>
-          <div>No other players have joined yet.</div>
-        </div>
-      );
     }
 
-    return this.otherPlayersToJsx();
+    return this.playersToJsx();
   }
 }
 
