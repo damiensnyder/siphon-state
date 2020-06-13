@@ -42,7 +42,7 @@ class InviteLink extends React.Component {
         <button className={styles.actionBtn}
                 id={styles.copyBtn}
                 onClick={this.copyInviteLink}>
-          {this.state.copied ? 'Copied' : 'Copy'}
+          {this.state.copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
     );

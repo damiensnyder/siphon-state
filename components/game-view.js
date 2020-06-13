@@ -2,7 +2,7 @@ import React from 'react';
 import io from 'socket.io-client';
 import styles from './game-view.module.css';
 import Province from './province';
-import OtherPlayer from './other-player';
+import PlayersSidebar from './players-sidebar';
 import ControlPanel from './control-panel';
 import Chat from './chat';
 
@@ -149,7 +149,7 @@ class GameView extends React.Component {
               chatHandler={this.chatHandler} />
         <div id={styles.otherPlayers}
              className={styles.containerLevel2}>
-          {this.otherPlayersToJsx()}
+          <PlayersSidebar gs={this.state.gs} />
         </div>
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
