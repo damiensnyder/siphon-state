@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const politicianNames = [
+const POLITICIAN_NAMES = [
   "Olive Bass",
   "Amber Melendez",
   "Iyla Conrad",
@@ -62,207 +62,137 @@ const politicianNames = [
   "Reid Buckley",
   "Shannon Morse"
 ];
-const playerNames = ["idiot 1", "johson", "Bkjbkjbkj", "0"];
-const provinceNames = ["Jermany 4", "Kanzas", "wilfred", "NO NO NO", "ian"];
+const PLAYER_NAMES = ["idiot 1", "johson", "Bkjbkjbkj", "0"];
+const PROVINCE_NAMES = ["Jermany 4", "Kanzas", "wilfred", "NO NO NO", "ian"];
 
-class Game {
+class GameManager {
   constructor(io, gameCode) {
     this.io = io;
-    this.gameCode = gameCode;
+    this.gs = new GameState(gameCode);
 
     this.viewers = [];
     this.players = [];
 
-    this.politicians = politicianNames.map(name => new Politician(name));
-    this.provinces = provinceNames.map(name => new Province(name));
+    this.io.on('connect', (socket) => this.handleConnect(socket));
 
-    this.activeProvince = 0;
-    this.activePlayer = 0;
-    this.started = false;
-    this.ended = false;
-    this.sympOrder = undefined;
-    this.numPlayers = 0;
-
-    this.io.on('connect', (socket) => {
-      this.addViewerHandlers(socket);
-    });
+    this.handleJoin = this.handleJoin.bind(this);
+    this.handleMsg = this.handleMsg.bind(this);
+    this.handleAction = this.handleAction.bind(this);
   }
 
-  addViewerHandlers(socket) {
-    this.viewers.push(socket);
-    
-    this.sendGameState(socket, -1);
+  handleConnect(socket) {
+    this.viewers.push(new Viewer(socket, this.viewers.length, this.handleJoin,
+                                 this.handleMsg, this.handleAction));
     socket.emit('msg', {
       sender: 'Game',
       text: "Connected to chat.",
       isSelf: false,
       isSystem: true
     });
-    socket.on('join', (data) => {
-      const player = new Player(data.name, data.abbr, socket,
-                                this.players.length, this.handleAction,
-                                this.handleMsg);
-      this.players.push(player);
-      socket.removeAllListeners('join');
+  }
+
+  handleJoin(index, name, abbr) {
+    const playerIndex = this.players.length;
+    this.players.push(this.viewers[index]);
+
+    this.viewers[index].socket.broadcast.emit('msg', {
+      sender: 'Game',
+      text: `Player '${name}' (${abbr}) has joined the chat`,
+      isSelf: false,
+      isSystem: true
     });
+
+    return playerIndex;
   }
 
-  begin() {
-    // assign each player an equal amount of politicians
-    shuffle(this.politicians);
-    for (var i = 0; i < politicianNames.length; i++) {
-      this.players[i % numPlayers].politicians.push(this.politicians[i]);
-      this.politicians[i].player = this.players[i % numPlayers];
-    }
-
-    // assign each player one random symp and their player index
-    this.sympOrder = shuffle(this.politicians.slice());
-    for (var i = 0; i < numPlayers; i++) {
-      this.giveSymp(i);
-    }
-  }
-
-  giveSymp(playerIndex) {
-    this.players[playerIndex].symps.push(this.politicians[0]);
-    this.politicians[0].sympTo = this.players[playerIndex];
-    this.politicians.splice(0, 1);
-  }
-
-  sendGameState(socket, pov) {
-    var gs = _.cloneDeep(this);
-
-    // send which player the client is, if they are a player
-    if (pov >= 0) {
-      gs.self = gs.players[pov];
-      gs.selfIndex = pov;
-    }
-
-    // remove knowledge of other players' symps
-    for (var i = 0; i < gs.numPlayers; i++) {
-      if (i !== pov) {
-        delete gs.players[i].symps;
-      }
-    }
-    for (var i = 0; i < gs.politicians.length; i++) {
-      gs.politicians[i].isSymp = gs.politicians[i].sympTo === pov;
-      delete gs.politicians[i].sympTo;
-    }
-    delete gs.sympOrder;
-
-    // remove socket.io information
-    delete gs.viewers;
-    delete gs.io;
-    for (var i = 0; i < gs.numPlayers; i++) {
-      delete gs.players[i].socket;
-    }
-
-    socket.emit('update', gs);
-  }
-
-  handleAction(action, player) {
-
-  }
-
-  handleMsg(msg, player) {
-    if (typeof(msg) == 'string' && msg.trim().length > 0) {
-      player.socket.broadcast.emit('msg', {
-        sender: player.name,
+  handleMsg(msg, viewer) {
+    if (typeof(msg) == 'string' &&
+        msg.trim().length > 0 &&
+        viewer.pov >= 0) {
+      viewer.socket.broadcast.emit('msg', {
+        sender: viewer.name,
         text: msg.trim(),
         isSelf: false,
         isSystem: false
       });
     }
   }
-}
 
-class Politician {
-  constructor(name) {
-    this.name = name;
+  handleAction(action, viewer) {
 
-    this.isAvailable = true;
-    this.usedThisTurn = false;
-    this.position = null;
-    this.player = null;
-    this.province = null;
-    this.sympTo = null;
-  }
-}
-
-class Player {
-  constructor(name, abbr, socket, index, actionHandler, msgHandler) {
-    this.name = name;
-    this.abbr = abbr;
-    this.index = index;
-
-    this.isTurn = false;
-    this.money = 10;
-    this.politicians = [];
-    this.symps = [];
-
-    this.socket = socket;
-    this.socket.broadcast.emit('msg', {
-      sender: 'Game',
-      text: `Player '${this.name}' (${this.abbr}) has joined the chat`,
-      isSelf: false,
-      isSystem: true
-    });
-    this.socket.on('action', (action) => actionHandler(action, this));
-    this.socket.on('msg', (msg) => msgHandler(msg, this));
-  }
-}
-
-class Province {
-  constructor(name) {
-    this.name = name;
-
-    this.isStarted = false;
-    this.isActive = false;
-    this.stage = 0;
-
-    this.governor = [];
-    this.officials = [];
-    this.candidates = [];
-    this.dropouts = [];
-  }
-}
-
-function generateGameState(gameObj, pov) {
-  var game = _.cloneDeep(gameObj);
-
-  // send which player the client is, if they are a player
-  if (pov >= 0) {
-    game.self = game.players[pov];
-    game.selfIndex = pov;
   }
 
-  // remove knowledge of other players' symps
-  for (var i = 0; i < game.numPlayers; i++) {
-    if (i !== pov) {
-      delete game.players[i].symps;
+  sendGameStateToAll() {
+    for (let i = 0; i < this.viewers.length; i++) {
+      const viewer = this.viewers[i];
+      const gs = this.gs;
+      this.gs.setToPov(viewer.pov);
+      viewer.sendGameState(this.gs);
+      this.gs = gs;
     }
   }
-  for (var i = 0; i < game.politicians.length; i++) {
-    game.politicians[i].isSymp = game.politicians[i].sympTo === pov;
-    delete game.politicians[i].sympTo;
-  }
-  delete game.sympOrder;
+}
 
-  // remove socket.io information
-  delete game.viewers;
-  delete game.io;
-  for (var i = 0; i < game.numPlayers; i++) {
-    delete game.players[i].socket;
+class Viewer {
+  constructor(socket, viewerIndex, joinHandler, msgHandler, actionHandler) {
+    this.socket = socket;
+    this.joinHandler = joinHandler;
+    this.actionHandler = actionHandler;
+    this.msgHandler = msgHandler
+
+    this.viewerIndex = viewerIndex;
+    this.name = null;
+    this.pov = -1; // point of view: -1 for spectator, player index for player
+
+    this.socket.on('join', (data) => this.handleJoin(data));
   }
 
-  return game;
+  handleJoin(data) {
+    this.pov = this.joinHandler(this.viewerIndex, data.name, data.abbr);
+    this.name = data.name;
+
+    // Set up handlers for actions and messages, and remove the join handler.
+    this.socket.on('action', (action) => this.handleAction(action));
+    this.socket.on('msg', (msg) => this.handleMsg(msg));
+    this.socket.removeAllListeners('join');
+  }
+
+  handleMsg(msg) {
+    this.msgHandler(msg, this);
+  }
+
+  handleAction(action) {
+    this.actionHandler(action, this);
+  }
+
+  sendGameState(gs) {
+    this.socket.emit('update', gs);
+  }
+}
+
+class GameState {
+  constructor(gameCode) {
+    this.gameCode = gameCode;
+
+    this.started = false;
+    this.ended = false;
+    this.pov = null;
+
+    this.provinces = PROVINCE_NAMES.slice();
+    shuffle(this.provinces);
+  }
+
+  setToPov(pov) {
+    this.pov = pov;
+  }
 }
 
 function shuffle(arr) {
-  for (var i = arr.length - 1; i > 0; i--) {
+  for (let i = arr.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
 }
 
-module.exports = Game;
+module.exports = GameManager;
