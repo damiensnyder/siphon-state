@@ -4,8 +4,7 @@ import styles from './province.module.css';
 class Province extends React.Component {
   constructor(props) {
     super(props);
-    this.gs = props.gameState;
-    this.self = this.gs.provinces[props.index];
+    this.self = this.props.gs.provinces[props.index];
   }
 
   activityStyle() {

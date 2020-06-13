@@ -13,16 +13,17 @@ class GameView extends React.Component {
     this.socket = undefined;
     this.gameCode = '';
 
-    this.numPlayers = 4;
     this.state = {
-      gameState: {
+      gs: {
         provinces: [
-          { name: 'texum', isActive: false },
-          { name: 'TikManDoo', isActive: false },
-          { name: 'Starf', isActive: false },
-          { name: '1', isActive: false },
-          { name: 'Cancelr', isActive: false }
-        ]
+          { name: '', isActive: false },
+          { name: '', isActive: false },
+          { name: '', isActive: false },
+          { name: '', isActive: false },
+          { name: '', isActive: false }
+        ],
+        players: [],
+        pov: -1
       },
       messages: []
     };
@@ -66,14 +67,20 @@ class GameView extends React.Component {
     this.socket.on('msg', (msg) => {
       this.addMsg(msg);
     });
+
+    this.socket.on('update', (gs) => {
+      this.setState({
+        gs: gs
+      });
+    })
   }
 
   // Converts the array of provinces in the game to an array of JSX objects.
   provincesToJsx() {
     const provincesJsx = [];
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < this.state.gs.provinces.length; i++) {
       provincesJsx.push(
-        <Province gameState={this.state.gameState}
+        <Province gs={this.state.gs}
                   index={i}
                   key={i} />
       );
@@ -84,12 +91,14 @@ class GameView extends React.Component {
   // Converts the array of other players in the game to an array of JSX objects.
   otherPlayersToJsx() {
     const otherPlayersJsx = [];
-    for (var i = 0; i < this.numPlayers - 1; i++) {
-      otherPlayersJsx.push(
-        <OtherPlayer gameState={this.state.gameState}
-                     index={i}
-                     key={i} />
-      );
+    for (var i = 0; i < this.state.gs.players.length; i++) {
+      if (i !== this.state.gs.pov) {
+        otherPlayersJsx.push(
+          <OtherPlayer gs={this.state.gs}
+                       index={i}
+                       key={i} />
+        );
+      }
     }
     return otherPlayersJsx;
   }

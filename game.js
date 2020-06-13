@@ -68,7 +68,7 @@ const PROVINCE_NAMES = ["Jermany 4", "Kanzas", "wilfred", "NO NO NO", "ian"];
 class GameManager {
   constructor(io, gameCode) {
     this.io = io;
-    this.gs = new GameState(gameCode);
+    this.gs = new GameState();
 
     this.viewers = [];
     this.players = [];
@@ -81,28 +81,33 @@ class GameManager {
   }
 
   handleConnect(socket) {
-    this.viewers.push(new Viewer(socket, this.viewers.length, this.handleJoin,
-                                 this.handleMsg, this.handleAction));
+    const newViewer = new Viewer(socket, this.viewers.length, this.handleJoin,
+                                 this.handleMsg, this.handleAction);
+    this.viewers.push(newViewer);
     socket.emit('msg', {
       sender: 'Game',
       text: "Connected to chat.",
       isSelf: false,
       isSystem: true
     });
+    newViewer.emitGameState(this.gs);
   }
 
-  handleJoin(index, name, abbr) {
-    const playerIndex = this.players.length;
-    this.players.push(this.viewers[index]);
+  handleJoin(viewer, name, abbr) {
+    viewer.pov = this.players.length;
+    this.players.push(viewer);
+    this.gs.players.push({
+      name: name,
+      abbr: abbr
+    });
 
-    this.viewers[index].socket.broadcast.emit('msg', {
+    viewer.socket.broadcast.emit('msg', {
       sender: 'Game',
       text: `Player '${name}' (${abbr}) has joined the chat`,
       isSelf: false,
       isSystem: true
     });
-
-    return playerIndex;
+    this.emitGameStateToAll();
   }
 
   handleMsg(msg, viewer) {
@@ -122,13 +127,9 @@ class GameManager {
 
   }
 
-  sendGameStateToAll() {
+  emitGameStateToAll() {
     for (let i = 0; i < this.viewers.length; i++) {
-      const viewer = this.viewers[i];
-      const gs = this.gs;
-      this.gs.setToPov(viewer.pov);
-      viewer.sendGameState(this.gs);
-      this.gs = gs;
+      this.viewers[i].emitGameState(this.gs);
     }
   }
 }
@@ -141,14 +142,14 @@ class Viewer {
     this.msgHandler = msgHandler
 
     this.viewerIndex = viewerIndex;
-    this.name = null;
+    this.name = undefined;
     this.pov = -1; // point of view: -1 for spectator, player index for player
 
     this.socket.on('join', (data) => this.handleJoin(data));
   }
 
   handleJoin(data) {
-    this.pov = this.joinHandler(this.viewerIndex, data.name, data.abbr);
+    this.joinHandler(this, data.name, data.abbr);
     this.name = data.name;
 
     // Set up handlers for actions and messages, and remove the join handler.
@@ -165,25 +166,64 @@ class Viewer {
     this.actionHandler(action, this);
   }
 
-  sendGameState(gs) {
+  emitGameState(gs) {
+    const sympInfo = gs.setPov(this.pov);
     this.socket.emit('update', gs);
+    gs.unsetPov(sympInfo);
   }
 }
 
 class GameState {
-  constructor(gameCode) {
-    this.gameCode = gameCode;
-
+  constructor() {
     this.started = false;
     this.ended = false;
-    this.pov = null;
+    this.pov = -1;
 
-    this.provinces = PROVINCE_NAMES.slice();
-    shuffle(this.provinces);
+    this.players = [];
+
+    this.politicians = POLITICIAN_NAMES.slice();
+    shuffle(this.politicians);
+    this.sympOrder = this.politicians.slice();
+    shuffle(this.sympOrder);
+    const provinceNames = PROVINCE_NAMES.slice();
+    shuffle(provinceNames);
+    this.provinces = provinceNames.map((name) => { return {
+      name: name,
+      isActive: false
+    }});
   }
 
-  setToPov(pov) {
+  // Censor secret info so the gamestate can be sent to the client, and return
+  // it so it can be retrieved later.
+  setPov(pov) {
     this.pov = pov;
+    const symps = [];
+
+    for (let i = 0; i < this.players.length; i++) {
+      symps.push(this.players[i].symps);
+      if (i !== pov) {
+        this.players[i].symps = undefined;
+      }
+    }
+
+    const sympOrder = this.sympOrder;
+    this.sympOrder = undefined;
+
+    return {
+      symps: symps,
+      sympOrder: sympOrder
+    }
+  }
+
+  // Uncensor stored secret info.
+  unsetPov(sympInfo) {
+    this.pov = -1;
+
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].symps = sympInfo.symps[i];
+    }
+
+    this.sympOrder = sympInfo.sympOrder;
   }
 }
 
