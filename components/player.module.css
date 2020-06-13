@@ -5,9 +5,19 @@
   border-radius: 4px;
 }
 
-.playerName {
+.name {
   margin: 8px;
+  margin-bottom: 0;
+
   text-align: center;
   font-size: 24px;
+  color: #cc9;
+}
+
+.abbr {
+  margin-top: 0;
+
+  text-align: center;
+  font-size: 12px;
   color: #cc9;
 }

@@ -108,21 +108,6 @@ class GameView extends React.Component {
     return provincesJsx;
   }
 
-  // Converts the array of other players in the game to an array of JSX objects.
-  otherPlayersToJsx() {
-    const otherPlayersJsx = [];
-    for (var i = 0; i < this.state.gs.players.length; i++) {
-      if (i !== this.state.gs.pov) {
-        otherPlayersJsx.push(
-          <OtherPlayer gs={this.state.gs}
-                       index={i}
-                       key={i} />
-        );
-      }
-    }
-    return otherPlayersJsx;
-  }
-
   // Passed to the control panel and called when the player joins the game.
   // Sends the player's info to the server and shows a system chat message to
   // the player.
