@@ -109,6 +109,8 @@ class GameManager {
       this.handleConnect(action.viewer);
     } else if (action.type == 'join') {
       this.handleJoin(action.viewer, action.data);
+    } else if (action.type == 'ready') {
+      this.handleReady(action.viewer, action.data);
     } else if (action.type == 'msg') {
       this.handleMsg(action.viewer, action.data);
     } else if (action.type == 'disconnect') {
@@ -139,13 +141,19 @@ class GameManager {
     this.players.push(viewer);
     this.gs.parties.push({
       name: data.name,
-      abbr: data.abbr
+      abbr: data.abbr,
+      ready: false
     });
 
     this.broadcastSystemMsg(
       viewer.socket,
       `Player '${data.name}' (${data.abbr}) has joined the game.`
     );
+    this.emitGameStateToAll();
+  }
+
+  handleReady(viewer, data) {
+    this.gs.parties[viewer.pov].ready = data.ready;
     this.emitGameStateToAll();
   }
 
@@ -241,6 +249,8 @@ class Viewer {
   join(pov, name) {
     this.pov = pov;
     this.name = name;
+    this.socket.on('ready', (ready) =>
+        this.actionHandler(this, 'ready', { ready: ready }));
     this.socket.on('msg', (msg) =>
                    this.actionHandler(this, 'msg', { msg: msg }));
 
@@ -250,7 +260,6 @@ class Viewer {
 
   emitGameState(gs) {
     const sympInfo = gs.setPov(this.pov);
-    console.log(gs.parties);
     this.socket.emit('update', gs);
     gs.unsetPov(sympInfo);
   }
@@ -264,16 +273,18 @@ class GameState {
 
     this.parties = [];
 
-    this.politicians = POLITICIAN_NAMES.slice();
-    shuffle(this.politicians);
+    this.politicians = POLITICIAN_NAMES.map((name) => { return {
+      name: name,
+      assigned: false
+    }});
     this.sympOrder = this.politicians.slice();
-    shuffle(this.sympOrder);
-    const provinceNames = PROVINCE_NAMES.slice();
-    shuffle(provinceNames);
-    this.provinces = provinceNames.map((name) => { return {
+    this.provinces = PROVINCE_NAMES.map((name) => { return {
       name: name,
       isActive: false
     }});
+    shuffle(this.politicians);
+    shuffle(this.sympOrder);
+    shuffle(this.provinces);
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return
@@ -312,8 +323,8 @@ class GameState {
 
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+    var j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
 }

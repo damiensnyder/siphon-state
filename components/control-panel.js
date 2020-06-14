@@ -1,6 +1,6 @@
 import React from 'react';
-// import styles from './control-panel.module.css';
 import JoinPanel from './join-panel';
+import ReadyPanel from './ready-panel';
 
 class ControlPanel extends React.Component {
   constructor(props) {
@@ -8,10 +8,16 @@ class ControlPanel extends React.Component {
   }
 
   render() {
-    return (
-      <JoinPanel joinHandler={this.props.joinHandler}
-                 gameCode={this.props.gameCode} />
-    );
+    if (this.props.gs.pov < 0) {
+      return (
+        <JoinPanel joinHandler={this.props.joinHandler}
+                   gameCode={this.props.gameCode} />
+      );
+    } else if (!this.props.gs.started) {
+      return <ReadyPanel readyHandler={this.props.readyHandler} />;
+    }
+
+    return <div>the game isn't allowed to start, this shouldn't happen</div>;
   }
 }
 

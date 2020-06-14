@@ -26,11 +26,14 @@ class GameView extends React.Component {
         pov: -1
       },
       messages: [],
-      connected: false
+      connected: false,
+      started: false,
+      ended: false
     };
 
     this.chatHandler = this.chatHandler.bind(this);
     this.joinHandler = this.joinHandler.bind(this);
+    this.readyHandler = this.readyHandler.bind(this);
   }
 
   componentDidMount() {
@@ -121,6 +124,16 @@ class GameView extends React.Component {
     this.socket.emit('join', partyInfo);
   }
 
+  readyHandler(ready) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].ready = ready;
+    this.setState({
+      gs: gs
+    });
+
+    this.socket.emit('ready', ready);
+  }
+
   // Handler passed to the Chat component, called whenever the user sends a chat
   // message. Shows the message client-side instantly and sends the message to
   // the server to be broadcasted to everyone else.
@@ -159,6 +172,7 @@ class GameView extends React.Component {
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
           <ControlPanel joinHandler={this.joinHandler}
+                        readyHandler={this.readyHandler}
                         gs={this.state.gs}
                         gameCode={this.gameCode} />
         </div>
