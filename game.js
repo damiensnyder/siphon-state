@@ -80,6 +80,21 @@ class GameManager {
       this.enqueueAction(viewer, 'connect', null);
     });
 
+    this.handlers = {
+      'connect': this.handleConnect,
+      'join': this.handleJoin,
+      'takeover': this.handleTakeover,
+      'ready': this.handleReady,
+      'msg': this.handleMsg,
+      'pay': this.handlePay,
+      'disconnect': this.handleDisconnect
+    }
+    for (var type in this.handlers) {
+      if (this.handlers.hasOwnProperty(type)) {
+          this.handlers[type] = this.handlers[type].bind(this);
+      }
+    }
+
     this.actionQueue = [];
     this.handlingAction = false;
 
@@ -105,19 +120,7 @@ class GameManager {
   // queue, show that it is done. Otherwise, handle the next action.
   handleAction() {
     const action = this.actionQueue[0];
-    if (action.type == 'connect') {
-      this.handleConnect(action.viewer);
-    } else if (action.type == 'join') {
-      this.handleJoin(action.viewer, action.data);
-    } else if (action.type == 'ready') {
-      this.handleReady(action.viewer, action.data);
-    } else if (action.type == 'msg') {
-      this.handleMsg(action.viewer, action.data);
-    } else if (action.type == 'pay') {
-      this.handlePay(action.viewer, action.data);
-    } else if (action.type == 'disconnect') {
-      this.handleDisconnect(action.viewer);
-    }
+    this.handlers[action.type](action.viewer, action.data);
 
     this.actionQueue.splice(0, 1);
     if (this.actionQueue.length > 0) {
@@ -127,7 +130,7 @@ class GameManager {
     }
   }
 
-  handleConnect(viewer) {
+  handleConnect(viewer, data) {
     this.viewers.push(viewer);
     viewer.socket.emit('msg', {
       sender: 'Game',
@@ -146,6 +149,19 @@ class GameManager {
     this.broadcastSystemMsg(
       viewer.socket,
       `Player '${data.name}' (${data.abbr}) has joined the game.`
+    );
+    this.emitGameStateToAll();
+  }
+
+  handleTakeover(viewer, data) {
+    viewer.join(data.target, this.gs.parties[data.target].name);
+    viewer.begin();
+    this.players.splice(data.target, 0, viewer);
+    this.gs.parties[data.target].connected = true;
+
+    this.broadcastSystemMsg(
+      viewer.socket,
+      `Player '${viewer.name}' has been replaced.`
     );
     this.emitGameStateToAll();
   }
@@ -181,7 +197,7 @@ class GameManager {
 
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
-  handleDisconnect(viewer) {
+  handleDisconnect(viewer, data) {
     let index = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
     for (let i = index; i < this.viewers.length; i++) {
@@ -205,6 +221,8 @@ class GameManager {
       for (let i = pov; i < this.players.length; i++) {
         this.players[i].pov = i;
       }
+    } else {
+      this.gs.parties[pov].connected = false;
     }
 
     this.emitGameStateToAll();
@@ -250,20 +268,29 @@ class Viewer {
 
     this.socket.on('join', (data) =>
                    this.actionHandler(this, 'join', data));
+    this.socket.on('takeover', (target) =>
+                   this.actionHandler(this, 'takeover', { target: target }));
     this.socket.on('disconnect', () =>
-                   this.actionHandler(this, 'disconnect', null));
+                   this.actionHandler(this, 'disconnect', {}));
   }
 
   join(pov, name) {
     this.pov = pov;
     this.name = name;
     this.socket.on('ready', (ready) =>
-        this.actionHandler(this, 'ready', { ready: ready }));
+                   this.actionHandler(this, 'ready', { ready: ready }));
     this.socket.on('msg', (msg) =>
                    this.actionHandler(this, 'msg', { msg: msg }));
 
-    // Set up handlers for actions and messages, and remove the join handler.
     this.socket.removeAllListeners('join');
+    this.socket.removeAllListeners('takeover');
+  }
+
+  begin() {
+    this.socket.on('pay', (data) =>
+                   this.actionHandler(this, 'pay', data));
+
+    this.socket.removeAllListeners('ready');
   }
 
   emitGameState(gs) {
@@ -299,6 +326,7 @@ class GameState {
       name: name,
       abbr: abbr,
       ready: false,
+      connected: true,
       money: 5,
       politicians: [],
       symps: []

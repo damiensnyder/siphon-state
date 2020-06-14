@@ -6,6 +6,9 @@ class OtherPlayer extends React.Component {
     super(props);
 
     this.playerInfo = this.playerInfo.bind(this);
+    this.takeoverButton = this.takeoverButton.bind(this);
+    this.payButton = this.payButton.bind(this);
+    this.handleTakeover = this.handleTakeover.bind(this);
     this.handlePay = this.handlePay.bind(this);
   }
 
@@ -17,12 +20,28 @@ class OtherPlayer extends React.Component {
     );
   }
 
+  takeoverButton() {
+    return (
+      <button onClick={this.handleTakeover}>
+        Take over
+      </button>
+    );
+  }
+
   payButton() {
     return (
       <button onClick={this.handlePay}>
         Pay $1
       </button>
     );
+  }
+
+  handleTakeover() {
+    this.props.takeoverHandler(this.props.index);
+  }
+
+  handlePay() {
+    this.props.payHandler(this.props.index, 1);
   }
 
   playerInfo(self) {
@@ -32,12 +51,9 @@ class OtherPlayer extends React.Component {
           ${self.money}
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
+        {this.props.gs.pov < 0 && !self.connected ? this.takeoverButton() : null}
       </div>
     );
-  }
-
-  handlePay() {
-    this.props.payHandler(this.props.index, 1);
   }
 
   render() {

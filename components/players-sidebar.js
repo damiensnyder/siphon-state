@@ -23,6 +23,7 @@ class PlayersSidebar extends React.Component {
         playersJsx.push(
           <OtherPlayer gs={this.props.gs}
                        payHandler={this.props.payHandler}
+                       takeoverHandler={this.props.takeoverHandler}
                        index={i}
                        key={i} />
         );

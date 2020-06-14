@@ -32,6 +32,7 @@ class GameView extends React.Component {
     };
 
     this.joinHandler = this.joinHandler.bind(this);
+    this.takeoverHandler = this.takeoverHandler.bind(this);
     this.readyHandler = this.readyHandler.bind(this);
     this.chatHandler = this.chatHandler.bind(this);
     this.payHandler = this.payHandler.bind(this);
@@ -125,6 +126,17 @@ class GameView extends React.Component {
     this.socket.emit('join', partyInfo);
   }
 
+  takeoverHandler(target) {
+    const gs = this.state.gs;
+    gs.pov = target;
+    gs.parties[target].connected = true;
+    this.setState({
+      gs: gs
+    });
+
+    this.socket.emit('takeover', target);
+  }
+
   readyHandler(ready) {
     const gs = this.state.gs;
     gs.parties[gs.pov].ready = ready;
@@ -150,7 +162,6 @@ class GameView extends React.Component {
 
   payHandler(target, amount) {
     const gs = this.state.gs;
-    console.log(`Target: ${target}\nAmount: ${amount}`)
     gs.parties[gs.pov].money -= amount;
     gs.parties[target].money += amount;
     this.setState({
@@ -184,6 +195,7 @@ class GameView extends React.Component {
         <div id={styles.playersSidebar}
              className={styles.containerLevel2}>
           <PlayersSidebar gs={this.state.gs}
+                          takeoverHandler={this.takeoverHandler}
                           payHandler={this.payHandler} />
         </div>
         <div id={styles.controlPanel}
