@@ -113,6 +113,8 @@ class GameManager {
       this.handleReady(action.viewer, action.data);
     } else if (action.type == 'msg') {
       this.handleMsg(action.viewer, action.data);
+    } else if (action.type == 'pay') {
+      this.handlePay(action.viewer, action.data);
     } else if (action.type == 'disconnect') {
       this.handleDisconnect(action.viewer);
     }
@@ -167,6 +169,13 @@ class GameManager {
         isSelf: false,
         isSystem: false
       });
+    }
+  }
+
+  handlePay(viewer, data) {
+    if (this.gs.parties[viewer.pov].money >= data.amount) {
+      this.gs.pay(viewer.pov, data.p2, data.amount);
+      this.emitGameStateToAll();
     }
   }
 
@@ -334,6 +343,11 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].money += 5;
     }
+  }
+
+  pay(p1Index, p2Index, amount) {
+    this.parties[p1Index].money -= amount;
+    this.parties[p2Index].money += amount;
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return

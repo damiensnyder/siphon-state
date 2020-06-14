@@ -31,9 +31,10 @@ class GameView extends React.Component {
       ended: false
     };
 
-    this.chatHandler = this.chatHandler.bind(this);
     this.joinHandler = this.joinHandler.bind(this);
     this.readyHandler = this.readyHandler.bind(this);
+    this.chatHandler = this.chatHandler.bind(this);
+    this.payHandler = this.payHandler.bind(this);
   }
 
   componentDidMount() {
@@ -147,6 +148,21 @@ class GameView extends React.Component {
     this.socket.emit('msg', msgText);
   }
 
+  payHandler(target, amount) {
+    const gs = this.state.gs;
+    console.log(`Target: ${target}\nAmount: ${amount}`)
+    gs.parties[gs.pov].money -= amount;
+    gs.parties[target].money += amount;
+    this.setState({
+      gs: gs
+    });
+
+    this.socket.emit('pay', {
+      p2: target,
+      amount: amount
+    });
+  }
+
   // Adds a message to the Chat component.
   addMsg(msg) {
     const messages = this.state.messages;
@@ -167,7 +183,8 @@ class GameView extends React.Component {
               chatHandler={this.chatHandler} />
         <div id={styles.playersSidebar}
              className={styles.containerLevel2}>
-          <PlayersSidebar gs={this.state.gs} />
+          <PlayersSidebar gs={this.state.gs}
+                          payHandler={this.payHandler} />
         </div>
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>

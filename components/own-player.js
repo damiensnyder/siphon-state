@@ -7,6 +7,24 @@ class OwnPlayer extends React.Component {
     super(props);
   }
 
+  readyIndicator(self) {
+    return (
+      <h4>
+        Ready: {self.ready ? '✓' : '╳'}
+      </h4>
+    );
+  }
+
+  playerInfo(self) {
+    return (
+      <div>
+        <h4>
+          ${self.money}
+        </h4>
+      </div>
+    );
+  }
+
   render() {
     const self = this.props.gs.parties[this.props.index];
     return (
@@ -17,9 +35,7 @@ class OwnPlayer extends React.Component {
         <h4 className={styles.abbr + " " + own.ownColor}>
           {self.abbr}
         </h4>
-        <h4 className={styles.abbr}>
-          Ready: {self.ready ? '✓' : '╳'}
-        </h4>
+        {this.props.gs.started ? this.playerInfo(self) : this.readyIndicator(self)}
       </div>
     );
   }
