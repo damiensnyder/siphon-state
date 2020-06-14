@@ -139,11 +139,7 @@ class GameManager {
   handleJoin(viewer, data) {
     viewer.join(this.players.length, data.name);
     this.players.push(viewer);
-    this.gs.parties.push({
-      name: data.name,
-      abbr: data.abbr,
-      ready: false
-    });
+    this.gs.addParty(data.name, data.abbr);
 
     this.broadcastSystemMsg(
       viewer.socket,
@@ -154,6 +150,9 @@ class GameManager {
 
   handleReady(viewer, data) {
     this.gs.parties[viewer.pov].ready = data.ready;
+    if (this.gs.allReady()) {
+      this.gs.begin();
+    }
     this.emitGameStateToAll();
   }
 
@@ -269,22 +268,63 @@ class GameState {
   constructor() {
     this.started = false;
     this.ended = false;
+    this.activeProvince = -1;
+    this.stage = -1;
+    this.priority = -1;
     this.pov = -1;
+    this.turn = -1;
 
     this.parties = [];
+    this.provinces = PROVINCE_NAMES.map((name) => { return {
+      name: name,
+      governors: [],
+      officials: [],
+      candidates: [],
+      dropouts: [],
+      isActive: false
+    }});
+    shuffle(this.provinces);
+  }
 
+  addParty(name, abbr) {
+    this.parties.push({
+      name: name,
+      abbr: abbr,
+      ready: false,
+      money: 10,
+      politicians: [],
+      symps: []
+    });
+  }
+
+  allReady() {
+    if (this.parties.length < 2) {
+      return false;
+    }
+
+    for (let i = 0; i < this.parties.length; i++) {
+      if (!this.parties[i].ready) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  begin() {
     this.politicians = POLITICIAN_NAMES.map((name) => { return {
       name: name,
+      available: true,
       assigned: false
     }});
     this.sympOrder = this.politicians.slice();
-    this.provinces = PROVINCE_NAMES.map((name) => { return {
-      name: name,
-      isActive: false
-    }});
     shuffle(this.politicians);
     shuffle(this.sympOrder);
-    shuffle(this.provinces);
+
+    this.activeProvince = 0;
+    this.stage = 0;
+    this.priority = 0;
+    this.started = true;
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return
