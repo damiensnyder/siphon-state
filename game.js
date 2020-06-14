@@ -269,7 +269,6 @@ class GameState {
     this.started = false;
     this.ended = false;
     this.activeProvince = -1;
-    this.stage = -1;
     this.priority = -1;
     this.pov = -1;
     this.turn = -1;
@@ -277,11 +276,11 @@ class GameState {
     this.parties = [];
     this.provinces = PROVINCE_NAMES.map((name) => { return {
       name: name,
+      stage: -1,
       governors: [],
       officials: [],
       candidates: [],
-      dropouts: [],
-      isActive: false
+      dropouts: []
     }});
     shuffle(this.provinces);
   }
@@ -291,7 +290,7 @@ class GameState {
       name: name,
       abbr: abbr,
       ready: false,
-      money: 10,
+      money: 5,
       politicians: [],
       symps: []
     });
@@ -322,9 +321,19 @@ class GameState {
     shuffle(this.sympOrder);
 
     this.activeProvince = 0;
-    this.stage = 0;
     this.priority = 0;
     this.started = true;
+
+    this.beginNoms();
+  }
+
+  beginNoms() {
+    this.provinces[this.activeProvince].stage = 0;
+    this.turn = this.priority;
+
+    for (let i = 0; i < this.parties.length; i++) {
+      this.parties[i].money += 5;
+    }
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return
