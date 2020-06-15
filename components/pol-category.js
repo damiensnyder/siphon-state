@@ -19,12 +19,12 @@ class PolCategory extends React.Component {
       )
     }
 
-    return (<div>{polsJsx}</div>);
+    return polsJsx;
   }
 
   render() {
     return (
-      <div>
+      <div className={styles.outerWrapper}>
         <h3 className={styles.categoryName}>
           {this.props.type}
         </h3>

@@ -12,15 +12,12 @@ class GameControls extends React.Component {
     const gs = this.props.gs;
     const self = gs.parties[gs.pov];
     const available = [];
-    const unavailable = [];
     const symps = [];
 
     for (let i = 0; i < self.politicians.length; i++) {
       let pol = self.politicians[i];
       if (gs.politicians[pol].available) {
         available.push(pol);
-      } else {
-        unavailable.push(pol);
       }
     }
 
@@ -35,11 +32,6 @@ class GameControls extends React.Component {
             <PolCategory gs={gs}
                          type={"Available"}
                          pols={available} />
-          </div>
-          <div>
-            <PolCategory gs={gs}
-                         type={"Unavailable"}
-                         pols={unavailable} />
           </div>
           <div>
             <PolCategory gs={gs}

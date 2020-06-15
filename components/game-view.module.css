@@ -18,7 +18,7 @@
 }
 
 #gameContainer {
-  grid-row: 1 / 4;
+  grid-row: 1 / 5;
   grid-column: 1 / 6;
 
   display: grid;
@@ -28,7 +28,7 @@
 }
 
 #playersSidebar {
-  grid-row: 1 / 5;
+  grid-row: 1 / 7;
   grid-column: 6 / 7;
 
   display: grid;
@@ -36,7 +36,7 @@
 }
 
 #controlPanel {
-  grid-row: 4 / 4;
+  grid-row: 5 / 7;
   grid-column: 3 / 6;
 
   background-color: #555;
