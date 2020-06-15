@@ -189,7 +189,7 @@ class GameManager {
   }
 
   handlePay(viewer, data) {
-    if (this.gs.parties[viewer.pov].money >= data.amount) {
+    if (this.gs.parties[viewer.pov].funds >= data.amount) {
       this.gs.pay(viewer.pov, data.p2, data.amount);
       this.emitGameStateToAll();
     }
@@ -327,7 +327,8 @@ class GameState {
       abbr: abbr,
       ready: false,
       connected: true,
-      money: 5,
+      funds: 5,
+      votes: 0,
       politicians: [],
       symps: []
     });
@@ -350,8 +351,7 @@ class GameState {
   begin() {
     this.politicians = POLITICIAN_NAMES.map((name) => { return {
       name: name,
-      available: true,
-      assigned: false
+      available: true
     }});
     this.sympOrder = this.politicians.slice();
     shuffle(this.politicians);
@@ -369,13 +369,13 @@ class GameState {
     this.turn = this.priority;
 
     for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].money += 5;
+      this.parties[i].funds += 5;
     }
   }
 
   pay(p1Index, p2Index, amount) {
-    this.parties[p1Index].money -= amount;
-    this.parties[p2Index].money += amount;
+    this.parties[p1Index].funds -= amount;
+    this.parties[p2Index].funds += amount;
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return

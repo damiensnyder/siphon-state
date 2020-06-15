@@ -19,7 +19,7 @@ class OwnPlayer extends React.Component {
     return (
       <div>
         <h4>
-          ${self.money}
+          ${self.funds}
         </h4>
       </div>
     );

@@ -162,8 +162,8 @@ class GameView extends React.Component {
 
   payHandler(target, amount) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].money -= amount;
-    gs.parties[target].money += amount;
+    gs.parties[gs.pov].funds -= amount;
+    gs.parties[target].funds += amount;
     this.setState({
       gs: gs
     });
