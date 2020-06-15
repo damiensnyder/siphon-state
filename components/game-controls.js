@@ -29,21 +29,23 @@ class GameControls extends React.Component {
     }
 
     return (
-      <div>
-        <div>
-          <PolCategory gs={gs}
-                       type={"Available"}
-                       pols={available} />
-        </div>
-        <div>
-          <PolCategory gs={gs}
-                       type={"Unavailable"}
-                       pols={unavailable} />
-        </div>
-        <div>
-          <PolCategory gs={gs}
-                       type={"Sympathizers"}
-                       pols={symps} />
+      <div className={styles.outerWrapper}>
+        <div className={styles.innerWrapper}>
+          <div>
+            <PolCategory gs={gs}
+                         type={"Available"}
+                         pols={available} />
+          </div>
+          <div>
+            <PolCategory gs={gs}
+                         type={"Unavailable"}
+                         pols={unavailable} />
+          </div>
+          <div>
+            <PolCategory gs={gs}
+                         type={"Sympathizers"}
+                         pols={symps} />
+          </div>
         </div>
       </div>
     );

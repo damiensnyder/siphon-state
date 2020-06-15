@@ -25,7 +25,9 @@ class PolCategory extends React.Component {
   render() {
     return (
       <div>
-        <h3>{this.props.type}</h3>
+        <h3 className={styles.categoryName}>
+          {this.props.type}
+        </h3>
         {this.polsToJsx()}
       </div>
     );

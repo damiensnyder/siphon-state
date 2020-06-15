@@ -20,13 +20,8 @@ class Pol extends React.Component {
     if (gs.parties[gs.pov].symps.includes(this.props.index)) {
       return <button>Flip</button>;
     }
-    if (gs.provinces[gs.activeProvince].stage == 0 &&
-        self.party === gs.pov &&
-        self.available) {
-      return <button>Nominate</button>;
-    }
     if (stage === 0 && self.party === gs.pov && self.available) {
-      return <button>Nominate</button>;
+      return <button>Run</button>;
     }
     if (stage === 1 && self.party === gs.pov && !self.actionTaken) {
       return <button>Fund</button>;
@@ -40,8 +35,8 @@ class Pol extends React.Component {
   render() {
     const self = this.props.gs.politicians[this.props.index];
     return (
-      <div>
-        <p>{self.name} ({this.props.gs.parties[self.party].abbr})</p>
+      <div className={styles.sameLine}>
+        <div>{self.name} ({this.props.gs.parties[self.party].abbr})</div>
         {this.actionButton()}
       </div>
     );
