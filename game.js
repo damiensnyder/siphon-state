@@ -171,6 +171,7 @@ class GameManager {
     this.gs.parties[viewer.pov].ready = data.ready;
     if (this.gs.allReady()) {
       this.gs.begin();
+      this.begin();
     }
     this.emitGameStateToAll();
   }
@@ -214,6 +215,12 @@ class GameManager {
 
     if (viewer.pov >= 0) {
       this.removePlayer(viewer.pov);
+    }
+  }
+
+  begin() {
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].begin();
     }
   }
 
@@ -276,19 +283,19 @@ class Viewer {
 
     this.socket.on('join', (data) =>
                    this.actionHandler(this, 'join', data));
-    this.socket.on('takeover', (target) =>
-                   this.actionHandler(this, 'takeover', { target: target }));
-    this.socket.on('disconnect', () =>
+    this.socket.on('takeover', (data) =>
+                   this.actionHandler(this, 'takeover', { target: data }));
+    this.socket.on('disconnect', (data) =>
                    this.actionHandler(this, 'disconnect', {}));
   }
 
   join(pov, name) {
     this.pov = pov;
     this.name = name;
-    this.socket.on('ready', (ready) =>
-                   this.actionHandler(this, 'ready', { ready: ready }));
-    this.socket.on('msg', (msg) =>
-                   this.actionHandler(this, 'msg', { msg: msg }));
+    this.socket.on('ready', (data) =>
+                   this.actionHandler(this, 'ready', { ready: data }));
+    this.socket.on('msg', (data) =>
+                   this.actionHandler(this, 'msg', { msg: data }));
 
     this.socket.removeAllListeners('join');
     this.socket.removeAllListeners('takeover');
@@ -297,7 +304,7 @@ class Viewer {
   begin() {
     this.socket.on('pay', (data) =>
                    this.actionHandler(this, 'pay', data));
-    this.socket.on('buy', () =>
+    this.socket.on('buy', (data) =>
                    this.actionHandler(this, 'buy', {}));
 
     this.socket.removeAllListeners('ready');
@@ -385,13 +392,13 @@ class GameState {
   }
 
   buySymp(party) {
-    this.parties[party].money -= 5;
+    this.parties[party].funds -= 5;
     this.giveSymp(party);
   }
 
   giveSymp(party) {
     var i = 0;
-    while(this.sympOrder[i] === party) {
+    while(this.sympOrder[i].party === party) {
       i++;
     }
     const polIndex = this.politicians.indexOf(this.sympOrder[i]);

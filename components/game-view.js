@@ -182,7 +182,7 @@ class GameView extends React.Component {
       gs: gs
     });
 
-    this.socket.emit('buy');
+    this.socket.emit('buy', null);
   }
 
   // Adds a message to the Chat component.
