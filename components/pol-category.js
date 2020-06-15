@@ -11,10 +11,10 @@ class PolCategory extends React.Component {
 
   polsToJsx() {
     const polsJsx = [];
-    for (let i = 0; i < this.props.pols; i++) {
-      polsJsx.append(
+    for (let i = 0; i < this.props.pols.length; i++) {
+      polsJsx.push(
         <Pol gs={this.props.gs}
-             index={i}
+             index={this.props.pols[i]}
              key={i} />
       )
     }

@@ -41,9 +41,9 @@ class Province extends React.Component {
     } else if (self.stage === 1) {
       return [candidates, dropouts];
     } else if (self.stage === 1) {
-      return [officials, candidates, dropouts];
+      return [officials, dropouts];
     } else if (self.stage === 1) {
-      return [governors, officials, candidates, dropouts];
+      return [governors, officials, dropouts];
     } else {
       return [];
     }

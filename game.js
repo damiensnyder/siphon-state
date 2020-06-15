@@ -345,7 +345,6 @@ class GameState {
       ready: false,
       connected: true,
       funds: 5,
-      votes: 0,
       politicians: [],
       symps: []
     });
@@ -369,6 +368,7 @@ class GameState {
     this.politicians = POLITICIAN_NAMES.map((name) => { return {
       name: name,
       party: null,
+      actionTaken: false,
       available: true
     }});
     this.sympOrder = this.politicians.slice();
@@ -429,12 +429,12 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       symps.push(this.parties[i].symps);
       if (i !== pov) {
-        this.parties[i].symps = undefined;
+        this.parties[i].symps = [];
       }
     }
 
     const sympOrder = this.sympOrder;
-    this.sympOrder = undefined;
+    this.sympOrder = [];
 
     return {
       symps: symps,
