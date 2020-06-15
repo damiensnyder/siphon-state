@@ -51,7 +51,8 @@ class OtherPlayer extends React.Component {
           ${self.funds}
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
-        {this.props.gs.pov < 0 && !self.connected ? this.takeoverButton() : null}
+        {this.props.gs.pov < 0 && !self.connected ?
+          this.takeoverButton() : null}
       </div>
     );
   }

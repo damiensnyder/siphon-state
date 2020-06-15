@@ -87,6 +87,7 @@ class GameManager {
       'ready': this.handleReady,
       'msg': this.handleMsg,
       'pay': this.handlePay,
+      'buy': this.handleBuy,
       'disconnect': this.handleDisconnect
     }
     for (var type in this.handlers) {
@@ -195,6 +196,13 @@ class GameManager {
     }
   }
 
+  handleBuy(viewer, data) {
+    if (this.gs.parties[viewer.pov].funds >= 5) {
+      this.gs.buySymp(viewer.pov);
+      this.emitGameStateToAll();
+    }
+  }
+
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
   handleDisconnect(viewer, data) {
@@ -289,6 +297,8 @@ class Viewer {
   begin() {
     this.socket.on('pay', (data) =>
                    this.actionHandler(this, 'pay', data));
+    this.socket.on('buy', () =>
+                   this.actionHandler(this, 'buy', {}));
 
     this.socket.removeAllListeners('ready');
   }
@@ -351,17 +361,42 @@ class GameState {
   begin() {
     this.politicians = POLITICIAN_NAMES.map((name) => { return {
       name: name,
+      party: null,
       available: true
     }});
     this.sympOrder = this.politicians.slice();
     shuffle(this.politicians);
     shuffle(this.sympOrder);
 
+    for (let i = 0; i < this.politicians.length; i++) {
+      this.politicians[i].party = i % this.parties.length;
+      this.parties[i % this.parties.length].politicians.push(i);
+    }
+
+    for (let i = 0; i < this.parties.length; i++) {
+      this.giveSymp(i);
+    }
+
     this.activeProvince = 0;
     this.priority = 0;
     this.started = true;
 
     this.beginNoms();
+  }
+
+  buySymp(party) {
+    this.parties[party].money -= 5;
+    this.giveSymp(party);
+  }
+
+  giveSymp(party) {
+    var i = 0;
+    while(this.sympOrder[i] === party) {
+      i++;
+    }
+    const polIndex = this.politicians.indexOf(this.sympOrder[i]);
+    this.parties[party].symps.push(polIndex);
+    this.sympOrder.splice(i, 1);
   }
 
   beginNoms() {

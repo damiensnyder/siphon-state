@@ -16,6 +16,7 @@ class PlayersSidebar extends React.Component {
       if (i === this.props.gs.pov) {
         playersJsx.push(
           <OwnPlayer gs={this.props.gs}
+                     buyHandler={this.props.buyHandler}
                      index={i}
                      key={i} />
         );

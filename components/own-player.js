@@ -5,6 +5,10 @@ import styles from './player.module.css';
 class OwnPlayer extends React.Component {
   constructor(props) {
     super(props);
+
+    this.playerInfo = this.playerInfo.bind(this);
+    this.buyButton = this.buyButton.bind(this);
+    this.handleBuy = this.handleBuy.bind(this);
   }
 
   readyIndicator(self) {
@@ -21,8 +25,21 @@ class OwnPlayer extends React.Component {
         <h4>
           ${self.funds}
         </h4>
+        {this.buyButton()}
       </div>
     );
+  }
+
+  buyButton() {
+    return (
+      <button onClick={this.handleBuy}>
+        Buy symp ($5)
+      </button>
+    );
+  }
+
+  handleBuy() {
+    this.props.buyHandler();
   }
 
   render() {
