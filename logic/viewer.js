@@ -28,6 +28,8 @@ class Viewer {
   }
 
   begin() {
+    this.socket.on('pass', (data) =>
+                   this.actionHandler(this, 'pass', data));
     this.socket.on('pay', (data) =>
                    this.actionHandler(this, 'pay', data));
     this.socket.on('buy', (data) =>

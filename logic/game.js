@@ -132,7 +132,7 @@ class GameManager {
   }
 
   handlePass(viewer, data) {
-    this.gs.pass();
+    this.gs.advanceTurn();
     emitGameStateToAll();
   }
 
