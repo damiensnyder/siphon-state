@@ -13,34 +13,35 @@ class Pol extends React.Component {
     const gs = this.props.gs;
     const self = gs.pols[this.props.index];
     const stage = gs.provinces[gs.activeProvince].stage;
+    const callback = this.props.callback;
 
     if (gs.turn !== gs.pov) {
       return null;
     }
     if (gs.parties[gs.pov].symps.includes(this.props.index)) {
       return (
-        <button onClick={e => this.props.callback('flip', this.props.index)}>
+        <button onClick={e => callback('flip', this.props.index)}>
           Flip
         </button>
       );
     }
     if (stage === 0 && self.party === gs.pov && self.available) {
       return (
-        <button onClick={e => this.props.callback('run', this.props.index)}>
+        <button onClick={e => callback('run', this.props.index)}>
           Run
         </button>
       );
     }
     if (stage === 1 && self.party === gs.pov && !self.actionTaken) {
       return (
-        <button onClick={e => this.props.callback('fund', this.props.index)}>
+        <button onClick={e => callback('fund', this.props.index)}>
           Fund
         </button>
       );
     }
     if (stage === 2 && !self.actionTaken) {
       return (
-        <button onClick={e => this.props.callback('vote', this.props.index)}>
+        <button onClick={e => callback('vote', this.props.index)}>
           Vote
         </button>
       );
