@@ -113,8 +113,9 @@ class GameState {
     this.pols = POL_NAMES.map((name) => { return {
       name: name,
       party: null,
-      actionTaken: false,
       available: true,
+      funded: false,
+      votable: false,
       votes: 0
     }});
     this.sympOrder = this.pols.slice();
@@ -162,7 +163,7 @@ class GameState {
   }
 
   pass() {
-    
+
   }
 
   pay(p1Index, p2Index, amount) {

@@ -32,14 +32,14 @@ class Pol extends React.Component {
         </button>
       );
     }
-    if (stage === 1 && self.party === gs.pov && !self.actionTaken) {
+    if (stage === 1 && self.party === gs.pov && !self.funded) {
       return (
         <button onClick={e => callback('fund', this.props.index)}>
           Fund
         </button>
       );
     }
-    if (stage === 2 && !self.actionTaken) {
+    if (stage === 2 && self.votable) {
       return (
         <button onClick={e => callback('vote', this.props.index)}>
           Vote
