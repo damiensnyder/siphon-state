@@ -21,7 +21,7 @@ class OtherPlayer extends React.Component {
     return (
       <div>
         <h4>
-          ${self.funds}
+          ${self.funds}{this.numVotes(self)}
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
         {this.props.gs.pov < 0 && !self.connected ?
@@ -36,6 +36,13 @@ class OtherPlayer extends React.Component {
         Ready: {self.ready ? '✓' : '╳'}
       </h4>
     );
+  }
+
+  numVotes(self) {
+    if (this.props.gs.provinces[this.props.gs.activeProvince].stage == 2) {
+      return `, ${self.votes} votes`;
+    }
+    return null;
   }
 
   replaceButton() {

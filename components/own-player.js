@@ -38,12 +38,8 @@ class OwnPlayer extends React.Component {
   }
 
   numVotes(self) {
-    if (this.props.gs.stage == 2) {
-      return (
-        <div>
-          , {self.votes} votes
-        </div>
-      );
+    if (this.props.gs.provinces[this.props.gs.activeProvince].stage == 2) {
+      return `, ${self.votes} votes`;
     }
     return null;
   }

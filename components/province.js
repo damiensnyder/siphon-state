@@ -23,30 +23,34 @@ class Province extends React.Component {
                                   callback={this.props.callback}
                                   pols={self.dropouts}
                                   type={'Dropouts'}
+                                  inProvince={true}
                                   key={0} />;
     const candidates = <PolCategory gs={this.props.gs}
                                     callback={this.props.callback}
                                     pols={self.candidates}
                                     type={'Candidates'}
+                                    inProvince={true}
                                     key={1} />;
     const officials = <PolCategory gs={this.props.gs}
                                    callback={this.props.callback}
                                    pols={self.officials}
                                    type={'Officials'}
+                                   inProvince={true}
                                    key={2} />;
     const governors = <PolCategory gs={this.props.gs}
                                    callback={this.props.callback}
                                    pols={self.governors}
                                    type={'Governors'}
+                                   inProvince={true}
                                    key={3} />;
 
-    if (self.stage === 0) {
+    if (self.stage == 0) {
       return [candidates];
-    } else if (self.stage === 1) {
+    } else if (self.stage == 1) {
       return [candidates, dropouts];
-    } else if (self.stage === 1) {
+    } else if (self.stage == 2) {
       return [officials, dropouts];
-    } else if (self.stage === 1) {
+    } else if (self.stage == 3) {
       return [governors, officials, dropouts];
     } else {
       return [];

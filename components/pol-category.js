@@ -16,6 +16,7 @@ class PolCategory extends React.Component {
         <Pol gs={this.props.gs}
              callback={this.props.callback}
              index={this.props.pols[i]}
+             inProvince={this.props.inProvince}
              key={i} />
       )
     }

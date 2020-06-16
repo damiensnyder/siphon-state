@@ -32,12 +32,14 @@ class GameControls extends React.Component {
             <PolCategory gs={gs}
                          callback={this.props.callback}
                          type={"Available"}
+                         inProvince={false}
                          pols={runnable} />
           </div>
           <div>
             <PolCategory gs={gs}
                          callback={this.props.callback}
                          type={"Sympathizers"}
+                         inProvince={false}
                          pols={symps} />
           </div>
         </div>

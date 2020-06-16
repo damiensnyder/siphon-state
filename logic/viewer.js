@@ -47,9 +47,9 @@ class Viewer {
   }
 
   emitGameState(gs) {
-    const sympInfo = gs.setPov(this.pov);
+    const hiddenInfo = gs.setPov(this.pov);
     this.socket.emit('update', gs);
-    gs.unsetPov(sympInfo);
+    gs.unsetPov(hiddenInfo);
   }
 }
 
