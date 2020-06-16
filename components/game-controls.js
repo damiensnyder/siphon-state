@@ -11,13 +11,13 @@ class GameControls extends React.Component {
   render() {
     const gs = this.props.gs;
     const self = gs.parties[gs.pov];
-    const available = [];
+    const runnable = [];
     const symps = [];
 
     for (let i = 0; i < self.pols.length; i++) {
       let pol = self.pols[i];
-      if (gs.pols[pol].available) {
-        available.push(pol);
+      if (gs.pols[pol].runnable) {
+        runnable.push(pol);
       }
     }
 
@@ -32,7 +32,7 @@ class GameControls extends React.Component {
             <PolCategory gs={gs}
                          callback={this.props.callback}
                          type={"Available"}
-                         pols={available} />
+                         pols={runnable} />
           </div>
           <div>
             <PolCategory gs={gs}

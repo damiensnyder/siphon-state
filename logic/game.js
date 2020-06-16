@@ -151,26 +151,36 @@ class GameManager {
   }
 
   handleFlip(viewer, data) {
-    if (this.gs.parties[viewer.pov].symps.includes(data)) {
+    if (this.gs.parties[viewer.pov].symps.includes(data)
+        && this.gs.turn == viewer.pov) {
       this.gs.flipSymp(viewer.pov, data);
       this.emitGameStateToAll();
     }
   }
 
   handleRun(viewer, data) {
-    if (false) {
+    if (this.gs.parties[viewer.pov].pols.includes(data)
+        && this.pols[data].runnable
+        && this.gs.turn == viewer.pov) {
+      this.gs.run(data);
       this.emitGameStateToAll();
     }
   }
 
   handleFund(viewer, data) {
-    if (false) {
+    if (this.gs.parties[viewer.pov].pols.includes(data)
+        && this.gs.provinces[this.gs.activeProvince].candidates.includes(data)
+        && this.gs.parties[viewer.pov].funds >= 1
+        && this.gs.turn == viewer.pov) {
+      this.gs.fund(viewer.pov, data);
       this.emitGameStateToAll();
     }
   }
 
   handleVote(viewer, data) {
-    if (false) {
+    if (this.gs.provinces[this.gs.activeProvince].officials.includes(data)
+        && this.gs.parties[viewer.pov].votes >= 1) {
+      this.gs.vote(viewer.pov, data);
       this.emitGameStateToAll();
     }
   }

@@ -8,7 +8,8 @@ class Pol extends React.Component {
     this.actionButton = this.actionButton.bind(this);
   }
 
-  // Return the appropriate action button for the pol (e.g., "Flip").
+  // Return the appropriate action button for the pol (e.g., "Flip"), or none
+  // if no action is applicable or it is not the player's turn.
   actionButton() {
     const gs = this.props.gs;
     const self = gs.pols[this.props.index];
@@ -25,7 +26,7 @@ class Pol extends React.Component {
         </button>
       );
     }
-    if (stage === 0 && self.party === gs.pov && self.available) {
+    if (stage === 0 && self.party === gs.pov && self.runnable) {
       return (
         <button onClick={e => callback('run', this.props.index)}>
           Run
