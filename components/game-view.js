@@ -178,7 +178,8 @@ class GameView extends React.Component {
   }
 
   passHandler(data) {
-    
+    // Might do this later, but this is way too much to try to implement
+    // client-side as well.
   }
 
   payHandler(data) {
@@ -199,19 +200,41 @@ class GameView extends React.Component {
   }
 
   flipHandler(data) {
-
+    const gs = this.state.gs;
+    const oldParty = gs.parties[gs.pols[data].party];
+    oldParty.pols.splice(oldParty.pols.indexOf(data), 1);
+    gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(data), 1);
+    gs.parties[gs.pov].pols.push(data);
+    this.setState({
+      gs: gs
+    });
   }
 
   runHandler(data) {
-
+    const gs = this.state.gs;
+    gs.pols[data].runnable = false;
+    gs.provinces[gs.activeProvince].candidates.push(data);
+    this.setState({
+      gs: gs
+    });
   }
 
   fundHandler(data) {
-
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds--;
+    gs.pols[data].funded = true;
+    this.setState({
+      gs: gs
+    });
   }
 
   voteHandler(data) {
-
+    const gs = this.state.gs;
+    gs.parties[gs.pov].votes--;
+    gs.pols[data].votes++;
+    this.setState({
+      gs: gs
+    });
   }
 
   // Adds a message to the Chat component.
