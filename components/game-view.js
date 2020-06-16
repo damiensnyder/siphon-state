@@ -33,11 +33,15 @@ class GameView extends React.Component {
 
     this.handlers = {
       'join': this.joinHandler,
-      'takeover': this.takeoverHandler,
+      'replace': this.replaceHandler,
       'ready': this.readyHandler,
       'chat': this.chatHandler,
       'pay': this.payHandler,
-      'buy': this.buyHandler
+      'buy': this.buyHandler,
+      'flip': this.flipHandler,
+      'run': this.runHandler,
+      'fund': this.fundHandler,
+      'vote': this.voteHandler
     };
 
     for (let key in this.handlers) {
@@ -114,6 +118,7 @@ class GameView extends React.Component {
     for (var i = 0; i < this.state.gs.provinces.length; i++) {
       provincesJsx.push(
         <Province gs={this.state.gs}
+                  callback={this.callback}
                   index={i}
                   key={i} />
       );
@@ -121,6 +126,9 @@ class GameView extends React.Component {
     return provincesJsx;
   }
 
+  // Passed to child components. Assigns the callback to the proper handler
+  // function and passes the data along. Sends the type and data via the socket
+  // to the server.
   callback(type, data) {
     this.handlers[type](data);
     this.socket.emit(type, data);
@@ -138,7 +146,7 @@ class GameView extends React.Component {
     });
   }
 
-  takeoverHandler(data) {
+  replaceHandler(data) {
     const gs = this.state.gs;
     gs.pov = data;
     gs.parties[data].connected = true;
@@ -156,8 +164,9 @@ class GameView extends React.Component {
   }
 
   // Handler passed to the Chat component, called whenever the user sends a chat
-  // message. Shows the message client-side instantly and sends the message to
-  // the server to be broadcasted to everyone else.
+  // message. Shows the message client-side instantly while the initial callback
+  // function sends the message to the server to be broadcasted to everyone
+  // else.
   chatHandler(data) {
     this.addMsg({
       sender: 'You',
@@ -182,6 +191,22 @@ class GameView extends React.Component {
     this.setState({
       gs: gs
     });
+  }
+
+  flipHandler(data) {
+    
+  }
+
+  runHandler(data) {
+
+  }
+
+  fundHandler(data) {
+
+  }
+
+  voteHandler(data) {
+
   }
 
   // Adds a message to the Chat component.

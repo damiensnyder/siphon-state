@@ -20,18 +20,22 @@ class Province extends React.Component {
 
   polCategoriesToJsx(self) {
     const dropouts = <PolCategory gs={this.props.gs}
+                                  callback={this.props.callback}
                                   pols={self.dropouts}
                                   type={'Dropouts'}
                                   key={0} />;
     const candidates = <PolCategory gs={this.props.gs}
+                                    callback={this.props.callback}
                                     pols={self.candidates}
                                     type={'Candidates'}
                                     key={1} />;
     const officials = <PolCategory gs={this.props.gs}
+                                   callback={this.props.callback}
                                    pols={self.officials}
                                    type={'Officials'}
                                    key={2} />;
     const governors = <PolCategory gs={this.props.gs}
+                                   callback={this.props.callback}
                                    pols={self.governors}
                                    type={'Governors'}
                                    key={3} />;

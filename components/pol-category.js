@@ -14,6 +14,7 @@ class PolCategory extends React.Component {
     for (let i = 0; i < this.props.pols.length; i++) {
       polsJsx.push(
         <Pol gs={this.props.gs}
+             callback={this.props.callback}
              index={this.props.pols[i]}
              key={i} />
       )

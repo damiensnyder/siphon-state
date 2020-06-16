@@ -83,7 +83,7 @@ class GameManager {
     this.handlers = {
       'connect': this.handleConnect,
       'join': this.handleJoin,
-      'takeover': this.handleTakeover,
+      'replace': this.handleReplace,
       'ready': this.handleReady,
       'msg': this.handleMsg,
       'pay': this.handlePay,
@@ -154,7 +154,7 @@ class GameManager {
     this.emitGameStateToAll();
   }
 
-  handleTakeover(viewer, data) {
+  handleReplace(viewer, data) {
     viewer.join(data.target, this.gs.parties[data.target].name);
     viewer.begin();
     this.players.splice(data.target, 0, viewer);
@@ -283,8 +283,8 @@ class Viewer {
 
     this.socket.on('join', (data) =>
                    this.actionHandler(this, 'join', data));
-    this.socket.on('takeover', (data) =>
-                   this.actionHandler(this, 'takeover', { target: data }));
+    this.socket.on('replace', (data) =>
+                   this.actionHandler(this, 'replace', { target: data }));
     this.socket.on('disconnect', (data) =>
                    this.actionHandler(this, 'disconnect', {}));
   }
@@ -298,7 +298,7 @@ class Viewer {
                    this.actionHandler(this, 'msg', { msg: data }));
 
     this.socket.removeAllListeners('join');
-    this.socket.removeAllListeners('takeover');
+    this.socket.removeAllListeners('replace');
   }
 
   begin() {

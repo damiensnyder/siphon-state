@@ -6,10 +6,8 @@ class OtherPlayer extends React.Component {
     super(props);
 
     this.playerInfo = this.playerInfo.bind(this);
-    this.takeoverButton = this.takeoverButton.bind(this);
+    this.replaceButton = this.replaceButton.bind(this);
     this.payButton = this.payButton.bind(this);
-    this.handleTakeover = this.handleTakeover.bind(this);
-    this.handlePay = this.handlePay.bind(this);
   }
 
   readyIndicator(self) {
@@ -20,10 +18,10 @@ class OtherPlayer extends React.Component {
     );
   }
 
-  takeoverButton() {
+  replaceButton() {
     return (
-      <button onClick={this.handleTakeover}>
-        Take over
+      <button onClick={e => this.props.callback('replace', this.props.index)}>
+        Replace
       </button>
     );
   }
@@ -33,21 +31,11 @@ class OtherPlayer extends React.Component {
       return null;
     }
     return (
-      <button onClick={this.handlePay}>
+      <button onClick={e =>
+        this.props.callback('pay', { p2: this.props.index, amount: 1 })}>
         Pay $1
       </button>
     );
-  }
-
-  handleTakeover() {
-    this.props.callback('takeover', this.props.index);
-  }
-
-  handlePay() {
-    this.props.callback('pay', {
-      p2: this.props.index,
-      amount: 1
-    });
   }
 
   playerInfo(self) {
@@ -58,7 +46,7 @@ class OtherPlayer extends React.Component {
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
         {this.props.gs.pov < 0 && !self.connected ?
-         this.takeoverButton() : null}
+         this.replaceButton() : null}
       </div>
     );
   }
