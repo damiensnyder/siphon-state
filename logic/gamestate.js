@@ -140,11 +140,11 @@ class GameState {
     this.beginNomination();
   }
 
-  // Advance to the next stage in the active province. If the governor has been
-  // elected in the province, move on to the next province.
+  // Advance to the next stage in the active province. Set the turn to the
+  // player with priority.
   advanceStage() {
     const activeProvince = this.provinces[this.activeProvince];
-    activeProvince.stage = (activeProvince.stage + 1) % this.provinces.length;
+    activeProvince.stage = (activeProvince.stage + 1) % 4;
     this.turn = this.priority;
   }
 
@@ -156,9 +156,9 @@ class GameState {
     if (stage == 1) {
       this.removeUnfundedCandidates();
     } else if (this.turn == this.priority) {
-      if (this.stage == 0) {
+      if (stage == 0) {
         this.beginFunding();
-      } else if (this.stage == 2) {
+      } else if (stage == 2) {
         this.tallyVotes();
       } else {
         this.checkIfGameWon();
