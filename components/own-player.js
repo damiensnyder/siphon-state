@@ -1,24 +1,23 @@
 import React from 'react';
-import own from './own-player.module.css';
 import styles from './player.module.css';
 
 class OwnPlayer extends React.Component {
   constructor(props) {
     super(props);
-
-    this.playerInfo = this.playerInfo.bind(this);
-    this.buyButton = this.buyButton.bind(this);
   }
 
-  readyIndicator(self) {
-    return (
-      <h4>
-        Ready: {self.ready ? '✓' : '╳'}
-      </h4>
-    );
+  activityStyle(self) {
+    if (this.props.gs.turn == this.props.index) {
+      return styles.player + " " + styles.activePlayer;
+    } else {
+      return styles.player + " " + styles.inactivePlayer;
+    }
   }
 
-  playerInfo(self) {
+  gsInfo(self) {
+    if (!this.props.gs.started) {
+      return this.readyIndicator(self);
+    }
     return (
       <div>
         <h4>
@@ -30,8 +29,16 @@ class OwnPlayer extends React.Component {
     );
   }
 
+  readyIndicator(self) {
+    return (
+      <h4>
+        Ready: {self.ready ? '✓' : '╳'}
+      </h4>
+    );
+  }
+
   numVotes(self) {
-    if (this.gs.stage == 2) {
+    if (this.props.gs.stage == 2) {
       return (
         <div>
           , {self.votes} votes
@@ -66,15 +73,14 @@ class OwnPlayer extends React.Component {
   render() {
     const self = this.props.gs.parties[this.props.index];
     return (
-      <div className={styles.otherPlayer}>
-        <h2 className={styles.name + " " + own.ownColor}>
+      <div className={this.activityStyle()}>
+        <h2 className={styles.name + " " + styles.ownName}>
           {self.name}
         </h2>
-        <h4 className={styles.abbr + " " + own.ownColor}>
+        <h4 className={styles.abbr + " " + styles.ownName}>
           {self.abbr}
         </h4>
-        {this.props.gs.started ?
-         this.playerInfo(self) : this.readyIndicator(self)}
+        {this.gsInfo(self)}
       </div>
     );
   }

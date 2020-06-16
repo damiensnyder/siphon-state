@@ -4,10 +4,30 @@ import styles from './player.module.css';
 class OtherPlayer extends React.Component {
   constructor(props) {
     super(props);
+  }
 
-    this.playerInfo = this.playerInfo.bind(this);
-    this.replaceButton = this.replaceButton.bind(this);
-    this.payButton = this.payButton.bind(this);
+  activityStyle(self) {
+    if (this.props.gs.turn == this.props.index) {
+      return styles.player + " " + styles.activePlayer;
+    } else {
+      return styles.player + " " + styles.inactivePlayer;
+    }
+  }
+
+  gsInfo(self) {
+    if (!this.props.gs.started) {
+      return this.readyIndicator(self);
+    }
+    return (
+      <div>
+        <h4>
+          ${self.funds}
+        </h4>
+        {this.props.gs.pov >= 0 ? this.payButton() : null}
+        {this.props.gs.pov < 0 && !self.connected ?
+         this.replaceButton() : null}
+      </div>
+    );
   }
 
   readyIndicator(self) {
@@ -40,31 +60,17 @@ class OtherPlayer extends React.Component {
     return null;
   }
 
-  playerInfo(self) {
-    return (
-      <div>
-        <h4>
-          ${self.funds}
-        </h4>
-        {this.props.gs.pov >= 0 ? this.payButton() : null}
-        {this.props.gs.pov < 0 && !self.connected ?
-         this.replaceButton() : null}
-      </div>
-    );
-  }
-
   render() {
     const self = this.props.gs.parties[this.props.index];
     return (
-      <div className={styles.otherPlayer}>
-        <h2 className={styles.name}>
+      <div className={this.activityStyle()}>
+        <h2 className={styles.name + " " + styles.otherName}>
           {self.name}
         </h2>
-        <h4 className={styles.abbr}>
+        <h4 className={styles.abbr + " " + styles.otherName}>
           {self.abbr}
         </h4>
-        {this.props.gs.started ?
-         this.playerInfo(self) : this.readyIndicator(self)}
+        {this.gsInfo(self)}
       </div>
     );
   }

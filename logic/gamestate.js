@@ -148,9 +148,11 @@ class GameState {
     this.turn = this.priority;
   }
 
-  // Advance to the next player's turn.
+  // Advance to the next player's turn, and if the stage should end, advance
+  // to the next one.
   advanceTurn() {
     const stage = this.provinces[this.activeProvince].stage;
+    this.turn = (this.turn + 1) % this.parties.length;
     if (stage == 1) {
       this.removeUnfundedCandidates();
     } else if (this.turn == this.priority) {
@@ -214,11 +216,11 @@ class GameState {
       let candidate = this.pols[activeProvince.candidates[i]];
 
       // If there are 5 or fewer candidates remaining, begin voting. Otherwise,
-      // if the candidate is unfunded and a member of the curren player's party,
-      // they become a dropout.
+      // if the candidate is unfunded and a member of the party whose turn just
+      // ended, they become a dropout.
       if (activeProvince.candidates.length <= 5) {
         this.beginVoting();
-      } else if (candidate.party == this.turn && !candidate.funded) {
+      } else if (candidate.party == (this.turn - 1) % 5 && !candidate.funded) {
         activeProvince.dropouts.push(activeProvince.candidates[i]);
         activeProvince.candidates.splice(i, 1);
         i--;
@@ -231,7 +233,6 @@ class GameState {
     if (activeProvince.candidates.length <= 5) {
       this.beginVoting();
     } else {
-      this.turn = (this.turn + 1) % this.parties.length;
       for (let i = 0; i < activeProvince.candidates; i++) {
         let candidate = this.pols[activeProvince.candidates[i]];
         if (candidate.party == this.turn) {
@@ -276,7 +277,6 @@ class GameState {
       // start again.
       this.votingRounds++;
       if (this.votingRounds < 3) {
-        this.turn = (this.turn + 1) % this.players.length;
         this.resetVotes();
       } else {
         maxPol = activeProvince.officials[0];

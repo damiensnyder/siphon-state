@@ -133,7 +133,7 @@ class GameManager {
 
   handlePass(viewer, data) {
     this.gs.advanceTurn();
-    emitGameStateToAll();
+    this.emitGameStateToAll();
   }
 
   handlePay(viewer, data) {
