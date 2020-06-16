@@ -6,7 +6,7 @@
     "next-dev": "next dev",
     "build": "next build",
     "next-start": "next start",
-    "start": "node app.js"
+    "start": "node app.js -p $PORT"
   },
   "dependencies": {
     "express": "^4.17.1",
