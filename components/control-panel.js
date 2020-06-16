@@ -4,7 +4,7 @@ import ReadyPanel from './ready-panel';
 import GameControls from './game-controls';
 
 function ControlPanel(props) {
-  if (props.gs.pov < 0) {
+  if (props.gs.pov < 0 && !props.gs.started) {
     return (
       <JoinPanel callback={props.callback}
                  gameCode={props.gameCode} />

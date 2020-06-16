@@ -36,6 +36,7 @@ class GameView extends React.Component {
       'replace': this.replaceHandler,
       'ready': this.readyHandler,
       'chat': this.chatHandler,
+      'pass': this.passHandler,
       'pay': this.payHandler,
       'buy': this.buyHandler,
       'flip': this.flipHandler,
@@ -176,6 +177,10 @@ class GameView extends React.Component {
     });
   }
 
+  passHandler(data) {
+    
+  }
+
   payHandler(data) {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds -= data.amount;
@@ -194,7 +199,7 @@ class GameView extends React.Component {
   }
 
   flipHandler(data) {
-    
+
   }
 
   runHandler(data) {

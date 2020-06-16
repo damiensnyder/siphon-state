@@ -114,7 +114,8 @@ class GameState {
       name: name,
       party: null,
       actionTaken: false,
-      available: true
+      available: true,
+      votes: 0
     }});
     this.sympOrder = this.pols.slice();
     shuffle(this.pols);
@@ -160,9 +161,26 @@ class GameState {
     }
   }
 
+  pass() {
+    
+  }
+
   pay(p1Index, p2Index, amount) {
     this.parties[p1Index].funds -= amount;
     this.parties[p2Index].funds += amount;
+  }
+
+  // Transfer the symp from their old party to their new party and add them
+  // back into the symp order.
+  flipSymp(party, pol) {
+    const oldParty = this.parties[this.pols[pol].party];
+    const newParty = this.parties[party];
+    newParty.pols.push(pol);
+    newParty.symps.splice(newParty.symps.indexOf(pol), 1);
+    oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
+    this.pols[pol].party = party;
+    this.sympOrder.push(pol);
+    shuffle(this.sympOrder);
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return

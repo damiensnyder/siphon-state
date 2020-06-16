@@ -8,7 +8,6 @@ class OwnPlayer extends React.Component {
 
     this.playerInfo = this.playerInfo.bind(this);
     this.buyButton = this.buyButton.bind(this);
-    this.handleBuy = this.handleBuy.bind(this);
   }
 
   readyIndicator(self) {
@@ -26,6 +25,7 @@ class OwnPlayer extends React.Component {
           ${self.funds}
         </h4>
         {this.buyButton(self)}
+        {this.passButton()}
       </div>
     );
   }
@@ -35,14 +35,18 @@ class OwnPlayer extends React.Component {
       return null;
     }
     return (
-      <button onClick={this.handleBuy}>
+      <button onClick={e => this.props.callback('buy', {})}>
         Buy symp ($5)
       </button>
     );
   }
 
-  handleBuy() {
-    this.props.callback('buy', {});
+  passButton() {
+    return (
+      <button onClick={e => this.props.callback('pass', {})}>
+        Pass
+      </button>
+    );
   }
 
   render() {

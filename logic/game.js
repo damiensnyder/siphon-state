@@ -22,6 +22,7 @@ class GameManager {
       'replace': this.handleReplace,
       'ready': this.handleReady,
       'msg': this.handleMsg,
+      'pass': this.handlePass,
       'pay': this.handlePay,
       'buy': this.handleBuy,
       'flip': this.handleFlip,
@@ -130,6 +131,11 @@ class GameManager {
     }
   }
 
+  handlePass(viewer, data) {
+    this.gs.pass();
+    emitGameStateToAll();
+  }
+
   handlePay(viewer, data) {
     if (this.gs.parties[viewer.pov].funds >= data.amount) {
       this.gs.pay(viewer.pov, data.p2, data.amount);
@@ -145,7 +151,8 @@ class GameManager {
   }
 
   handleFlip(viewer, data) {
-    if (false) {
+    if (this.gs.parties[viewer.pov].symps.includes(data)) {
+      this.gs.flipSymp(viewer.pov, data);
       this.emitGameStateToAll();
     }
   }
