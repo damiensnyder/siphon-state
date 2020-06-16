@@ -12,7 +12,8 @@ function ControlPanel(props) {
   } else if (props.gs.pov >= 0 && !props.gs.started) {
     return <ReadyPanel callback={props.callback} />;
   } else if (props.gs.pov >= 0 && props.gs.started) {
-    return <GameControls gs={props.gs} />;
+    return <GameControls gs={props.gs}
+                         callback={props.callback} />;
   } else {
     return <div>hope you like watchin em</div>;
   }
