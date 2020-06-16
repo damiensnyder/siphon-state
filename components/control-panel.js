@@ -9,13 +9,13 @@ function ControlPanel(props) {
       <JoinPanel callback={props.callback}
                  gameCode={props.gameCode} />
     );
+  } else if (props.gs.ended) {
+    return <div>{props.gs.parties[props.gs.winner].name} wins</div>;
   } else if (props.gs.pov >= 0 && !props.gs.started) {
     return <ReadyPanel callback={props.callback} />;
   } else if (props.gs.pov >= 0 && props.gs.started) {
     return <GameControls gs={props.gs}
                          callback={props.callback} />;
-  } else if (props.gs.ended) {
-    return <div>{props.gs.parties[props.gs.winner].name} wins</div>;
   } else {
     return <div>enjoy the show</div>;
   }

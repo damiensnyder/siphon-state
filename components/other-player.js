@@ -24,8 +24,7 @@ class OtherPlayer extends React.Component {
           ${self.funds}{this.numVotes(self)}
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
-        {this.props.gs.pov < 0 && !self.connected ?
-         this.replaceButton() : null}
+        {this.replaceButton()}
       </div>
     );
   }
@@ -46,16 +45,21 @@ class OtherPlayer extends React.Component {
   }
 
   replaceButton() {
-    return (
-      <button onClick={e => this.props.callback('replace', this.props.index)}>
-        Replace
-      </button>
-    );
+    if (this.props.gs.pov < 0 && !self.connected && !this.props.gs.ended) {
+      return (
+        <button onClick={e => this.props.callback('replace', this.props.index)}>
+          Replace
+        </button>
+      );
+    }
+
+    return null;
   }
 
   payButton() {
     if (this.props.gs.pov == this.props.gs.turn
-        && this.props.gs.parties[this.props.gs.pov].funds >= 1) {
+        && this.props.gs.parties[this.props.gs.pov].funds >= 1
+        && !this.props.gs.ended) {
       return (
         <button onClick={e =>
           this.props.callback('pay', { p2: this.props.index, amount: 1 })}>

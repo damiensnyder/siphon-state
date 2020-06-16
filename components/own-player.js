@@ -45,7 +45,9 @@ class OwnPlayer extends React.Component {
   }
 
   buyButton(self) {
-    if (self.funds < 5 && this.props.gs.pov == this.props.gs.turn) {
+    if (self.funds >= 5
+        && this.props.gs.pov == this.props.gs.turn
+        && !this.props.gs.ended) {
       return (
         <button onClick={e => this.props.callback('buy', {})}>
           Buy symp ($5)
@@ -56,7 +58,7 @@ class OwnPlayer extends React.Component {
   }
 
   passButton() {
-    if (this.props.gs.pov == this.props.gs.turn) {
+    if (this.props.gs.pov == this.props.gs.turn && !this.props.gs.ended) {
       return (
         <button onClick={e => this.props.callback('pass', {})}>
           Pass
