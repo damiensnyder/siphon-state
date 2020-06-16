@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 const POL_NAMES = [
   "Olive Bass",
   "Amber Melendez",
