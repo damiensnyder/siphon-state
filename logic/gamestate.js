@@ -339,9 +339,10 @@ class GameState {
     for (let i = 0; i < this.provinces.length; i++) {
       let provinceGovernors = this.provinces[i].governors;
       for (let j = 0; j < provinceGovernors.length; j++) {
-        governorCounts[provinceGovernors[j]]++;
-        if (governorCounts[provinceGovernors[j]] > this.provinces.length / 2) {
-          this.winner = provinceGovernors[j];
+        governorParty = this.pols[provinceGovernors[j]].party;
+        governorCounts[governorParty]++;
+        if (governorCounts[governorParty] > this.provinces.length / 2) {
+          this.winner = governorParty;
           this.ended = true;
         }
       }
