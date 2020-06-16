@@ -199,6 +199,7 @@ class GameState {
     this.advanceStage();
 
     // All candidates begin un-funded.
+    const activeProvince = this.provinces[this.activeProvince];
     for (let i = 0; i < activeProvince.candidates.length; i++) {
       this.pols[activeProvince.candidates[i]].funded = false;
     }
