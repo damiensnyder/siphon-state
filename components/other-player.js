@@ -29,6 +29,9 @@ class OtherPlayer extends React.Component {
   }
 
   payButton() {
+    if (this.props.gs.parties[this.props.gs.pov].funds < 1) {
+      return null;
+    }
     return (
       <button onClick={this.handlePay}>
         Pay $1
@@ -37,11 +40,14 @@ class OtherPlayer extends React.Component {
   }
 
   handleTakeover() {
-    this.props.takeoverHandler(this.props.index);
+    this.props.callback('takeover', this.props.index);
   }
 
   handlePay() {
-    this.props.payHandler(this.props.index, 1);
+    this.props.callback('pay', {
+      p2: this.props.index,
+      amount: 1
+    });
   }
 
   playerInfo(self) {
@@ -52,7 +58,7 @@ class OtherPlayer extends React.Component {
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
         {this.props.gs.pov < 0 && !self.connected ?
-          this.takeoverButton() : null}
+         this.takeoverButton() : null}
       </div>
     );
   }
@@ -67,7 +73,8 @@ class OtherPlayer extends React.Component {
         <h4 className={styles.abbr}>
           {self.abbr}
         </h4>
-        {this.props.gs.started ? this.playerInfo(self) : this.readyIndicator(self)}
+        {this.props.gs.started ?
+         this.playerInfo(self) : this.readyIndicator(self)}
       </div>
     );
   }

@@ -37,7 +37,7 @@ class JoinPanel extends React.Component {
         this.state.abbrPlaceholder :
         this.state.abbr;
 
-    this.props.joinHandler({
+    this.props.callback('join', {
       name: this.state.partyName,
       abbr: abbr
     });

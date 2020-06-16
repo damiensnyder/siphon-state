@@ -25,12 +25,15 @@ class OwnPlayer extends React.Component {
         <h4>
           ${self.funds}
         </h4>
-        {this.buyButton()}
+        {this.buyButton(self)}
       </div>
     );
   }
 
-  buyButton() {
+  buyButton(self) {
+    if (self.funds < 5) {
+      return null;
+    }
     return (
       <button onClick={this.handleBuy}>
         Buy symp ($5)
@@ -39,7 +42,7 @@ class OwnPlayer extends React.Component {
   }
 
   handleBuy() {
-    this.props.buyHandler();
+    this.props.callback('buy', {});
   }
 
   render() {
@@ -52,7 +55,8 @@ class OwnPlayer extends React.Component {
         <h4 className={styles.abbr + " " + own.ownColor}>
           {self.abbr}
         </h4>
-        {this.props.gs.started ? this.playerInfo(self) : this.readyIndicator(self)}
+        {this.props.gs.started ?
+         this.playerInfo(self) : this.readyIndicator(self)}
       </div>
     );
   }

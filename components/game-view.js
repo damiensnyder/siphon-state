@@ -31,12 +31,19 @@ class GameView extends React.Component {
       ended: false
     };
 
-    this.joinHandler = this.joinHandler.bind(this);
-    this.takeoverHandler = this.takeoverHandler.bind(this);
-    this.readyHandler = this.readyHandler.bind(this);
-    this.chatHandler = this.chatHandler.bind(this);
-    this.payHandler = this.payHandler.bind(this);
-    this.buyHandler = this.buyHandler.bind(this);
+    this.handlers = {
+      'join': this.joinHandler,
+      'takeover': this.takeoverHandler,
+      'ready': this.readyHandler,
+      'chat': this.chatHandler,
+      'pay': this.payHandler,
+      'buy': this.buyHandler
+    };
+
+    for (let key in this.handlers) {
+      this.handlers[key] = this.handlers[key].bind(this);
+    }
+    this.callback = this.callback.bind(this);
   }
 
   componentDidMount() {
@@ -114,75 +121,67 @@ class GameView extends React.Component {
     return provincesJsx;
   }
 
+  callback(type, data) {
+    this.handlers[type](data);
+    this.socket.emit(type, data);
+  }
+
   // Passed to the control panel and called when the player joins the game.
   // Sends the player's info to the server and shows a system chat message to
   // the player.
-  joinHandler(partyInfo) {
+  joinHandler(data) {
     this.addMsg({
       sender: 'Client',
-      text: `You have joined the game as '${partyInfo.name}'.`,
+      text: `You have joined the game as '${data.name}'.`,
       isSelf: false,
       isSystem: true
     });
-    this.socket.emit('join', partyInfo);
   }
 
-  takeoverHandler(target) {
+  takeoverHandler(data) {
     const gs = this.state.gs;
-    gs.pov = target;
-    gs.parties[target].connected = true;
+    gs.pov = data;
+    gs.parties[data].connected = true;
     this.setState({
       gs: gs
     });
-
-    this.socket.emit('takeover', target);
   }
 
-  readyHandler(ready) {
+  readyHandler(data) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].ready = ready;
+    gs.parties[gs.pov].ready = data;
     this.setState({
       gs: gs
     });
-
-    this.socket.emit('ready', ready);
   }
 
   // Handler passed to the Chat component, called whenever the user sends a chat
   // message. Shows the message client-side instantly and sends the message to
   // the server to be broadcasted to everyone else.
-  chatHandler(msgText) {
+  chatHandler(data) {
     this.addMsg({
       sender: 'You',
-      text: msgText,
+      text: data,
       isSelf: true,
       isSystem: false
     });
-    this.socket.emit('msg', msgText);
   }
 
-  payHandler(target, amount) {
+  payHandler(data) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds -= amount;
-    gs.parties[target].funds += amount;
+    gs.parties[gs.pov].funds -= data.amount;
+    gs.parties[data.p2].funds += data.amount;
     this.setState({
       gs: gs
     });
-
-    this.socket.emit('pay', {
-      p2: target,
-      amount: amount
-    });
   }
 
-  buyHandler() {
+  buyHandler(data) {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds -= 5;
     this.setState({
       gs: gs
     });
-
-    this.socket.emit('buy', null);
   }
 
   // Adds a message to the Chat component.
@@ -202,19 +201,16 @@ class GameView extends React.Component {
           {this.provincesToJsx()}
         </div>
         <Chat messages={this.state.messages}
-              chatHandler={this.chatHandler} />
+              callback={this.callback} />
         <div id={styles.playersSidebar}
              className={styles.containerLevel2}>
           <PlayersSidebar gs={this.state.gs}
-                          takeoverHandler={this.takeoverHandler}
-                          payHandler={this.payHandler}
-                          buyHandler={this.buyHandler} />
+                          callback={this.callback} />
         </div>
         <div id={styles.controlPanel}
              className={styles.containerLevel2}>
-          <ControlPanel joinHandler={this.joinHandler}
-                        readyHandler={this.readyHandler}
-                        gs={this.state.gs}
+          <ControlPanel gs={this.state.gs}
+                        callback={this.callback}
                         gameCode={this.gameCode} />
         </div>
       </div>

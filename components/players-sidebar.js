@@ -16,15 +16,14 @@ class PlayersSidebar extends React.Component {
       if (i === this.props.gs.pov) {
         playersJsx.push(
           <OwnPlayer gs={this.props.gs}
-                     buyHandler={this.props.buyHandler}
+                     callback={this.props.callback}
                      index={i}
                      key={i} />
         );
       } else {
         playersJsx.push(
           <OtherPlayer gs={this.props.gs}
-                       payHandler={this.props.payHandler}
-                       takeoverHandler={this.props.takeoverHandler}
+                       callback={this.props.callback}
                        index={i}
                        key={i} />
         );

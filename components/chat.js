@@ -44,7 +44,7 @@ class Chat extends React.Component {
   sendMsg() {
     const newMsg = this.state.currentMsg.trim();
     if (newMsg.length > 0) {
-      this.props.chatHandler(newMsg);
+      this.props.callback('msg', newMsg);
 
       // Update the message box and scroll to the bottom of the chat log
       this.setState(state => ({

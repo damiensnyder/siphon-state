@@ -18,7 +18,7 @@ class ReadyPanel extends React.Component {
     this.setState({
       ready: ready
     });
-    this.props.readyHandler(ready);
+    this.props.callback('ready', ready);
   }
 
   render() {

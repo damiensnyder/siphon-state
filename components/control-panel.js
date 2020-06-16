@@ -6,11 +6,11 @@ import GameControls from './game-controls';
 function ControlPanel(props) {
   if (props.gs.pov < 0) {
     return (
-      <JoinPanel joinHandler={props.joinHandler}
+      <JoinPanel callback={props.callback}
                  gameCode={props.gameCode} />
     );
   } else if (props.gs.pov >= 0 && !props.gs.started) {
-    return <ReadyPanel readyHandler={props.readyHandler} />;
+    return <ReadyPanel callback={props.callback} />;
   } else if (props.gs.pov >= 0 && props.gs.started) {
     return <GameControls gs={props.gs} />;
   } else {
