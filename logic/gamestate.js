@@ -344,8 +344,6 @@ class GameState {
         if (governorCounts[governorParty] > this.provinces.length / 2) {
           this.winner = governorParty;
           this.ended = true;
-          this.turn = -1;
-          this.activeProvince = -1;
         }
       }
     }

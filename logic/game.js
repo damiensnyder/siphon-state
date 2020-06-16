@@ -29,6 +29,7 @@ class GameManager {
       'run': this.handleRun,
       'fund': this.handleFund,
       'vote': this.handleVote,
+      'rematch': this.handleRematch,
       'disconnect': this.handleDisconnect
     }
     for (var type in this.handlers) {
@@ -183,6 +184,17 @@ class GameManager {
       this.gs.vote(viewer.pov, data);
       this.emitGameStateToAll();
     }
+  }
+
+  handleRematch(viewer, data) {
+    for (let i = 0; i < this.viewers.length; i++) {
+      this.viewers[i].reset();
+    }
+
+    this.gs = new GameState();
+    this.players = [];
+    this.actionQueue = [];
+    this.emitGameStateToAll();
   }
 
   // When a player disconnects, remove them from the list of viewers, fix the

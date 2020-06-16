@@ -4,7 +4,7 @@ const io = require('socket.io')(server);
 const next = require('next');
 const Game = require('./logic/game.js');
 
-const nextApp = next({ dev: process.env.NODE_ENV !== 'production' });
+const nextApp = next({ dev: process.env.NODE_ENV != 'production' });
 const nextHandler = nextApp.getRequestHandler();
 
 var envPort = parseInt(process.env.PORT);

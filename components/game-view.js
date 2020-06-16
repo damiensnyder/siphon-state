@@ -42,7 +42,8 @@ class GameView extends React.Component {
       'flip': this.flipHandler,
       'run': this.runHandler,
       'fund': this.fundHandler,
-      'vote': this.voteHandler
+      'vote': this.voteHandler,
+      'rematch': this.rematchHandler
     };
 
     for (let key in this.handlers) {
@@ -235,6 +236,10 @@ class GameView extends React.Component {
     this.setState({
       gs: gs
     });
+  }
+
+  rematchHandler(data) {
+    
   }
 
   // Adds a message to the Chat component.

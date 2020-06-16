@@ -10,7 +10,14 @@ function ControlPanel(props) {
                  gameCode={props.gameCode} />
     );
   } else if (props.gs.ended) {
-    return <div>{props.gs.parties[props.gs.winner].name} wins</div>;
+    return (
+      <div>
+        {props.gs.parties[props.gs.winner].name} wins
+        <button onClick={e => props.callback('rematch', {})}>
+          Rematch
+        </button>
+      </div>
+    );
   } else if (props.gs.pov >= 0 && !props.gs.started) {
     return <ReadyPanel callback={props.callback} />;
   } else if (props.gs.pov >= 0 && props.gs.started) {

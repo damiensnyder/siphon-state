@@ -42,8 +42,33 @@ class Viewer {
                    this.actionHandler(this, 'fund', data));
     this.socket.on('vote', (data) =>
                    this.actionHandler(this, 'vote', data));
+    this.socket.on('rematch', (data) =>
+                   this.actionHandler(this, 'rematch', data));
 
     this.socket.removeAllListeners('ready');
+  }
+
+  reset() {
+    this.name = undefined;
+    this.pov = -1;
+
+    this.socket.removeAllListeners('join');
+    this.socket.removeAllListeners('replace');
+    this.socket.removeAllListeners('ready');
+    this.socket.removeAllListeners('msg');
+    this.socket.removeAllListeners('pass');
+    this.socket.removeAllListeners('pay');
+    this.socket.removeAllListeners('buy');
+    this.socket.removeAllListeners('flip');
+    this.socket.removeAllListeners('run');
+    this.socket.removeAllListeners('fund');
+    this.socket.removeAllListeners('vote');
+    this.socket.removeAllListeners('reset');
+
+    this.socket.on('join', (data) =>
+                   this.actionHandler(this, 'join', data));
+    this.socket.on('replace', (data) =>
+                   this.actionHandler(this, 'replace', { target: data }));
   }
 
   emitGameState(gs) {
