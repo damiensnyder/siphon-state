@@ -27,15 +27,17 @@ class OtherPlayer extends React.Component {
   }
 
   payButton() {
-    if (this.props.gs.parties[this.props.gs.pov].funds < 1) {
-      return null;
+    if (this.props.gs.pov == this.props.gs.turn
+        && this.props.gs.parties[this.props.gs.pov].funds >= 1) {
+      return (
+        <button onClick={e =>
+          this.props.callback('pay', { p2: this.props.index, amount: 1 })}>
+          Pay $1
+        </button>
+      );
     }
-    return (
-      <button onClick={e =>
-        this.props.callback('pay', { p2: this.props.index, amount: 1 })}>
-        Pay $1
-      </button>
-    );
+
+    return null;
   }
 
   playerInfo(self) {

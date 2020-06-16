@@ -160,7 +160,7 @@ class GameManager {
 
   handleRun(viewer, data) {
     if (this.gs.parties[viewer.pov].pols.includes(data)
-        && this.pols[data].runnable
+        && this.gs.pols[data].runnable
         && this.gs.turn == viewer.pov) {
       this.gs.run(data);
       this.emitGameStateToAll();

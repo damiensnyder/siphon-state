@@ -14,8 +14,10 @@ function ControlPanel(props) {
   } else if (props.gs.pov >= 0 && props.gs.started) {
     return <GameControls gs={props.gs}
                          callback={props.callback} />;
+  } else if (props.gs.ended) {
+    return <div>{props.gs.parties[props.gs.winner].name} wins</div>;
   } else {
-    return <div>hope you like watchin em</div>;
+    return <div>enjoy the show</div>;
   }
 }
 

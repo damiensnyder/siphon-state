@@ -290,14 +290,19 @@ class GameState {
             maxPriority = priority;
           }
         }
-        activeProvince.governors.push(maxPol);
-        advanceStage();
+        declareWinner(maxPol);
       }
     } else {
-      // If undisputed, elect the winner and begin distribution.
-      activeProvince.governors.push(maxPol);
-      advanceStage();
+      declareWinner(maxPol);
     }
+  }
+
+  // Promote the winning politician to governor and give their part $10, then
+  // advance to the next stage.
+  declareWinner(pol) {
+    this.provinces[this.activeProvince].governors.push(maxPol);
+    this.parties[this.pols[pol].party].funds += 3 * this.parties.length;
+    advanceStage();
   }
 
   // Reset all officials' vote totals and parties' usable votes to 0, then give
@@ -321,7 +326,7 @@ class GameState {
     }
     for (let i = 0; i < this.provinces.length; i++) {
       let provinceGovernors = this.provinces[i].governors;
-      for (let j = 0; j < provinceGovernors.length) {
+      for (let j = 0; j < provinceGovernors.length; j++) {
         governorCounts[provinceGovernors[j]]++;
         if (governorCounts[provinceGovernors[j]] > this.provinces.length / 2) {
           this.winner = provinceGovernors[j];
