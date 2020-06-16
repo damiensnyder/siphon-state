@@ -8,10 +8,10 @@ class Pol extends React.Component {
     this.actionButton = this.actionButton.bind(this);
   }
 
-  // Return the appropriate action button for the politician (e.g., "Flip").
+  // Return the appropriate action button for the pol (e.g., "Flip").
   actionButton() {
     const gs = this.props.gs;
-    const self = gs.politicians[this.props.index];
+    const self = gs.pols[this.props.index];
     const stage = gs.provinces[gs.activeProvince].stage;
 
     if (gs.turn !== gs.pov) {
@@ -33,7 +33,7 @@ class Pol extends React.Component {
   }
 
   render() {
-    const self = this.props.gs.politicians[this.props.index];
+    const self = this.props.gs.pols[this.props.index];
     return (
       <div className={styles.sameLine}>
         <div>{self.name} ({this.props.gs.parties[self.party].abbr})</div>

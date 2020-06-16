@@ -14,9 +14,9 @@ class GameControls extends React.Component {
     const available = [];
     const symps = [];
 
-    for (let i = 0; i < self.politicians.length; i++) {
-      let pol = self.politicians[i];
-      if (gs.politicians[pol].available) {
+    for (let i = 0; i < self.pols.length; i++) {
+      let pol = self.pols[i];
+      if (gs.pols[pol].available) {
         available.push(pol);
       }
     }

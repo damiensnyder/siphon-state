@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const POLITICIAN_NAMES = [
+const POL_NAMES = [
   "Olive Bass",
   "Amber Melendez",
   "Iyla Conrad",
@@ -345,7 +345,7 @@ class GameState {
       ready: false,
       connected: true,
       funds: 5,
-      politicians: [],
+      pols: [],
       symps: []
     });
   }
@@ -365,19 +365,19 @@ class GameState {
   }
 
   begin() {
-    this.politicians = POLITICIAN_NAMES.map((name) => { return {
+    this.pols = POL_NAMES.map((name) => { return {
       name: name,
       party: null,
       actionTaken: false,
       available: true
     }});
-    this.sympOrder = this.politicians.slice();
-    shuffle(this.politicians);
+    this.sympOrder = this.pols.slice();
+    shuffle(this.pols);
     shuffle(this.sympOrder);
 
-    for (let i = 0; i < this.politicians.length; i++) {
-      this.politicians[i].party = i % this.parties.length;
-      this.parties[i % this.parties.length].politicians.push(i);
+    for (let i = 0; i < this.pols.length; i++) {
+      this.pols[i].party = i % this.parties.length;
+      this.parties[i % this.parties.length].pols.push(i);
     }
 
     for (let i = 0; i < this.parties.length; i++) {
@@ -401,7 +401,7 @@ class GameState {
     while(this.sympOrder[i].party === party) {
       i++;
     }
-    const polIndex = this.politicians.indexOf(this.sympOrder[i]);
+    const polIndex = this.pols.indexOf(this.sympOrder[i]);
     this.parties[party].symps.push(polIndex);
     this.sympOrder.splice(i, 1);
   }
