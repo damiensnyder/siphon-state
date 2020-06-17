@@ -35,7 +35,7 @@ class GameView extends React.Component {
       'join': this.joinHandler,
       'replace': this.replaceHandler,
       'ready': this.readyHandler,
-      'chat': this.chatHandler,
+      'msg': this.msgHandler,
       'pass': this.passHandler,
       'pay': this.payHandler,
       'buy': this.buyHandler,
@@ -142,7 +142,7 @@ class GameView extends React.Component {
   joinHandler(data) {
     this.addMsg({
       sender: 'Client',
-      text: `You have joined the game as '${data.name}'.`,
+      text: `You have joined the game as '${data.name}' (${data.abbr}).`,
       isSelf: false,
       isSystem: true
     });
@@ -169,7 +169,7 @@ class GameView extends React.Component {
   // message. Shows the message client-side instantly while the initial callback
   // function sends the message to the server to be broadcasted to everyone
   // else.
-  chatHandler(data) {
+  msgHandler(data) {
     this.addMsg({
       sender: 'You',
       text: data,
@@ -239,7 +239,7 @@ class GameView extends React.Component {
   }
 
   rematchHandler(data) {
-    
+
   }
 
   // Adds a message to the Chat component.

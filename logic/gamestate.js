@@ -326,7 +326,6 @@ class GameState {
   // advance to the next stage.
   declareWinner(pol) {
     this.provinces[this.activeProvince].governors.push(pol);
-    this.parties[this.pols[pol].party].funds += 3 * this.parties.length;
     this.advanceStage();
   }
 
@@ -351,6 +350,11 @@ class GameState {
     // If there was no winner, advance to the next province and player with
     // priority and begin nomination.
     if (this.winner === null) {
+      const governors = this.provinces[this.activeProvince].governors;
+      for (let i = 0; i < governors.length; i++) {
+        this.parties[this.pols[governors[i]].party].funds += 3 * this.parties.length;
+      }
+
       this.activeProvince = (this.activeProvince + 1) % this.provinces.length;
       this.priority = (this.priority + 1) % this.parties.length;
       this.beginNomination();
