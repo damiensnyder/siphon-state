@@ -15,11 +15,9 @@ class OtherPlayer extends React.Component {
   }
 
   gsInfo(self) {
-    if (!this.props.gs.started) {
-      return this.readyIndicator(self);
-    }
     return (
       <div>
+        {this.readyIndicator(self)}
         <h4>
           ${self.funds}{this.numVotes(self)}
         </h4>
