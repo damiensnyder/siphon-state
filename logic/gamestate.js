@@ -97,11 +97,8 @@ class GameState {
     });
   }
 
+  // Returns true if all parties are ready, false otherwise.
   allReady() {
-    if (this.parties.length < 2) {
-      return false;
-    }
-
     for (let i = 0; i < this.parties.length; i++) {
       if (!this.parties[i].ready) {
         return false;
@@ -113,15 +110,17 @@ class GameState {
 
   // Begin the game.
   begin() {
-    // Create all politicians, and randomize the order in which they symp.
-    this.pols = POL_NAMES.map((name) => { return {
+    // Create 12 politicians for each party, and randomize the order in which
+    // they symp.
+    all_pols = POL_NAMES.map((name) => { return {
       name: name,
       party: null,
       runnable: true,
       funded: false
     }});
+    shuffle(all_pols);
+    this.pols = all_pols.slice(0, 12 * this.parties.length)
     this.sympOrder = this.pols.slice();
-    shuffle(this.pols);
     shuffle(this.sympOrder);
 
     // Distribute an equal number of politicians to each player.
