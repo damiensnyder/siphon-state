@@ -160,22 +160,11 @@ class GameManager {
   }
 
   handleRun(viewer, data) {
-    if (this.gs.parties[viewer.pov].pols.includes(data)
-        && this.gs.pols[data].runnable
-        && this.gs.turn == viewer.pov) {
-      this.gs.run(data);
-      this.emitGameStateToAll();
-    }
+    this.gs.run(viewer.pov, data);
   }
 
   handleFund(viewer, data) {
-    if (this.gs.parties[viewer.pov].pols.includes(data)
-        && this.gs.provinces[this.gs.activeProvince].candidates.includes(data)
-        && this.gs.parties[viewer.pov].funds >= 1
-        && this.gs.turn == viewer.pov) {
-      this.gs.fund(viewer.pov, data);
-      this.emitGameStateToAll();
-    }
+    this.gs.fund(viewer.pov, data);
   }
 
   handleVote(viewer, data) {
