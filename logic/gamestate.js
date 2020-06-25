@@ -145,32 +145,21 @@ class GameState {
   // player with priority.
   advanceStage() {
     const activeProvince = this.provinces[this.activeProvince];
-    activeProvince.stage = (activeProvince.stage + 1) % 4;
-    this.turn = this.priority;
-  }
-
-  // Advance to the next player's turn, and if the stage should end, advance
-  // to the next one.
-  advanceTurn() {
-    const stage = this.provinces[this.activeProvince].stage;
-    this.turn = (this.turn + 1) % this.parties.length;
-    if (stage == 1) {
+    const stage = (activeProvince.stage + 1) % 4;
+    activeProvince.stage = stage;
+    if (stage == 0) {
+      this.checkIfGameWon();
+    } else if (stage == 1) {
+      this.beginFunding();
+    } else if (stage == 2) {
       this.removeUnfundedCandidates();
-    } else if (this.turn == this.priority) {
-      if (stage == 0) {
-        this.beginFunding();
-      } else if (stage == 2) {
-        this.tallyVotes();
-      } else {
-        this.checkIfGameWon();
-      }
+    } else {
+      this.tallyVotes();
     }
   }
 
   // Begin the nomination stage in the new province.
   beginNomination() {
-    this.advanceStage();
-
     // Give all parties $5.
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].funds += 5;
@@ -187,6 +176,10 @@ class GameState {
     activeProvince.dropouts = [];
     activeProvince.officials = [];
     activeProvince.governors = [];
+
+    this.flipQueue = [];
+    this.buyQueue = [];
+    this.runQueue = [];
   }
 
   // The given politician becomes a candidate in the active province, and they
@@ -197,8 +190,6 @@ class GameState {
   }
 
   beginFunding() {
-    this.advanceStage();
-
     // All candidates begin un-funded.
     const activeProvince = this.provinces[this.activeProvince];
     for (let i = 0; i < activeProvince.candidates.length; i++) {
@@ -224,8 +215,7 @@ class GameState {
 
       // If the candidate is unfunded and a member of the party whose turn just
       // ended, they become a dropout. Otherwise, reset them to un-funded.
-      if (this.turn == (candidate.party + 1) % this.parties.length
-          && !candidate.funded) {
+      if (!candidate.funded) {
         activeProvince.dropouts.push(activeProvince.candidates[i]);
         activeProvince.candidates.splice(i, 1);
         i--;
@@ -240,7 +230,6 @@ class GameState {
   }
 
   beginVoting() {
-    this.advanceStage();
     const activeProvince = this.provinces[this.activeProvince];
 
     // All remaining candidates become officials.
