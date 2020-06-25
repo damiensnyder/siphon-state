@@ -181,10 +181,22 @@ class GameState {
     this.runQueue = [];
   }
 
+  enqueueRun(party, pol) {
+    this.runQueue.push(pol);
+  }
+
+  executeRuns() {
+    for (let i = 0; i < this.runQueue.length; i++) {
+      this.run(this.runQueue[i]);
+    }
+    this.runQueue = [];
+  }
+
   // The given politician becomes a candidate in the active province, and they
   // cannot be run until the next time that province becomes active.
-  run(party, pol) {
-    this.runQueue.push(pol);
+  run(pol) {
+    this.activeProvince.candidates.push(pol);
+    this.pols[pol].runnable = false;
   }
 
   beginFunding() {
@@ -205,8 +217,20 @@ class GameState {
   }
 
   // The given politician becomes funded for the turn, and their party loses $1.
-  fund(party, pol) {
+  enqueueFund(party, pol) {
     this.fundQueue.push(pol);
+  }
+
+  executeFunds() {
+    for (let i = 0; i < this.fundQueue.length; i++) {
+      this.fund(this.fundQueue[i]);
+    }
+    this.fundQueue = [];
+  }
+
+  fund(party, pol) {
+    this.parties[this.pols[pol].party].funds--;
+    this.pols[pol].funded = true;
   }
 
   removeUnfundedCandidates() {
@@ -241,10 +265,16 @@ class GameState {
     if (activeProvince.officials.length == 0) {
       this.advanceStage();
     }
+  }
 
-    this.flipQueue = [];
-    this.buyQueue = [];
-    this.payQueue = [];
+  enqueueVote(party, pol) {
+    this.voteQueue.push([party, pol]);
+  }
+
+  executeVotes(party, pol) {
+    for (let i = 0; i < this.voteQueue.length; i++) {
+      this.vote(this.voteQueue[i][0], this.voteQueue[i][1]);
+    }
     this.voteQueue = [];
   }
 
@@ -252,6 +282,13 @@ class GameState {
   vote(party, pol) {
     this.votes[this.provinces[this.activeProvinceId].officials.indexOf(pol)]++;
     this.parties[party].votes--;
+  }
+
+  commitVoting() {
+    this.executeFlips();
+    this.executePays();
+    this.executeBuys();
+    this.tallyVotes();
   }
 
   // Reset all officials' vote totals and parties' usable votes to 0, then give
@@ -318,6 +355,13 @@ class GameState {
     this.advanceStage();
   }
 
+  commitDistribution() {
+    this.executeFlips();
+    this.executePays();
+    this.executeBuys();
+    this.checkIfGameWon();
+  }
+
   checkIfGameWon() {
     // If any player has more than half the governors, they win the game.
     var governorCounts = Array(this.parties.length);
@@ -353,10 +397,31 @@ class GameState {
     }
   }
 
+  enqueuePay(p1Index, p2Index, amount) {
+    this.payQueue.push([p1Index, p2Index, amount])
+  }
+
+  executePays() {
+    for (let i = 0; i < this.payQueue.length; i++) {
+      this.pay(this.payQueue[i][0], this.payQueue[i][1], this.payQueue[i][2]);
+    }
+    this.payQueue = [];
+  }
+
   // Pay the given amount of funds from party 1 to party 2.
   pay(p1Index, p2Index, amount) {
     this.parties[p1Index].funds -= amount;
     this.parties[p2Index].funds += amount;
+  }
+
+  enqueueBuy(party) {
+    this.buyQueue.push(party);
+  }
+
+  executeBuys() {
+    for (let i = 0; i < this.buyQueue.length; i++) {
+      this.buySymp(this.buyQueue[i]);
+    }
   }
 
   // Remove $5 from the given party's funds, then give a symp to that party.
@@ -376,9 +441,21 @@ class GameState {
     this.sympOrder.splice(i, 1);
   }
 
+  enqueueFlip(pol) {
+    this.flipQueue.push(pol);
+  }
+
+  executeFlips() {
+    for (let i = 0; i < this.flipQueue.length; i++) {
+      this.flipSymp(this.flipQueue[i]);
+    }
+    this.flipQueue = [];
+  }
+
   // Transfer the symp from their old party to their new party and add them
   // back into the symp order.
-  flipSymp(party, pol) {
+  flipSymp(pol) {
+    const partyIndex = this.pols[pol].party;
     const oldParty = this.parties[this.pols[pol].party];
     const newParty = this.parties[party];
     newParty.pols.push(pol);
@@ -406,6 +483,7 @@ class GameState {
     this.sympOrder = [];
     const votes = this.votes;
     this.votes = [];
+    delete this.activeProvince;
 
     return {
       symps: symps,
@@ -424,6 +502,7 @@ class GameState {
 
     this.sympOrder = hiddenInfo.sympOrder;
     this.votes = hiddenInfo.votes;
+    this.activeProvince = this.provinces[this.activeProvinceId];
   }
 }
 
