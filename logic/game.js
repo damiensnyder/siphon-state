@@ -168,7 +168,7 @@ class GameManager {
   }
 
   handleVote(viewer, data) {
-    if (this.gs.provinces[this.gs.activeProvince].officials.includes(data)
+    if (this.gs.provs[this.gs.activeProv].officials.includes(data)
         && this.gs.parties[viewer.pov].votes >= 1) {
       this.gs.vote(viewer.pov, data);
       this.emitGameStateToAll();

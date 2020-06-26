@@ -66,7 +66,7 @@ class GameState {
   constructor() {
     this.started = false;
     this.ended = false;
-    this.activeProvinceId = -1;
+    this.activeProvId = -1;
     this.priority = -1;
     this.pov = -1;
     this.turn = -1;
@@ -74,7 +74,7 @@ class GameState {
     this.winner = null;
 
     this.parties = [];
-    this.provinces = PROVINCE_NAMES.map((name) => { return {
+    this.provs = PROVINCE_NAMES.map((name) => { return {
       name: name,
       stage: -1,
       governors: [],
@@ -82,7 +82,7 @@ class GameState {
       candidates: [],
       dropouts: []
     }});
-    shuffle(this.provinces);
+    shuffle(this.provs);
   }
 
   addParty(name, abbr) {
@@ -134,7 +134,7 @@ class GameState {
       this.giveSymp(i);
     }
 
-    // Begin the nomination stage in the first province.
+    // Begin the nomination stage in the first prov.
     this.started = true;
     this.beginNomination();
   }
@@ -142,28 +142,28 @@ class GameState {
   // Advance to the next province and begin the nomination stage in the new
   // province.
   beginNomination() {
-    // Advance to the next province.
-    this.activeProvinceId = (this.activeProvinceId + 1) %
-                            this.provinces.length;
-    this.activeProvince = this.provinces[this.activeProvinceId];
+    // Advance to the next prov.
+    this.activeProvId = (this.activeProvId + 1) %
+                            this.provs.length;
+    this.activeProv = this.provs[this.activeProvId];
     this.priority = (this.priority + 1) % this.parties.length;
-    this.activeProvince.stage = 0;
+    this.activeProv.stage = 0;
 
     // Give all parties $5.
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].funds += 5;
     }
 
-    // Remove all politicians from the province and make them runnable again.
-    for (let i = 0; i < this.activeProvince.dropouts.length; i++) {
-      this.pols[this.activeProvince.dropouts[i]].runnable = true;
+    // Remove all politicians from the prov and make them runnable again.
+    for (let i = 0; i < this.activeProv.dropouts.length; i++) {
+      this.pols[this.activeProv.dropouts[i]].runnable = true;
     }
-    for (let i = 0; i < this.activeProvince.officials.length; i++) {
-      this.pols[this.activeProvince.officials[i]].runnable = true;
+    for (let i = 0; i < this.activeProv.officials.length; i++) {
+      this.pols[this.activeProv.officials[i]].runnable = true;
     }
-    this.activeProvince.dropouts = [];
-    this.activeProvince.officials = [];
-    this.activeProvince.governors = [];
+    this.activeProv.dropouts = [];
+    this.activeProv.officials = [];
+    this.activeProv.governors = [];
 
     this.flipQueue = [];
     this.buyQueue = [];
@@ -185,7 +185,7 @@ class GameState {
   // The given politician becomes a candidate in the active province, and they
   // cannot be run until the next time that province becomes active.
   run(pol) {
-    this.activeProvince.candidates.push(pol);
+    this.activeProv.candidates.push(pol);
     this.pols[pol].runnable = false;
   }
 
@@ -194,17 +194,22 @@ class GameState {
     executePays();
     executeBuys();
     executeRuns();
+    beginFunding();
   }
 
   beginFunding() {
-    // All candidates begin un-funded.
-    for (let i = 0; i < this.activeProvince.candidates.length; i++) {
-      this.pols[this.activeProvince.candidates[i]].funded = false;
-    }
+    this.activeProv.stage = 1;
+    this.resetFunds();
 
     // If there are 5 or fewer candidates, begin voting immediately.
-    if (this.activeProvince.candidates.length <= 5) {
+    if (this.activeProv.candidates.length <= 5) {
       this.beginVoting();
+    }
+  }
+
+  resetFunds() {
+    for (let i = 0; i < this.activeProv.candidates.length; i++) {
+      this.pols[this.activeProv.candidates[i]].funded = false;
     }
 
     this.flipQueue = [];
@@ -230,40 +235,62 @@ class GameState {
     this.pols[pol].funded = true;
   }
 
+  // Remove one unfunded candidate from the party with priority, then one from
+  // the next-highest priority party, and so on, and repeat until there are
+  // five or fewer candidates or all remaining candidates are funded.
   removeUnfundedCandidates() {
-    for (let i = 0; i < this.activeProvince.candidates.length; i++) {
-      let candidate = this.pols[this.activeProvince.candidates[i]];
+    var allFunded = false;
 
-      // If the candidate is unfunded and a member of the party whose turn just
-      // ended, they become a dropout. Otherwise, reset them to un-funded.
-      if (!candidate.funded) {
-        this.activeProvince.dropouts.push(this.activeProvince.candidates[i]);
-        this.activeProvince.candidates.splice(i, 1);
-        i--;
-      }
-      candidate.funded = false;
+    while (!allFunded) {
+      allFunded = true;
+      for (let i = 0; i < this.parties.length; i++) {
+        for (let j = this.activeProv.candidates.length - 1; j >= 0 j--) {
+          let candidate = this.pols[this.activeProv.candidates[j]];
 
-      // If there are 5 or fewer candidates remaining, begin voting.
-      if (this.activeProvince.candidates.length <= 5) {
-        this.advanceStage();
+          // If the candidate is unfunded and a member of the party to remove
+          // from, and there are still more than 5 candidates remaining, they
+          // become a dropout.
+          if (!candidate.funded &&
+              candidate.party == (i + this.priority) % 5 &&
+              this.activeProv.candidates.length > 5) {
+            this.activeProv.dropouts.push(this.activeProv.candidates[j]);
+            this.activeProv.candidates.splice(j, 1);
+            allFunded = false;
+          }
+        }
       }
     }
+
+    // If there are 5 or fewer candidates remaining, begin voting.
+    if (this.activeProv.candidates.length <= 5) {
+      this.beginVoting();
+    } else {
+      this.resetFunds();
+    }
+  }
+
+  commitFunding() {
+    executeFlips();
+    executePays();
+    executeBuys();
+    executeFunds();
+    removeUnfundedCandidates();
   }
 
   beginVoting() {
     // All remaining candidates become officials.
-    this.activeProvince.officials = this.activeProvince.candidates;
-    this.activeProvince.candidates = [];
-    this.activeProvince.stage = 2;
+    this.activeProv.officials = this.activeProv.candidates;
+    this.activeProv.candidates = [];
+    this.activeProv.stage = 2;
 
     this.votingRounds = 0;
     this.resetVotes();
 
     // If there are no officials, skip to the next stage.
-    if (activeProvince.officials.length == 0) {
+    if (activeProv.officials.length == 0) {
       this.beginDistribution();
-    } else if (activeProvince.officials.length == 1) {
-      this.activeProvince.governors.push(activeProvince.officials[0]);
+    } else if (activeProv.officials.length == 1) {
+      this.activeProv.governors.push(activeProv.officials[0]);
       this.beginDistribution();
     }
   }
@@ -281,7 +308,7 @@ class GameState {
 
   // Assign one vote from the given party to the given politician.
   vote(party, pol) {
-    this.votes[this.provinces[this.activeProvinceId].officials.indexOf(pol)]++;
+    this.votes[this.provs[this.activeProvId].officials.indexOf(pol)]++;
     this.parties[party].votes--;
   }
 
@@ -294,16 +321,16 @@ class GameState {
 
   // Reset all officials' vote totals and parties' usable votes to 0, then give
   // all parties votes equal to the number of officials they have in the
-  // province.
+  // prov.
   resetVotes() {
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].votes = 0;
     }
 
-    this.votes = Array(this.activeProvince.officials.length);
+    this.votes = Array(this.activeProv.officials.length);
     for (let i = 0; i < this.votes.length; i++) {
       this.votes[i] = 0;
-      this.parties[this.pols[this.activeProvince.officials[i]].party].votes++;
+      this.parties[this.pols[this.activeProv.officials[i]].party].votes++;
     }
   }
 
@@ -314,10 +341,10 @@ class GameState {
     var maxPols = [];
     for (let i = 0; i < this.votes.length; i++) {
       if (this.votes[i] > maxVotes) {
-        maxPols = [this.activeProvince.officials[i]];
+        maxPols = [this.activeProv.officials[i]];
         maxVotes = this.votes[i];
       } else if (this.votes[i] == maxVotes) {
-        maxPols.push(this.activeProvince.officials[i]);
+        maxPols.push(this.activeProv.officials[i]);
       }
     }
 
@@ -341,17 +368,17 @@ class GameState {
             maxPriority = priority;
           }
         }
-        this.activeProvince.governors.push(maxPol);
+        this.activeProv.governors.push(maxPol);
         this.beginDistribution();
       }
     } else {
-      this.activeProvince.governors.push(maxPols[0]);
+      this.activeProv.governors.push(maxPols[0]);
       this.beginDistribution();
     }
   }
 
   beginDistribution() {
-    this.activeProvince.stage = 3;
+    this.activeProv.stage = 3;
   }
 
   commitDistribution() {
@@ -367,22 +394,22 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       governorCounts[i] = 0;
     }
-    for (let i = 0; i < this.provinces.length; i++) {
-      let provinceGovernors = this.provinces[i].governors;
-      for (let j = 0; j < provinceGovernors.length; j++) {
-        const governorParty = this.pols[provinceGovernors[j]].party;
+    for (let i = 0; i < this.provs.length; i++) {
+      let provGovernors = this.provs[i].governors;
+      for (let j = 0; j < provGovernors.length; j++) {
+        const governorParty = this.pols[provGovernors[j]].party;
         governorCounts[governorParty]++;
-        if (governorCounts[governorParty] > this.provinces.length / 2) {
+        if (governorCounts[governorParty] > this.provs.length / 2) {
           this.winner = governorParty;
           this.ended = true;
         }
       }
     }
 
-    // If there was no winner, advance to the next province and begin
+    // If there was no winner, advance to the next prov and begin
     // nomination.
     if (!this.ended) {
-      const governors = this.activeProvince.governors;
+      const governors = this.activeProv.governors;
       if (governors.length > 0) {
         this.parties[this.pols[governors[0]].party].funds +=
             3 * this.parties.length;
@@ -463,7 +490,7 @@ class GameState {
   // it so it can be retrieved later.
   setPov(pov) {
     this.pov = pov;
-    delete this.activeProvince;   // no need to send
+    delete this.activeProv;   // no need to send
 
     // Delete other players' symps
     const symps = [];
@@ -508,7 +535,7 @@ class GameState {
   // Uncensor stored secret info.
   unsetPov(hiddenInfo) {
     this.pov = -1;
-    this.activeProvince = this.provinces[this.activeProvinceId];
+    this.activeProv = this.provs[this.activeProvId];
 
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].symps = hiddenInfo.symps[i];

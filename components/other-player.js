@@ -36,7 +36,7 @@ class OtherPlayer extends React.Component {
   }
 
   numVotes(self) {
-    if (this.props.gs.provinces[this.props.gs.activeProvince].stage == 2) {
+    if (this.props.gs.provs[this.props.gs.activeProv].stage == 2) {
       return `, ${self.votes} votes`;
     }
     return null;

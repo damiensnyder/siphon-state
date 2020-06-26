@@ -1,7 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 import styles from './game-view.module.css';
-import Province from './province';
+import Prov from './prov';
 import PlayersSidebar from './players-sidebar';
 import ControlPanel from './control-panel';
 import Chat from './chat';
@@ -15,7 +15,7 @@ class GameView extends React.Component {
 
     this.state = {
       gs: {
-        provinces: [
+        provs: [
           { name: '', isActive: false },
           { name: '', isActive: false },
           { name: '', isActive: false },
@@ -114,18 +114,18 @@ class GameView extends React.Component {
     });
   }
 
-  // Converts the array of provinces in the game to an array of JSX objects.
-  provincesToJsx() {
-    const provincesJsx = [];
-    for (var i = 0; i < this.state.gs.provinces.length; i++) {
-      provincesJsx.push(
-        <Province gs={this.state.gs}
+  // Converts the array of provs in the game to an array of JSX objects.
+  provsToJsx() {
+    const provsJsx = [];
+    for (var i = 0; i < this.state.gs.provs.length; i++) {
+      provsJsx.push(
+        <Prov gs={this.state.gs}
                   callback={this.callback}
                   index={i}
                   key={i} />
       );
     }
-    return provincesJsx;
+    return provsJsx;
   }
 
   // Passed to child components. Assigns the callback to the proper handler
@@ -214,7 +214,7 @@ class GameView extends React.Component {
   runHandler(data) {
     const gs = this.state.gs;
     gs.pols[data].runnable = false;
-    gs.provinces[gs.activeProvince].candidates.push(data);
+    gs.provs[gs.activeProv].candidates.push(data);
     this.setState({
       gs: gs
     });
@@ -256,7 +256,7 @@ class GameView extends React.Component {
       <div id={styles.root}>
         <div id={styles.gameContainer}
              className={styles.containerLevel2}>
-          {this.provincesToJsx()}
+          {this.provsToJsx()}
         </div>
         <Chat messages={this.state.messages}
               callback={this.callback} />
