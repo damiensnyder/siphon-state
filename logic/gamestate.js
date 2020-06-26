@@ -136,8 +136,6 @@ class GameState {
 
     // Begin the nomination stage in the first province.
     this.started = true;
-    this.priority = 0;
-    this.activeProvinceId = 0;
     this.beginNomination();
   }
 
@@ -151,14 +149,19 @@ class GameState {
     } else if (stage == 1) {
       this.beginFunding();
     } else if (stage == 2) {
-      this.removeUnfundedCandidates();
-    } else {
-      this.checkIfElectionWon();
+      this.beginVoting();
     }
   }
 
-  // Begin the nomination stage in the new province.
+  // Advance to the next province and begin the nomination stage in the new
+  // province.
   beginNomination() {
+    // Advance to the next province.
+    this.activeProvinceId = (this.activeProvinceId + 1) %
+                            this.provinces.length;
+    this.activeProvince = this.provinces[this.activeProvinceId];
+    this.priority = (this.priority + 1) % this.parties.length;
+
     // Give all parties $5.
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].funds += 5;
@@ -197,6 +200,13 @@ class GameState {
   run(pol) {
     this.activeProvince.candidates.push(pol);
     this.pols[pol].runnable = false;
+  }
+
+  commitNomination() {
+    executeFlips();
+    executePays();
+    executeBuys();
+    executeRuns();
   }
 
   beginFunding() {
@@ -248,7 +258,7 @@ class GameState {
 
       // If there are 5 or fewer candidates remaining, begin voting.
       if (this.activeProvince.candidates.length <= 5) {
-        this.beginVoting();
+        this.advanceStage();
       }
     }
   }
@@ -388,11 +398,6 @@ class GameState {
         this.parties[this.pols[governors[i]].party].funds +=
             3 * this.parties.length;
       }
-
-      this.activeProvinceId = (this.activeProvinceId + 1) %
-                              this.provinces.length;
-      this.activeProvince = this.provinces[this.activeProvinceId];
-      this.priority = (this.priority + 1) % this.parties.length;
       this.beginNomination();
     }
   }
@@ -485,9 +490,15 @@ class GameState {
     delete this.sympOrder;
     delete this.votes;
 
+    const flipQueue = this.flipQueue;
+    const payQueue = this.payQueue;
+    const buyQueue = this.buyQueue;
+    const runQueue = this.runQueue;
+    const fundQueue = this.fundQueue;
+    const voteQueue = this.voteQueue;
     delete this.flipQueue;
-    delete this.buyQueue;
     delete this.payQueue;
+    delete this.buyQueue;
     delete this.runQueue;
     delete this.fundQueue;
     delete this.voteQueue;
@@ -495,13 +506,20 @@ class GameState {
     return {
       symps: symps,
       sympOrder: sympOrder,
-      votes: votes
+      votes: votes,
+      flipQueue: flipQueue,
+      payQueue: payQueue,
+      buyQueue: buyQueue,
+      runQueue: runQueue,
+      fundQueue: fundQueue,
+      voteQueue: voteQueue
     }
   }
 
   // Uncensor stored secret info.
   unsetPov(hiddenInfo) {
     this.pov = -1;
+    this.activeProvince = this.provinces[this.activeProvinceId];
 
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].symps = hiddenInfo.symps[i];
@@ -509,7 +527,13 @@ class GameState {
 
     this.sympOrder = hiddenInfo.sympOrder;
     this.votes = hiddenInfo.votes;
-    this.activeProvince = this.provinces[this.activeProvinceId];
+
+    this.flipQueue = hiddenInfo.flipQueue;
+    this.payQueue = hiddenInfo.payQueue;
+    this.buyQueue = hiddenInfo.buyQueue;
+    this.runQueue = hiddenInfo.runQueue;
+    this.fundQueue = hiddenInfo.fundQueue;
+    this.voteQueue = hiddenInfo.voteQueue;
   }
 }
 
