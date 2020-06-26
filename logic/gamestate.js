@@ -153,7 +153,7 @@ class GameState {
     } else if (stage == 2) {
       this.removeUnfundedCandidates();
     } else {
-      this.tallyVotes();
+      this.checkIfElectionWon();
     }
   }
 
@@ -288,7 +288,7 @@ class GameState {
     this.executeFlips();
     this.executePays();
     this.executeBuys();
-    this.tallyVotes();
+    this.checkIfElectionWon();
   }
 
   // Reset all officials' vote totals and parties' usable votes to 0, then give
@@ -308,7 +308,7 @@ class GameState {
 
   // Coutn each official's votes. If there is a winner, elect them and begin
   // distribution. Otherwise, start the voting again.
-  tallyVotes() {
+  checkIfElectionWon() {
     var disputed = false;
     var maxVotes = -1;
     var maxPol = -1;
@@ -455,7 +455,6 @@ class GameState {
   // Transfer the symp from their old party to their new party and add them
   // back into the symp order.
   flipSymp(pol) {
-    const partyIndex = this.pols[pol].party;
     const oldParty = this.parties[this.pols[pol].party];
     const newParty = this.parties[party];
     newParty.pols.push(pol);
@@ -470,20 +469,28 @@ class GameState {
   // it so it can be retrieved later.
   setPov(pov) {
     this.pov = pov;
-    const symps = [];
+    delete this.activeProvince;   // no need to send
 
+    // Delete other players' symps
+    const symps = [];
     for (let i = 0; i < this.parties.length; i++) {
       symps.push(this.parties[i].symps);
       if (i !== pov) {
-        this.parties[i].symps = [];
+        delete this.parties[i].symps;
       }
     }
 
     const sympOrder = this.sympOrder;
-    this.sympOrder = [];
     const votes = this.votes;
-    this.votes = [];
-    delete this.activeProvince;
+    delete this.sympOrder;
+    delete this.votes;
+
+    delete this.flipQueue;
+    delete this.buyQueue;
+    delete this.payQueue;
+    delete this.runQueue;
+    delete this.fundQueue;
+    delete this.voteQueue;
 
     return {
       symps: symps,
