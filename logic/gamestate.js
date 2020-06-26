@@ -139,20 +139,6 @@ class GameState {
     this.beginNomination();
   }
 
-  // Advance to the next stage in the active province. Set the turn to the
-  // player with priority.
-  advanceStage() {
-    const stage = (this.activeProvince.stage + 1) % 4;
-    this.activeProvince.stage = stage;
-    if (stage == 0) {
-      this.checkIfGameWon();
-    } else if (stage == 1) {
-      this.beginFunding();
-    } else if (stage == 2) {
-      this.beginVoting();
-    }
-  }
-
   // Advance to the next province and begin the nomination stage in the new
   // province.
   beginNomination() {
@@ -161,6 +147,7 @@ class GameState {
                             this.provinces.length;
     this.activeProvince = this.provinces[this.activeProvinceId];
     this.priority = (this.priority + 1) % this.parties.length;
+    this.activeProvince.stage = 0;
 
     // Give all parties $5.
     for (let i = 0; i < this.parties.length; i++) {
@@ -267,13 +254,17 @@ class GameState {
     // All remaining candidates become officials.
     this.activeProvince.officials = this.activeProvince.candidates;
     this.activeProvince.candidates = [];
+    this.activeProvince.stage = 2;
 
     this.votingRounds = 0;
     this.resetVotes();
 
     // If there are no officials, skip to the next stage.
     if (activeProvince.officials.length == 0) {
-      this.advanceStage();
+      this.beginDistribution();
+    } else if (activeProvince.officials.length == 1) {
+      this.activeProvince.governors.push(activeProvince.officials[0]);
+      this.beginDistribution();
     }
   }
 
@@ -298,7 +289,7 @@ class GameState {
     this.executeFlips();
     this.executePays();
     this.executeBuys();
-    this.checkIfElectionWon();
+    this.tallyVotes();
   }
 
   // Reset all officials' vote totals and parties' usable votes to 0, then give
@@ -318,51 +309,49 @@ class GameState {
 
   // Coutn each official's votes. If there is a winner, elect them and begin
   // distribution. Otherwise, start the voting again.
-  checkIfElectionWon() {
-    var disputed = false;
+  tallyVotes() {
     var maxVotes = -1;
-    var maxPol = -1;
+    var maxPols = [];
     for (let i = 0; i < this.votes.length; i++) {
       if (this.votes[i] > maxVotes) {
-        maxPol = this.activeProvince.officials[i];
+        maxPols = [this.activeProvince.officials[i]];
         maxVotes = this.votes[i];
-        disputed = false;
       } else if (this.votes[i] == maxVotes) {
-        disputed = true;
+        maxPols.push(this.activeProvince.officials[i]);
       }
     }
 
-    if (disputed) {
-      // If this was the third voting round, elect the official belonging to the
-      // highest-priority party. Otherwise, reset every politician's votes and
-      // start again.
+    // If the election was not disputed, elect the winner. If it was disputed
+    // and this was the third voting round, elect the official belonging to the
+    // highest-priority party. Otherwise, reset every politician's votes and
+    // start again.
+    if (maxPols.length > 1) {
       this.votingRounds++;
       if (this.votingRounds < 3) {
         this.resetVotes();
       } else {
-        maxPol = this.activeProvince.officials[0];
-        maxPriority = (this.pols[maxPol].party - this.priority) %
-                      this.players.length;
-        for (let i = 1; i < this.activeProvince.officials.length; i++) {
-          let priority = (this.pols[this.activeProvince.officials[i]].party -
-                         this.priority) % this.players.length;
+        var maxPol = maxPols[0];
+        var maxPriority = (this.pols[maxPol].party - this.priority) %
+                          this.players.length;
+        for (let i = 1; i < maxPols.length; i++) {
+          let priority = (this.pols[maxPols[i]].party - this.priority) %
+                         this.players.length;
           if (priority < maxPriority) {
-            maxPol = this.activeProvince.officials[i];
+            maxPol = maxPols[i];
             maxPriority = priority;
           }
         }
-        this.declareWinner(maxPol);
+        this.activeProvince.governors.push(maxPol);
+        this.beginDistribution();
       }
     } else {
-      this.declareWinner(maxPol);
+      this.activeProvince.governors.push(maxPols[0]);
+      this.beginDistribution();
     }
   }
 
-  // Promote the winning politician to governor and give their part $10, then
-  // advance to the next stage.
-  declareWinner(pol) {
-    this.activeProvince.governors.push(pol);
-    this.advanceStage();
+  beginDistribution() {
+    this.activeProvince.stage = 3;
   }
 
   commitDistribution() {
@@ -390,12 +379,12 @@ class GameState {
       }
     }
 
-    // If there was no winner, advance to the next province and player with
-    // priority and begin nomination.
-    if (this.winner === null) {
+    // If there was no winner, advance to the next province and begin
+    // nomination.
+    if (!this.ended) {
       const governors = this.activeProvince.governors;
-      for (let i = 0; i < governors.length; i++) {
-        this.parties[this.pols[governors[i]].party].funds +=
+      if (governors.length > 0) {
+        this.parties[this.pols[governors[0]].party].funds +=
             3 * this.parties.length;
       }
       this.beginNomination();
