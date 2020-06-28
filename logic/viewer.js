@@ -28,24 +28,23 @@ class Viewer {
   }
 
   begin() {
-    this.socket.on('pass', (data) =>
-                   this.actionHandler(this, 'pass', data));
-    this.socket.on('pay', (data) =>
-                   this.actionHandler(this, 'pay', data));
-    this.socket.on('buy', (data) =>
-                   this.actionHandler(this, 'buy', data));
-    this.socket.on('flip', (data) =>
-                   this.actionHandler(this, 'flip', data));
-    this.socket.on('run', (data) =>
-                   this.actionHandler(this, 'run', data));
-    this.socket.on('fund', (data) =>
-                   this.actionHandler(this, 'fund', data));
-    this.socket.on('vote', (data) =>
-                   this.actionHandler(this, 'vote', data));
-    this.socket.on('rematch', (data) =>
-                   this.actionHandler(this, 'rematch', data));
+    this.socket.on('flip', (data) => this.flipQueue.push(data));
+    this.socket.on('pay', (data) => this.payQueue.push(data));
+    this.socket.on('buy', (data) => this.buyQueue.push(data));
+    this.socket.on('run', (data) => this.runQueue.push(data));
+    this.socket.on('fund', (data) => this.fundQueue.push(data));
+    this.socket.on('vote', (data) => this.voteQueue.push(data));
+  }
 
-    this.socket.removeAllListeners('ready');
+  end() {
+    this.socket.removeAllListeners('pay');
+    this.socket.removeAllListeners('buy');
+    this.socket.removeAllListeners('flip');
+    this.socket.removeAllListeners('run');
+    this.socket.removeAllListeners('fund');
+    this.socket.removeAllListeners('vote');
+
+    this.deleteActionQueues();
   }
 
   reset() {
@@ -56,25 +55,37 @@ class Viewer {
     this.socket.removeAllListeners('replace');
     this.socket.removeAllListeners('ready');
     this.socket.removeAllListeners('msg');
-    this.socket.removeAllListeners('pass');
-    this.socket.removeAllListeners('pay');
-    this.socket.removeAllListeners('buy');
-    this.socket.removeAllListeners('flip');
-    this.socket.removeAllListeners('run');
-    this.socket.removeAllListeners('fund');
-    this.socket.removeAllListeners('vote');
-    this.socket.removeAllListeners('reset');
 
     this.socket.on('join', (data) =>
                    this.actionHandler(this, 'join', data));
     this.socket.on('replace', (data) =>
                    this.actionHandler(this, 'replace', { target: data }));
+
+    this.deleteActionQueues();
   }
 
   emitGameState(gs) {
     const hiddenInfo = gs.setPov(this.pov);
     this.socket.emit('update', gs);
     gs.unsetPov(hiddenInfo);
+  }
+
+  resetActionQueues() {
+    this.flipQueue = [];
+    this.payQueue = [];
+    this.buyQueue = [];
+    this.runQueue = [];
+    this.fundQueue = [];
+    this.voteQueue = [];
+  }
+
+  deleteActionQueues() {
+    delete this.flipQueue;
+    delete this.payQueue;
+    delete this.buyQueue;
+    delete this.runQueue;
+    delete this.fundQueue;
+    delete this.voteQueue;
   }
 }
 

@@ -22,13 +22,6 @@ class GameManager {
       'replace': this.handleReplace,
       'ready': this.handleReady,
       'msg': this.handleMsg,
-      'pass': this.handlePass,
-      'pay': this.handlePay,
-      'buy': this.handleBuy,
-      'flip': this.handleFlip,
-      'run': this.handleRun,
-      'fund': this.handleFund,
-      'vote': this.handleVote,
       'rematch': this.handleRematch,
       'disconnect': this.handleDisconnect
     }
@@ -112,8 +105,18 @@ class GameManager {
   handleReady(viewer, data) {
     this.gs.parties[viewer.pov].ready = data.ready;
     if (this.gs.allReady()) {
-      this.gs.begin();
-      this.begin();
+      if (this.gs.ended) {
+        this.restart();
+      } else {
+        for (let i = 0; i < this.players.length; i++) {
+          this.players[i].resetActionQueues();
+
+          if (!this.gs.started) {
+            this.players[i].begin();
+          }
+        }
+      }
+      this.gs.commitAll();
     }
     this.emitGameStateToAll();
   }
@@ -132,54 +135,10 @@ class GameManager {
     }
   }
 
-  handlePass(viewer, data) {
-    this.gs.advanceTurn();
-    this.emitGameStateToAll();
-  }
-
-  handlePay(viewer, data) {
-    if (this.gs.parties[viewer.pov].funds >= data.amount) {
-      this.gs.pay(viewer.pov, data.p2, data.amount);
-      this.emitGameStateToAll();
+  restart() {
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].reset();
     }
-  }
-
-  handleBuy(viewer, data) {
-    if (this.gs.parties[viewer.pov].funds >= 5) {
-      this.gs.buySymp(viewer.pov);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleFlip(viewer, data) {
-    if (this.gs.parties[viewer.pov].symps.includes(data)
-        && this.gs.turn == viewer.pov) {
-      this.gs.flipSymp(viewer.pov, data);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleRun(viewer, data) {
-    this.gs.run(viewer.pov, data);
-  }
-
-  handleFund(viewer, data) {
-    this.gs.fund(viewer.pov, data);
-  }
-
-  handleVote(viewer, data) {
-    if (this.gs.provs[this.gs.activeProv].officials.includes(data)
-        && this.gs.parties[viewer.pov].votes >= 1) {
-      this.gs.vote(viewer.pov, data);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleRematch(viewer, data) {
-    for (let i = 0; i < this.viewers.length; i++) {
-      this.viewers[i].reset();
-    }
-
     this.gs = new GameState();
     this.players = [];
     this.actionQueue = [];
@@ -197,12 +156,6 @@ class GameManager {
 
     if (viewer.pov >= 0) {
       this.removePlayer(viewer.pov);
-    }
-  }
-
-  begin() {
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].begin();
     }
   }
 

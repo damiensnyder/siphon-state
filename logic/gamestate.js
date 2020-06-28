@@ -108,6 +108,24 @@ class GameState {
     return true;
   }
 
+  commitAll() {
+    for (let i = 0; i < this.parties.length; i++) {
+      this.parties[i].ready = false;
+    }
+    
+    if (!this.started) {
+      this.begin();
+    } else if (this.activeProv.stage == 0) {
+      this.commitNomination();
+    } else if (this.activeProv.stage == 1) {
+      this.commitFunding();
+    } else if (this.activeProv.stage == 2) {
+      this.commitVoting();
+    } else if (this.activeProv.stage == 3) {
+      this.commitDistribution();
+    }
+  }
+
   // Begin the game.
   begin() {
     // Create 12 politicians for each party, and randomize the order in which
@@ -190,11 +208,11 @@ class GameState {
   }
 
   commitNomination() {
-    executeFlips();
-    executePays();
-    executeBuys();
-    executeRuns();
-    beginFunding();
+    this.executeFlips();
+    this.executePays();
+    this.executeBuys();
+    this.executeRuns();
+    this.beginFunding();
   }
 
   beginFunding() {
@@ -270,11 +288,11 @@ class GameState {
   }
 
   commitFunding() {
-    executeFlips();
-    executePays();
-    executeBuys();
-    executeFunds();
-    removeUnfundedCandidates();
+    this.executeFlips();
+    this.executePays();
+    this.executeBuys();
+    this.executeFunds();
+    this.removeUnfundedCandidates();
   }
 
   beginVoting() {
