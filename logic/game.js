@@ -107,14 +107,12 @@ class GameManager {
     if (this.gs.allReady()) {
       if (this.gs.ended) {
         this.restart();
-      } else {
+      } else if (!this.gs.started) {
         for (let i = 0; i < this.players.length; i++) {
-          if (!this.gs.started) {
-            this.players[i].begin();
-          } else {
-            this.enqueueAllActions(this.players[i]);
-          }
+          this.players[i].begin();
         }
+      } else {
+        this.enqueueAllActions();
       }
       this.gs.commitAll();
     }
@@ -135,27 +133,29 @@ class GameManager {
     }
   }
 
-  enqueueAllActions(player) {
-    for (let i = 0; i < player.flipQueue.length; i++) {
-      this.gs.enqueueFlip(player.pov, player.flipQueue[i]);
-    }
-    for (let i = 0; i < player.payQueue.length; i++) {
-      this.gs.enqueuePay(player.pov, player.payQueue[i]);
-    }
-    for (let i = 0; i < player.buyCounter; i++) {
-      this.gs.enqueueBuy(player.pov);
-    }
-    for (let i = 0; i < player.runQueue.length; i++) {
-      this.gs.enqueueRun(player.pov, player.runQueue[i]);
-    }
-    for (let i = 0; i < player.fundQueue.length; i++) {
-      this.gs.enqueueFund(player.pov, player.fundQueue[i]);
-    }
-    for (let i = 0; i < player.voteQueue.length; i++) {
-      this.gs.enqueueVote(player.pov, player.voteQueue[i]);
-    }
+  enqueueAllActions() {
+    for (let i = 0; i < this.players.length; i++) {
+      for (let j = 0; j < this.players[i].flipQueue.length; j++) {
+        this.gs.enqueueFlip(i, this.players[i].flipQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].payQueue.length; j++) {
+        this.gs.enqueuePay(i, this.players[i].payQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].buyCounter; j++) {
+        this.gs.enqueueBuy(i);
+      }
+      for (let j = 0; j < this.players[i].runQueue.length; j++) {
+        this.gs.enqueueRun(i, this.players[i].runQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].fundQueue.length; j++) {
+        this.gs.enqueueFund(i, this.players[i].fundQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].voteQueue.length; j++) {
+        this.gs.enqueueVote(i, this.players[i].voteQueue[j]);
+      }
 
-    player.resetActionQueues();
+      player.resetActionQueues();
+    }
   }
 
   restart() {

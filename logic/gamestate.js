@@ -461,6 +461,7 @@ class GameState {
     for (let i = 0; i < this.buyQueue.length; i++) {
       this.buySymp(this.buyQueue[i]);
     }
+    this.buyQueue = [];
   }
 
   // Remove $5 from the given party's funds, then give a symp to that party.
