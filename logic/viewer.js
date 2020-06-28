@@ -7,10 +7,10 @@ class Viewer {
     this.name = undefined;
     this.pov = -1; // point of view: -1 for spectator, player index for player
 
-    this.socket.on('join', (data) =>
-                   this.actionHandler(this, 'join', data));
-    this.socket.on('replace', (data) =>
-                   this.actionHandler(this, 'replace', { target: data }));
+    this.socket.on('join', (partyInfo) =>
+                   this.actionHandler(this, 'join', partyInfo));
+    this.socket.on('replace', (player) =>
+                   this.actionHandler(this, 'replace', { target: player }));
     this.socket.on('disconnect', () =>
                    this.actionHandler(this, 'disconnect', {}));
   }
@@ -28,21 +28,47 @@ class Viewer {
   }
 
   begin() {
-    this.socket.on('flip', (data) => this.flipQueue.push(data));
-    this.socket.on('pay', (data) => this.payQueue.push(data));
-    this.socket.on('buy', (data) => this.buyQueue.push(data));
-    this.socket.on('run', (data) => this.runQueue.push(data));
-    this.socket.on('fund', (data) => this.fundQueue.push(data));
-    this.socket.on('vote', (data) => this.voteQueue.push(data));
+    this.socket.on('flip', (pol) => this.flipQueue.push(pol));
+    this.socket.on('pay', (party) => this.payQueue.push(party));
+    this.socket.on('buy', () => { this.buyCounter++ });
+    this.socket.on('run', (pol) => this.runQueue.push(pol));
+    this.socket.on('fund', (pol) => this.fundQueue.push(pol));
+    this.socket.on('vote', (pol) => this.voteQueue.push(pol));
+
+    this.socket.on('unflip', (pol) => {
+      this.flipQueue.splice(this.flipQueue.indexOf(pol), 1);
+    });
+    this.socket.on('unpay', (party) => {
+      this.payQueue.splice(this.payQueue.indexOf(party), 1);
+    });
+    this.socket.on('unbuy', () => { this.buyCounter-- });
+    this.socket.on('unrun', (pol) => {
+      this.runQueue.splice(this.runQueue.indexOf(pol), 1);
+    });
+    this.socket.on('unfund', (pol) => {
+      this.fundQueue.splice(this.fundQueue.indexOf(pol), 1);
+    });
+    this.socket.on('unvote', (pol) => {
+      this.voteQueue.splice(this.voteQueue.indexOf(pol), 1);
+    });
+
+    this.resetActionQueues();
   }
 
   end() {
+    this.socket.removeAllListeners('flip');
     this.socket.removeAllListeners('pay');
     this.socket.removeAllListeners('buy');
-    this.socket.removeAllListeners('flip');
     this.socket.removeAllListeners('run');
     this.socket.removeAllListeners('fund');
     this.socket.removeAllListeners('vote');
+
+    this.socket.removeAllListeners('unflip');
+    this.socket.removeAllListeners('unpay');
+    this.socket.removeAllListeners('unbuy');
+    this.socket.removeAllListeners('unrun');
+    this.socket.removeAllListeners('unfund');
+    this.socket.removeAllListeners('unvote');
 
     this.deleteActionQueues();
   }
@@ -73,10 +99,10 @@ class Viewer {
   resetActionQueues() {
     this.flipQueue = [];
     this.payQueue = [];
-    this.buyQueue = [];
-    this.runQueue = [];
-    this.fundQueue = [];
-    this.voteQueue = [];
+    this.buyCounter = 0;
+    this.payQueue = [];
+    this.payQueue = [];
+    this.payQueue = [];
   }
 
   deleteActionQueues() {

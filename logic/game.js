@@ -109,10 +109,10 @@ class GameManager {
         this.restart();
       } else {
         for (let i = 0; i < this.players.length; i++) {
-          this.players[i].resetActionQueues();
-
           if (!this.gs.started) {
             this.players[i].begin();
+          } else {
+            this.enqueueAllActions(this.players[i]);
           }
         }
       }
@@ -133,6 +133,29 @@ class GameManager {
         isSystem: false
       });
     }
+  }
+
+  enqueueAllActions(player) {
+    for (let i = 0; i < player.flipQueue.length; i++) {
+      this.gs.enqueueFlip(player.pov, player.flipQueue[i]);
+    }
+    for (let i = 0; i < player.payQueue.length; i++) {
+      this.gs.enqueuePay(player.pov, player.payQueue[i]);
+    }
+    for (let i = 0; i < player.buyCounter; i++) {
+      this.gs.enqueueBuy(player.pov);
+    }
+    for (let i = 0; i < player.runQueue.length; i++) {
+      this.gs.enqueueRun(player.pov, player.runQueue[i]);
+    }
+    for (let i = 0; i < player.fundQueue.length; i++) {
+      this.gs.enqueueFund(player.pov, player.fundQueue[i]);
+    }
+    for (let i = 0; i < player.voteQueue.length; i++) {
+      this.gs.enqueueVote(player.pov, player.voteQueue[i]);
+    }
+
+    player.resetActionQueues();
   }
 
   restart() {

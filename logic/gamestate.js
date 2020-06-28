@@ -112,7 +112,7 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].ready = false;
     }
-    
+
     if (!this.started) {
       this.begin();
     } else if (this.activeProv.stage == 0) {
@@ -190,19 +190,19 @@ class GameState {
   }
 
   enqueueRun(party, pol) {
-    this.runQueue.push(pol);
+    this.runQueue.push([party, pol]);
   }
 
   executeRuns() {
     for (let i = 0; i < this.runQueue.length; i++) {
-      this.run(this.runQueue[i]);
+      this.run([this.runQueue[i][0], this.runQueue[i][1]);
     }
     this.runQueue = [];
   }
 
   // The given politician becomes a candidate in the active province, and they
   // cannot be run until the next time that province becomes active.
-  run(pol) {
+  run(party, pol) {
     this.activeProv.candidates.push(pol);
     this.pols[pol].runnable = false;
   }
@@ -238,12 +238,12 @@ class GameState {
 
   // The given politician becomes funded for the turn, and their party loses $1.
   enqueueFund(party, pol) {
-    this.fundQueue.push(pol);
+    this.fundQueue.push(party, pol);
   }
 
   executeFunds() {
     for (let i = 0; i < this.fundQueue.length; i++) {
-      this.fund(this.fundQueue[i]);
+      this.fund(this.fundQueue[i][0], this.fundQueue[i][1]);
     }
     this.fundQueue = [];
   }
@@ -436,21 +436,21 @@ class GameState {
     }
   }
 
-  enqueuePay(p1Index, p2Index, amount) {
-    this.payQueue.push([p1Index, p2Index, amount])
+  enqueuePay(p1, p2) {
+    this.payQueue.push([p1, p2])
   }
 
   executePays() {
     for (let i = 0; i < this.payQueue.length; i++) {
-      this.pay(this.payQueue[i][0], this.payQueue[i][1], this.payQueue[i][2]);
+      this.pay(this.payQueue[i][0], this.payQueue[i][1]);
     }
     this.payQueue = [];
   }
 
   // Pay the given amount of funds from party 1 to party 2.
-  pay(p1Index, p2Index, amount) {
-    this.parties[p1Index].funds -= amount;
-    this.parties[p2Index].funds += amount;
+  pay(p1, p2) {
+    this.parties[p1].funds--;
+    this.parties[p2].funds++;
   }
 
   enqueueBuy(party) {
@@ -480,20 +480,20 @@ class GameState {
     this.sympOrder.splice(i, 1);
   }
 
-  enqueueFlip(pol) {
-    this.flipQueue.push(pol);
+  enqueueFlip(party, pol) {
+    this.flipQueue.push([party, pol]);
   }
 
   executeFlips() {
     for (let i = 0; i < this.flipQueue.length; i++) {
-      this.flipSymp(this.flipQueue[i]);
+      this.flipSymp([this.flipQueue[i][0], this.flipQueue[i][1]);
     }
     this.flipQueue = [];
   }
 
   // Transfer the symp from their old party to their new party and add them
   // back into the symp order.
-  flipSymp(pol) {
+  flipSymp(party, pol) {
     const oldParty = this.parties[this.pols[pol].party];
     const newParty = this.parties[party];
     newParty.pols.push(pol);
@@ -524,29 +524,10 @@ class GameState {
     delete this.sympOrder;
     delete this.votes;
 
-    const flipQueue = this.flipQueue;
-    const payQueue = this.payQueue;
-    const buyQueue = this.buyQueue;
-    const runQueue = this.runQueue;
-    const fundQueue = this.fundQueue;
-    const voteQueue = this.voteQueue;
-    delete this.flipQueue;
-    delete this.payQueue;
-    delete this.buyQueue;
-    delete this.runQueue;
-    delete this.fundQueue;
-    delete this.voteQueue;
-
     return {
       symps: symps,
       sympOrder: sympOrder,
-      votes: votes,
-      flipQueue: flipQueue,
-      payQueue: payQueue,
-      buyQueue: buyQueue,
-      runQueue: runQueue,
-      fundQueue: fundQueue,
-      voteQueue: voteQueue
+      votes: votes
     }
   }
 
@@ -561,13 +542,6 @@ class GameState {
 
     this.sympOrder = hiddenInfo.sympOrder;
     this.votes = hiddenInfo.votes;
-
-    this.flipQueue = hiddenInfo.flipQueue;
-    this.payQueue = hiddenInfo.payQueue;
-    this.buyQueue = hiddenInfo.buyQueue;
-    this.runQueue = hiddenInfo.runQueue;
-    this.fundQueue = hiddenInfo.fundQueue;
-    this.voteQueue = hiddenInfo.voteQueue;
   }
 }
 
