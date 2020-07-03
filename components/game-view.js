@@ -22,6 +22,7 @@ class GameView extends React.Component {
           { name: '', isActive: false },
           { name: '', isActive: false }
         ],
+        activeProv: {},
         parties: [],
         pov: -1
       },

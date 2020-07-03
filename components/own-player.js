@@ -36,7 +36,7 @@ class OwnPlayer extends React.Component {
   }
 
   numVotes(self) {
-    if (this.props.gs.provs[this.props.gs.activeProv].stage == 2) {
+    if (this.props.gs.provs[this.props.gs.activeProvId].stage == 2) {
       return `, ${self.votes} votes`;
     }
     return null;

@@ -22,7 +22,6 @@ class GameManager {
       'replace': this.handleReplace,
       'ready': this.handleReady,
       'msg': this.handleMsg,
-      'rematch': this.handleRematch,
       'disconnect': this.handleDisconnect
     }
     for (var type in this.handlers) {
