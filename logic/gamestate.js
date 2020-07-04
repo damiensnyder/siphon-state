@@ -130,14 +130,14 @@ class GameState {
   begin() {
     // Create 12 politicians for each party, and randomize the order in which
     // they symp.
-    all_pols = POL_NAMES.map((name) => { return {
+    let allPols = POL_NAMES.map((name) => { return {
       name: name,
       party: null,
       runnable: true,
       funded: false
     }});
-    shuffle(all_pols);
-    this.pols = all_pols.slice(0, 12 * this.parties.length)
+    shuffle(allPols);
+    this.pols = allPols.slice(0, 12 * this.parties.length)
     this.sympOrder = this.pols.slice();
     shuffle(this.sympOrder);
 
@@ -203,8 +203,10 @@ class GameState {
   // The given politician becomes a candidate in the active province, and they
   // cannot be run until the next time that province becomes active.
   run(party, pol) {
-    this.activeProv.candidates.push(pol);
-    this.pols[pol].runnable = false;
+    if (this.pols[pol].party == party && this.pols[pol].runnable) {
+      this.activeProv.candidates.push(pol);
+      this.pols[pol].runnable = false;
+    }
   }
 
   commitNomination() {
@@ -249,8 +251,12 @@ class GameState {
   }
 
   fund(party, pol) {
-    this.parties[this.pols[pol].party].funds--;
-    this.pols[pol].funded = true;
+    if (this.pols[pol].party == party
+        && !this.pols[pol].funded
+        && this.parties[party].funds > 0) {
+      this.parties[party].funds--;
+      this.pols[pol].funded = true;
+    }
   }
 
   // Remove one unfunded candidate from the party with priority, then one from
@@ -326,6 +332,9 @@ class GameState {
 
   // Assign one vote from the given party to the given politician.
   vote(party, pol) {
+    if (this.pols[pol].party == party
+        && this.parties[party].votes > 0
+        && pol in this.activeProv.officials) {
     this.votes[this.activeProv.officials.indexOf(pol)]++;
     this.parties[party].votes--;
   }
@@ -449,8 +458,10 @@ class GameState {
 
   // Pay the given amount of funds from party 1 to party 2.
   pay(p1, p2) {
-    this.parties[p1].funds--;
-    this.parties[p2].funds++;
+    if (this.parties[p1].funds > 0) {
+      this.parties[p1].funds--;
+      this.parties[p2].funds++;
+    }
   }
 
   enqueueBuy(party) {
@@ -466,8 +477,10 @@ class GameState {
 
   // Remove $5 from the given party's funds, then give a symp to that party.
   buySymp(party) {
-    this.parties[party].funds -= 5;
-    this.giveSymp(party);
+    if (this.parties[party].funds >= 5) {
+      this.parties[party].funds -= 5;
+      this.giveSymp(party);
+    }
   }
 
   // Give a symp to the given party.
@@ -497,12 +510,15 @@ class GameState {
   flipSymp(party, pol) {
     const oldParty = this.parties[this.pols[pol].party];
     const newParty = this.parties[party];
-    newParty.pols.push(pol);
-    newParty.symps.splice(newParty.symps.indexOf(pol), 1);
-    oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
-    this.pols[pol].party = party;
-    this.sympOrder.push(pol);
-    shuffle(this.sympOrder);
+
+    if (pol in newParty.symps) {
+      newParty.pols.push(pol);
+      newParty.symps.splice(newParty.symps.indexOf(pol), 1);
+      oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
+      this.pols[pol].party = party;
+      this.sympOrder.push(pol);
+      shuffle(this.sympOrder);
+    }
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return

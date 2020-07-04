@@ -9,8 +9,8 @@ class Viewer {
 
     this.socket.on('join', (partyInfo) =>
                    this.actionHandler(this, 'join', partyInfo));
-    this.socket.on('replace', (player) =>
-                   this.actionHandler(this, 'replace', { target: player }));
+    this.socket.on('replace', (target) =>
+                   this.actionHandler(this, 'replace', target));
     this.socket.on('disconnect', () =>
                    this.actionHandler(this, 'disconnect', {}));
   }
@@ -18,10 +18,9 @@ class Viewer {
   join(pov, name) {
     this.pov = pov;
     this.name = name;
-    this.socket.on('ready', (data) =>
-                   this.actionHandler(this, 'ready', { ready: data }));
-    this.socket.on('msg', (data) =>
-                   this.actionHandler(this, 'msg', { msg: data }));
+    this.socket.on('ready', (isReady) =>
+                   this.actionHandler(this, 'ready', isReady));
+    this.socket.on('msg', (msg) => this.actionHandler(this, 'msg', msg));
 
     this.socket.removeAllListeners('join');
     this.socket.removeAllListeners('replace');
@@ -82,10 +81,10 @@ class Viewer {
     this.socket.removeAllListeners('ready');
     this.socket.removeAllListeners('msg');
 
-    this.socket.on('join', (data) =>
-                   this.actionHandler(this, 'join', data));
+    this.socket.on('join', (partyInfo) =>
+                   this.actionHandler(this, 'join', partyInfo));
     this.socket.on('replace', (data) =>
-                   this.actionHandler(this, 'replace', { target: data }));
+                   this.actionHandler(this, 'replace', data));
 
     this.deleteActionQueues();
   }

@@ -76,33 +76,35 @@ class GameManager {
     viewer.emitGameState(this.gs);
   }
 
-  handleJoin(viewer, data) {
-    viewer.join(this.players.length, data.name);
+  handleJoin(viewer, partyInfo) {
+    viewer.join(this.players.length, partyInfo.name);
     this.players.push(viewer);
-    this.gs.addParty(data.name, data.abbr);
+    this.gs.addParty(partyInfo.name, partyInfo.abbr);
 
     this.broadcastSystemMsg(
       viewer.socket,
-      `Player '${data.name}' (${data.abbr}) has joined the game.`
+      `Player '${partyInfo.name}' (${partyInfo.abbr}) has joined the game.`
     );
     this.emitGameStateToAll();
   }
 
-  handleReplace(viewer, data) {
-    viewer.join(data.target, this.gs.parties[data.target].name);
-    viewer.begin();
-    this.players.splice(data.target, 0, viewer);
-    this.gs.parties[data.target].connected = true;
+  handleReplace(viewer, target) {
+    if (this.gs.started && !this.gs.parties[target].connected) {
+      viewer.join(target, this.gs.parties[target].name);
+      viewer.begin();
+      this.players.splice(target, 0, viewer);
+      this.gs.parties[target].connected = true;
 
-    this.broadcastSystemMsg(
-      viewer.socket,
-      `Player '${viewer.name}' has been replaced.`
-    );
+      this.broadcastSystemMsg(
+        viewer.socket,
+        `Player '${viewer.name}' has been replaced.`
+      );
+    }
     this.emitGameStateToAll();
   }
 
-  handleReady(viewer, data) {
-    this.gs.parties[viewer.pov].ready = data.ready;
+  handleReady(viewer, isReady) {
+    this.gs.parties[viewer.pov].ready = isReady;
     if (this.gs.allReady()) {
       if (this.gs.ended) {
         this.restart();
@@ -118,8 +120,7 @@ class GameManager {
     this.emitGameStateToAll();
   }
 
-  handleMsg(viewer, data) {
-    const msg = data.msg;
+  handleMsg(viewer, msg) {
     if (typeof(msg) == 'string' &&
         msg.trim().length > 0 &&
         viewer.pov >= 0) {
