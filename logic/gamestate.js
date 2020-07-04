@@ -335,8 +335,9 @@ class GameState {
     if (this.pols[pol].party == party
         && this.parties[party].votes > 0
         && pol in this.activeProv.officials) {
-    this.votes[this.activeProv.officials.indexOf(pol)]++;
-    this.parties[party].votes--;
+      this.votes[this.activeProv.officials.indexOf(pol)]++;
+      this.parties[party].votes--;
+    }
   }
 
   commitVoting() {
