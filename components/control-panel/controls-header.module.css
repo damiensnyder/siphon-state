@@ -19,9 +19,10 @@
 
 .headerItem {
   margin: 4px;
+  margin-right: 0;
 }
 
 #readyBtn {
-  margin-left: 0;
+  margin-right: 4px;
   width: 72px;
 }
