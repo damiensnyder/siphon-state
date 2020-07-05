@@ -39,14 +39,18 @@ class GameView extends React.Component {
       'replace': this.replaceHandler,
       'ready': this.readyHandler,
       'msg': this.msgHandler,
-      'pass': this.passHandler,
+      'flip': this.flipHandler,
       'pay': this.payHandler,
       'buy': this.buyHandler,
-      'flip': this.flipHandler,
       'run': this.runHandler,
       'fund': this.fundHandler,
       'vote': this.voteHandler,
-      'rematch': this.rematchHandler
+      'unflip': this.unflipHandler,
+      'unpay': this.unpayHandler,
+      'unbuy': this.unbuyHandler,
+      'unrun': this.unrunHandler,
+      'unfund': this.unfundHandler,
+      'unvote': this.unvoteHandler
     };
 
     for (let key in this.handlers) {
@@ -181,68 +185,118 @@ class GameView extends React.Component {
     });
   }
 
-  passHandler(data) {
-    // Might do this later, but this is way too much to try to implement
-    // client-side as well.
+  flipHandler(pol) {
+    const gs = this.state.gs;
+    const oldParty = gs.parties[gs.pols[pol].party];
+    oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
+    gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(pol), 1);
+    gs.parties[gs.pov].pols.push(data);
+    gs.pols[pol].party = gs.pov;
+    gs.pols[pol].oldParty = oldParty;
+    this.setState({
+      gs: gs
+    });
   }
 
-  payHandler(data) {
+  payHandler(party) {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds -= data.amount;
-    gs.parties[data.p2].funds += data.amount;
+    gs.parties[party].funds += data.amount;
     this.setState({
       gs: gs
     });
   }
 
-  buyHandler(data) {
+  buyHandler() {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds -= 5;
+    gs.parties[gs.pov].funds += 5;
     this.setState({
       gs: gs
     });
   }
 
-  flipHandler(data) {
+  runHandler(pol) {
     const gs = this.state.gs;
-    const oldParty = gs.parties[gs.pols[data].party];
-    oldParty.pols.splice(oldParty.pols.indexOf(data), 1);
-    gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(data), 1);
-    gs.parties[gs.pov].pols.push(data);
+    gs.pols[pol].runnable = false;
+    gs.provs[gs.activeProv].candidates.push(pol);
     this.setState({
       gs: gs
     });
   }
 
-  runHandler(data) {
-    const gs = this.state.gs;
-    gs.pols[data].runnable = false;
-    gs.provs[gs.activeProv].candidates.push(data);
-    this.setState({
-      gs: gs
-    });
-  }
-
-  fundHandler(data) {
+  fundHandler(pol) {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds--;
-    gs.pols[data].funded = true;
+    gs.pols[pol].funded = true;
     this.setState({
       gs: gs
     });
   }
 
-  voteHandler(data) {
+  voteHandler(pol) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].votes--;
+    gs.pols[pol].votes++;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unflipHandler(pol) {
+    const gs = this.state.gs;
+    const oldParty = gs.parties[gs.pols[pol].party];
+    oldParty.pols.push(pol);
+    gs.pols[pol].party = gs.pols[pol].oldParty;
+    delete gs.pols[pol].oldParty;
+    gs.parties[gs.pov].symps.push(pol, 1);
+    gs.parties[gs.pov].pols.splice(gs.parties[gs.pov].pols.indexOf(pol), 1);
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unpayHandler(party) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds += data.amount;
+    gs.parties[party].funds -= data.amount;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unbuyHandler() {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds += 5;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unrunHandler(pol) {
+    const gs = this.state.gs;
+    gs.pols[pol].runnable = true;
+    gs.activeProv.candidates.splice(gs.activeProv.indexOf(pol), 1);
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unfundHandler(pol) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds++;
+    gs.pols[pol].funded = false;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unvoteHandler(data) {
     const gs = this.state.gs;
     gs.parties[gs.pov].votes--;
     gs.pols[data].votes++;
     this.setState({
       gs: gs
     });
-  }
-
-  rematchHandler(data) {
-
   }
 
   // Adds a message to the Chat component.

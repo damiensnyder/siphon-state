@@ -19,11 +19,7 @@ class ControlsHeader extends React.Component {
     this.setState({
       ready: newReady
     });
-    if (newReady) {
-      this.props.callback('ready');
-    } else {
-      this.props.callback('unready');
-    }
+    this.props.callback('ready', newReady);
   }
 
   render() {

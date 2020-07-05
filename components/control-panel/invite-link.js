@@ -18,6 +18,12 @@ class InviteLink extends React.Component {
     this.linkArea.current.select();
     document.execCommand('copy');
 
+    if (window.getSelection) {          // All browsers except IE <9
+      window.getSelection().removeAllRanges();
+    } else if (document.selection !== undefined) {    // IE <9
+      document.selection.empty();
+    }
+
     this.setState({
       copied: true
     });
@@ -26,7 +32,7 @@ class InviteLink extends React.Component {
       this.setState({
         copied: false
       });
-    }, 3000);
+    }, 2500);
   }
 
   render() {
