@@ -9,7 +9,7 @@ class Chat extends React.Component {
 
     this.state = {
       currentMsg: ""
-    }
+    };
 
     this.textInput = React.createRef();
     this.messagesInner = React.createRef();
@@ -59,9 +59,9 @@ class Chat extends React.Component {
   // themselves or they are already scrolled to within 50 pixels of the bottom
   // of the chat log.
   scrollToBottom() {
-    var e = this.messagesInner.current;
+    var p = this.messagesInner.current;
     if (this.messageJustSent ||
-        e.scrollHeight - e.scrollTop > e.clientHeight - 50) {
+        p.scrollHeight - p.scrollTop < p.clientHeight + 50) {
       this.bottomMessage.current.scrollIntoView(false);
       this.messageJustSent = false;
     }

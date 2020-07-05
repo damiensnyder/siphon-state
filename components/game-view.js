@@ -222,7 +222,7 @@ class GameView extends React.Component {
   runHandler(pol) {
     const gs = this.state.gs;
     gs.pols[pol].runnable = false;
-    gs.provs[gs.activeProv].candidates.push(pol);
+    gs.provs[gs.activeProvId].candidates.push(pol);
     this.setState({
       gs: gs
     });
@@ -279,7 +279,8 @@ class GameView extends React.Component {
   unrunHandler(pol) {
     const gs = this.state.gs;
     gs.pols[pol].runnable = true;
-    gs.activeProv.candidates.splice(gs.activeProv.indexOf(pol), 1);
+    gs.provs[gs.activeProvId].candidates.splice(
+        gs.provs[gs.activeProvId].candidates.indexOf(pol), 1);
     this.setState({
       gs: gs
     });
