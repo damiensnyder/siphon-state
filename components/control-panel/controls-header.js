@@ -32,7 +32,7 @@ class ControlsHeader extends React.Component {
         <button id={styles.readyBtn}
                 className={general.actionBtn + ' ' + styles.headerItem}
                 onClick={this.toggleReady}>
-          {this.state.ready ? "Cancel" : "Ready"}
+          {this.props.readyMsg}
         </button>
       </div>
     );

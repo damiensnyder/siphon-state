@@ -2,10 +2,9 @@ import React from 'react';
 import io from 'socket.io-client';
 
 import Prov from './prov';
-import PlayersSidebar from './players-sidebar';
+import PlayersSidebar from './players-sidebar/players-sidebar';
 import ControlPanel from './control-panel/panel-switcher';
 import Chat from './chat/chat';
-
 import styles from './game-view.module.css';
 
 class GameView extends React.Component {
@@ -88,9 +87,13 @@ class GameView extends React.Component {
     });
   }
 
+  // Creates the socket connection to the server and handlers for when messages
+  // are received from the server.
   initializeSocket() {
     this.socket = io.connect('/game/' + this.props.gameCode);
-    this.connected = true;
+    this.setState({
+      connected: true
+    });
 
     this.socket.on('connection', () => {
       this.setState({
@@ -155,10 +158,11 @@ class GameView extends React.Component {
     });
   }
 
-  replaceHandler(data) {
+  replaceHandler(target) {
     const gs = this.state.gs;
-    gs.pov = data;
-    gs.parties[data].connected = true;
+    gs.pov = target;
+    gs.parties[target].connected = true;
+    gs.parties[target].symps = [];
     this.setState({
       gs: gs
     });

@@ -8,6 +8,7 @@ function WaitingPanel(props) {
     <div className={general.outerWrapper}>
       <ControlsHeader offMsg={"Click ready when you're ready to start."}
                       onMsg={"Click cancel if you're not ready anymore."}
+                      readyMsg={"Ready!"}
                       callback={props.callback} />
     </div>
   );

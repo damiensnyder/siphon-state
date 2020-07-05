@@ -7,7 +7,7 @@ import styles from './pol.module.css';
 function actionButton(props) {
   const gs = props.gs;
   const self = gs.pols[props.index];
-  const stage = gs.provs[gs.activeProv].stage;
+  const stage = gs.provs[gs.activeProvId].stage;
   const callback = props.callback;
 
   if (gs.pov < 0) {
@@ -57,7 +57,7 @@ function Pol(props) {
   return (
     <div className={styles.sameLine}>
       <div>{self.name} ({props.gs.parties[self.party].abbr})</div>
-      {this.actionButton(props)}
+      {actionButton(props)}
     </div>
   );
 }

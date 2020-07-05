@@ -12,7 +12,7 @@ class Viewer {
     this.socket.on('replace', (target) =>
                    this.actionHandler(this, 'replace', target));
     this.socket.on('disconnect', () =>
-                   this.actionHandler(this, 'disconnect', {}));
+                   this.actionHandler(this, 'disconnect'));
   }
 
   join(pov, name) {

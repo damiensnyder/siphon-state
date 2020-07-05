@@ -170,7 +170,7 @@ class GameManager {
 
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
-  handleDisconnect(viewer, data) {
+  handleDisconnect(viewer) {
     let index = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
     for (let i = index; i < this.viewers.length; i++) {
@@ -184,7 +184,6 @@ class GameManager {
 
   // If the game hasn't started, remove the player with the given POV from the
   // game.
-  // TODO: If the game has started, replace them with a bot.
   removePlayer(pov) {
     const name = this.gs.parties[pov].name;
     this.players.splice(pov, 1);

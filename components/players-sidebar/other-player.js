@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styles from './player.module.css';
 
 class OtherPlayer extends React.Component {

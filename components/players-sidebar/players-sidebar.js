@@ -1,8 +1,8 @@
 import React from 'react';
-import io from 'socket.io-client';
-import styles from './players-sidebar.module.css';
+
 import OtherPlayer from './other-player';
 import OwnPlayer from './own-player';
+import styles from './players-sidebar.module.css';
 
 class PlayersSidebar extends React.Component {
   constructor(props) {
