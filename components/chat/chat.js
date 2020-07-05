@@ -1,6 +1,7 @@
 import React from 'react';
-import styles from './chat.module.css';
+
 import ChatMessage from './chat-message';
+import styles from './chat.module.css';
 
 class Chat extends React.Component {
   constructor(props) {

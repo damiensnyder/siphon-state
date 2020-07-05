@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Prov from './prov';
 import PlayersSidebar from './players-sidebar';
 import ControlPanel from './control-panel/panel-switcher';
-import Chat from './chat';
+import Chat from './chat/chat';
 
 import styles from './game-view.module.css';
 

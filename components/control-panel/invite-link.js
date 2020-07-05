@@ -18,9 +18,9 @@ class InviteLink extends React.Component {
     this.linkArea.current.select();
     document.execCommand('copy');
 
-    if (window.getSelection) {          // All browsers except IE <9
+    if (window.getSelection !== undefined) {        // All browsers except IE <9
       window.getSelection().removeAllRanges();
-    } else if (document.selection !== undefined) {    // IE <9
+    } else if (document.selection !== undefined) {  // IE <9
       document.selection.empty();
     }
 
