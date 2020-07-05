@@ -23,7 +23,7 @@ class OtherPlayer extends React.Component {
           ${self.funds}{this.numVotes(self)}
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
-        {this.replaceButton()}
+        {this.replaceButton(self)}
       </div>
     );
   }
@@ -43,15 +43,16 @@ class OtherPlayer extends React.Component {
     return null;
   }
 
-  replaceButton() {
-    if (this.props.gs.pov < 0 && !self.connected && !this.props.gs.ended) {
+  replaceButton(self) {
+    if (this.props.gs.pov < 0
+        && !self.connected
+        && !this.props.gs.ended) {
       return (
         <button onClick={e => this.props.callback('replace', this.props.index)}>
           Replace
         </button>
       );
     }
-
     return null;
   }
 

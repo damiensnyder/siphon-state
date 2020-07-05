@@ -23,7 +23,6 @@ class OwnPlayer extends React.Component {
           ${self.funds}{this.numVotes(self)}
         </h4>
         {this.buyButton(self)}
-        {this.passButton()}
       </div>
     );
   }
@@ -50,17 +49,6 @@ class OwnPlayer extends React.Component {
       return (
         <button onClick={e => this.props.callback('buy', {})}>
           Buy symp ($5)
-        </button>
-      );
-    }
-    return null;
-  }
-
-  passButton() {
-    if (this.props.gs.pov == this.props.gs.turn && !this.props.gs.ended) {
-      return (
-        <button onClick={e => this.props.callback('pass', {})}>
-          Pass
         </button>
       );
     }

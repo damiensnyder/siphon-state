@@ -104,7 +104,6 @@ class GameState {
         return false;
       }
     }
-
     return true;
   }
 
