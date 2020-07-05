@@ -60,7 +60,7 @@ const POL_NAMES = [
   "Reid Buckley",
   "Shannon Morse"
 ];
-const PROVINCE_NAMES = ["Germany 5", "Aranzas", "wilfreed", "NONONONO", "ian"];
+const PROVINCE_NAMES = ["Germany 5", "Arkanzas", "wilfreed", "NONONONO", "ian"];
 
 class GameState {
   constructor() {
@@ -533,7 +533,7 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       symps.push(this.parties[i].symps);
       if (i !== pov) {
-        delete this.parties[i].symps;
+        this.parties[i].symps = this.parties[i].symps.length;
       }
     }
 

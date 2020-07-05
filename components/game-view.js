@@ -1,10 +1,12 @@
 import React from 'react';
 import io from 'socket.io-client';
-import styles from './game-view.module.css';
+
 import Prov from './prov';
 import PlayersSidebar from './players-sidebar';
-import ControlPanel from './control-panel';
+import ControlPanel from './control-panel/panel-switcher';
 import Chat from './chat';
+
+import styles from './game-view.module.css';
 
 class GameView extends React.Component {
   constructor(props) {

@@ -1,6 +1,8 @@
 import React from 'react';
+
+import PolCategory from '../pol-category';
+
 import styles from './game-controls.module.css';
-import PolCategory from './pol-category';
 
 class GameControls extends React.Component {
   constructor(props) {

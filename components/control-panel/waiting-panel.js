@@ -1,8 +1,11 @@
 import React from 'react';
-import join from './join-panel.module.css';
-import styles from './ready-panel.module.css';
 
-class ReadyPanel extends React.Component {
+import ControlsHeader from './controls-header';
+
+import general from './general.module.css';
+import styles from './waiting-panel.module.css';
+
+class WaitingPanel extends React.Component {
   constructor(props) {
     super(props);
 
@@ -23,7 +26,10 @@ class ReadyPanel extends React.Component {
 
   render() {
     return (
-      <div className={join.outerWrapper}>
+      <div className={general.outerWrapper}>
+        <ControlsHeader offMsg={"Click ready when you're ready to start."}
+                        onMsg={"Click cancel if you're not ready anymore."}
+                        callback={this.props.callback} />
         <div className={styles.bigText}>
           <span className={styles.bigText}
                 checked={this.state.ready}>ready?</span>
@@ -36,4 +42,4 @@ class ReadyPanel extends React.Component {
   }
 }
 
-export default ReadyPanel;
+export default WaitingPanel;

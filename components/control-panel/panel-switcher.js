@@ -1,6 +1,7 @@
 import React from 'react';
+
 import JoinPanel from './join-panel';
-import ReadyPanel from './ready-panel';
+import WaitingPanel from './waiting-panel';
 import GameControls from './game-controls';
 
 function ControlPanel(props) {
@@ -19,7 +20,7 @@ function ControlPanel(props) {
       </div>
     );
   } else if (props.gs.pov >= 0 && !props.gs.started) {
-    return <ReadyPanel callback={props.callback} />;
+    return <WaitingPanel callback={props.callback} />;
   } else if (props.gs.pov >= 0 && props.gs.started) {
     return <GameControls gs={props.gs}
                          callback={props.callback} />;

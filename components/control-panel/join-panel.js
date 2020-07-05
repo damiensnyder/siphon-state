@@ -1,6 +1,9 @@
 import React from 'react';
+
+import InviteLink from '../invite-link';
+
+import general from './general.module.css';
 import styles from './join-panel.module.css';
-import InviteLink from './invite-link';
 
 class JoinPanel extends React.Component {
   constructor(props) {
@@ -45,16 +48,16 @@ class JoinPanel extends React.Component {
 
   render() {
     return (
-      <div className={styles.outerWrapper}>
-        <div className={styles.containerLevel5}>
-          <div className={styles.sameLine}>
+      <div className={general.horizWrapper}>
+        <div className={general.containerLevel5}>
+          <div className={general.sameLine}>
             <div className={styles.joinLabel}>Party:</div>
             <input className={styles.joinInput}
                    onChange={this.updatePartyName}
                    value={this.state.partyName}
                    maxLength={40} />
           </div>
-          <div className={styles.sameLine}>
+          <div className={general.sameLine}>
             <div className={styles.joinLabel}>Abbreviation:</div>
             <input className={styles.joinInput}
                    placeholder={this.state.abbrPlaceholder}
@@ -62,15 +65,15 @@ class JoinPanel extends React.Component {
                    value={this.state.abbr}
                    maxLength={4} />
           </div>
-          <div className={styles.sameLine}>
-            <button className={styles.actionBtn}
+          <div className={general.sameLine}>
+            <button className={general.actionBtn}
                     onClick={this.joinGame}>
               Join Game
             </button>
           </div>
         </div>
         <div id={styles.orDiv}>or</div>
-        <div className={styles.containerLevel5}>
+        <div className={general.containerLevel5}>
           <InviteLink gameCode={this.props.gameCode} />
           <span id={styles.inviteFriend}>invite a friend</span>
         </div>
