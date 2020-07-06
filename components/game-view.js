@@ -149,10 +149,11 @@ class GameView extends React.Component {
   // Passed to the control panel and called when the player joins the game.
   // Sends the player's info to the server and shows a system chat message to
   // the player.
-  joinHandler(data) {
+  joinHandler(partyInfo) {
     this.addMsg({
       sender: 'Client',
-      text: `You have joined the game as '${data.name}' (${data.abbr}).`,
+      text: `You have joined the game as '${partyInfo.name}' ` +
+            `(${partyInfo.abbr}).`,
       isSelf: false,
       isSystem: true
     });
@@ -168,9 +169,9 @@ class GameView extends React.Component {
     });
   }
 
-  readyHandler(data) {
+  readyHandler(isReady) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].ready = data;
+    gs.parties[gs.pov].ready = isReady;
     this.setState({
       gs: gs
     });

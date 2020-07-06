@@ -36,9 +36,7 @@ class GameControls extends React.Component {
 
     return (
       <div className={general.outerWrapper}>
-        <ControlsHeader offMsg={"Pick candidates to run in the election."}
-                        onMsg={"Click cancel to make more changes."}
-                        readyMsg={"Done"}
+        <ControlsHeader gs={gs}
                         callback={this.props.callback}
                         isTabbed={true}
                         tabCallback={this.switchTab} />

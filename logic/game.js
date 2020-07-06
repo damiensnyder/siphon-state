@@ -154,7 +154,7 @@ class GameManager {
         this.gs.enqueueVote(i, this.players[i].voteQueue[j]);
       }
 
-      player.resetActionQueues();
+      this.players[i].resetActionQueues();
     }
   }
 

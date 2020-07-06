@@ -20,7 +20,8 @@ function ControlPanel(props) {
       </div>
     );
   } else if (props.gs.pov >= 0 && !props.gs.started) {
-    return <WaitingPanel callback={props.callback} />;
+    return <WaitingPanel gs={props.gs}
+                         callback={props.callback} />;
   } else if (props.gs.pov >= 0 && props.gs.started) {
     return <GameControls gs={props.gs}
                          callback={props.callback} />;

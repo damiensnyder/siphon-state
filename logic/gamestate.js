@@ -75,7 +75,7 @@ class GameState {
     this.parties = [];
     this.provs = PROVINCE_NAMES.map((name) => { return {
       name: name,
-      stage: -1,
+      stage: 3,
       governors: [],
       officials: [],
       candidates: [],
@@ -136,15 +136,20 @@ class GameState {
       funded: false
     }});
     shuffle(allPols);
-    this.pols = allPols.slice(0, 12 * this.parties.length)
-    this.sympOrder = this.pols.slice();
-    shuffle(this.sympOrder);
+    this.pols = allPols.slice(0, 12 * this.parties.length);
 
-    // Distribute an equal number of politicians to each player.
+    this.sympOrder = Array(this.pols.length);
     for (let i = 0; i < this.pols.length; i++) {
       this.pols[i].party = i % this.parties.length;
       this.parties[i % this.parties.length].pols.push(i);
+      this.sympOrder[i] = i;
+
+      if (i < this.pols.length * 5 / 6) {
+        this.pols[i].runnable = false;
+        this.provs[Math.floor(i / (2 * this.parties.length))].officials.push(i);
+      }
     }
+    shuffle(this.sympOrder);
 
     // Give one symp to each player.
     for (let i = 0; i < this.parties.length; i++) {
@@ -186,6 +191,8 @@ class GameState {
     this.buyQueue = [];
     this.payQueue = [];
     this.runQueue = [];
+    this.fundQueue = [];
+    this.voteQueue = [];
   }
 
   enqueueRun(party, pol) {
@@ -310,10 +317,10 @@ class GameState {
     this.resetVotes();
 
     // If there are no officials, skip to the next stage.
-    if (activeProv.officials.length == 0) {
+    if (this.activeProv.officials.length == 0) {
       this.beginDistribution();
-    } else if (activeProv.officials.length == 1) {
-      this.activeProv.governors.push(activeProv.officials[0]);
+    } else if (this.activeProv.officials.length == 1) {
+      this.activeProv.governors.push(this.activeProv.officials[0]);
       this.beginDistribution();
     }
   }
@@ -386,10 +393,10 @@ class GameState {
       } else {
         var maxPol = maxPols[0];
         var maxPriority = (this.pols[maxPol].party - this.priority) %
-                          this.players.length;
+                          this.parties.length;
         for (let i = 1; i < maxPols.length; i++) {
           let priority = (this.pols[maxPols[i]].party - this.priority) %
-                         this.players.length;
+                         this.parties.length;
           if (priority < maxPriority) {
             maxPol = maxPols[i];
             maxPriority = priority;
@@ -486,12 +493,15 @@ class GameState {
   // Give a symp to the given party.
   giveSymp(party) {
     var i = 0;
-    while(this.sympOrder[i].party === party) {
+    while (i < this.sympOrder.length
+           && this.pols[this.sympOrder[i]].party === party) {
       i++;
     }
-    const polIndex = this.pols.indexOf(this.sympOrder[i]);
-    this.parties[party].symps.push(polIndex);
-    this.sympOrder.splice(i, 1);
+    if (i < this.sympOrder.length) {
+      const polIndex = this.pols.indexOf(this.sympOrder[i]);
+      this.parties[party].symps.push(polIndex);
+      this.sympOrder.splice(i, 1);
+    }
   }
 
   enqueueFlip(party, pol) {

@@ -6,9 +6,7 @@ import general from '../general.module.css';
 function WaitingPanel(props) {
   return (
     <div className={general.outerWrapper}>
-      <ControlsHeader offMsg={"Click ready when you're ready to start."}
-                      onMsg={"Click cancel if you're not ready anymore."}
-                      readyMsg={"Ready!"}
+      <ControlsHeader gs={props.gs}
                       callback={props.callback} />
     </div>
   );

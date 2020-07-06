@@ -33,7 +33,7 @@ function actionButton(props) {
       </button>
     );
   }
-  if (gs.provs[gs.activeProv].candidates.includes(props.index)
+  if (gs.provs[gs.activeProvId].candidates.includes(props.index)
       && stage == 1
       && self.party === gs.pov
       && !self.funded) {
@@ -44,7 +44,7 @@ function actionButton(props) {
       </button>
     );
   }
-  if (gs.provs[gs.activeProv].officials.includes(props.index)
+  if (gs.provs[gs.activeProvId].officials.includes(props.index)
       && gs.parties[gs.pov].votes > 0
       && stage == 2) {
     return (
