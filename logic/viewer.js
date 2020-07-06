@@ -4,7 +4,6 @@ class Viewer {
     this.actionHandler = actionHandler;
 
     this.viewerIndex = viewerIndex;
-    this.name = undefined;
     this.pov = -1; // point of view: -1 for spectator, player index for player
 
     this.socket.on('join', (partyInfo) =>
@@ -73,7 +72,7 @@ class Viewer {
   }
 
   reset() {
-    this.name = undefined;
+    delete this.name;
     this.pov = -1;
 
     this.socket.removeAllListeners('join');
@@ -99,9 +98,9 @@ class Viewer {
     this.flipQueue = [];
     this.payQueue = [];
     this.buyCounter = 0;
-    this.payQueue = [];
-    this.payQueue = [];
-    this.payQueue = [];
+    this.runQueue = [];
+    this.fundQueue = [];
+    this.voteQueue = [];
   }
 
   deleteActionQueues() {
