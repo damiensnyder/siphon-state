@@ -1,7 +1,7 @@
 import React from 'react';
 
 import InviteLink from './invite-link';
-import general from './general.module.css';
+import general from '../general.module.css';
 import styles from './join-panel.module.css';
 
 class JoinPanel extends React.Component {
@@ -65,7 +65,7 @@ class JoinPanel extends React.Component {
                    maxLength={4} />
           </div>
           <div className={general.sameLine}>
-            <button className={general.actionBtn}
+            <button className={general.actionBtn + ' ' + general.priorityBtn}
                     onClick={this.joinGame}>
               Join Game
             </button>

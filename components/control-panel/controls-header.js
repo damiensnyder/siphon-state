@@ -1,6 +1,6 @@
 import React from 'react';
 
-import general from './general.module.css';
+import general from '../general.module.css';
 import styles from './controls-header.module.css';
 
 class ControlsHeader extends React.Component {
@@ -30,7 +30,9 @@ class ControlsHeader extends React.Component {
           {this.state.ready ? this.props.onMsg : this.props.offMsg}
         </div>
         <button id={styles.readyBtn}
-                className={general.actionBtn + ' ' + styles.headerItem}
+                className={general.actionBtn + ' ' +
+                           general.priorityBtn + ' ' +
+                           styles.headerItem}
                 onClick={this.toggleReady}>
           {this.props.readyMsg}
         </button>

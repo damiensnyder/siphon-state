@@ -1,6 +1,7 @@
 import React from 'react';
 
 import ChatMessage from './chat-message';
+import general from '../general.module.css';
 import styles from './chat.module.css';
 
 class Chat extends React.Component {
@@ -89,7 +90,8 @@ class Chat extends React.Component {
                  onChange={this.handleTyping}
                  onKeyDown={this.checkIfEnterPressed}
                  ref={this.textInput} />
-          <button id={styles.sendBtn}
+          <button className={general.actionBtn}
+                  id={styles.sendBtn}
                   onClick={this.sendMsg}>
             Send
           </button>

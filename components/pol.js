@@ -1,5 +1,6 @@
 import React from 'react';
 
+import general from './general.module.css';
 import styles from './pol.module.css';
 
 // Return the appropriate action button for the pol (e.g., "Flip"), or none
@@ -16,7 +17,8 @@ function actionButton(props) {
   if (gs.parties[gs.pov].symps.includes(props.index)
       && !props.inProv) {
     return (
-      <button onClick={e => callback('flip', props.index)}>
+      <button className={general.actionBtn}
+              onClick={e => callback('flip', props.index)}>
         Flip
       </button>
     );
@@ -25,7 +27,8 @@ function actionButton(props) {
       && self.party === gs.pov
       && self.runnable) {
     return (
-      <button onClick={e => callback('run', props.index)}>
+      <button className={general.actionBtn}
+              onClick={e => callback('run', props.index)}>
         Run
       </button>
     );
@@ -35,7 +38,8 @@ function actionButton(props) {
       && self.party === gs.pov
       && !self.funded) {
     return (
-      <button onClick={e => callback('fund', props.index)}>
+      <button className={general.actionBtn}
+              onClick={e => callback('fund', props.index)}>
         Fund
       </button>
     );
@@ -44,7 +48,8 @@ function actionButton(props) {
       && gs.parties[gs.pov].votes > 0
       && stage == 2) {
     return (
-      <button onClick={e => callback('vote', props.index)}>
+      <button className={general.actionBtn}
+              onClick={e => callback('vote', props.index)}>
         Vote
       </button>
     );

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ControlsHeader from './controls-header';
-import general from './general.module.css';
+import general from '../general.module.css';
 
 function WaitingPanel(props) {
   return (

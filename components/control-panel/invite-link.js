@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styles from './invite-link.module.css';
 
 class InviteLink extends React.Component {
@@ -45,7 +46,7 @@ class InviteLink extends React.Component {
                   value={'https://filter-state.herokuapp.com/game/' +
                          this.props.gameCode}>
         </textarea>
-        <button className={styles.actionBtn}
+        <button className={styles.actionBtn + ' ' + general.priorityBtn}
                 id={styles.copyBtn}
                 onClick={this.copyInviteLink}>
           {this.state.copied ? 'Copied!' : 'Copy'}

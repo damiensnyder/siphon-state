@@ -2,7 +2,7 @@ import React from 'react';
 
 import PolCategory from '../pol-category';
 import ControlsHeader from './controls-header';
-import general from './general.module.css';
+import general from '../general.module.css';
 
 class GameControls extends React.Component {
   constructor(props) {
