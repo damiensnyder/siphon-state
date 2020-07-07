@@ -198,6 +198,13 @@ class GameView extends React.Component {
     gs.parties[gs.pov].pols.push(data);
     gs.pols[pol].party = gs.pov;
     gs.pols[pol].oldParty = oldParty;
+
+    if (gs.provs[gs.activeProvId].stage == 2
+        && pol in gs.provs[gs.activeProvId].officials) {
+      gs.parties[gs.pov].votes++;
+      oldParty.votes--;
+    }
+
     this.setState({
       gs: gs
     });
@@ -255,6 +262,13 @@ class GameView extends React.Component {
     delete gs.pols[pol].oldParty;
     gs.parties[gs.pov].symps.push(pol, 1);
     gs.parties[gs.pov].pols.splice(gs.parties[gs.pov].pols.indexOf(pol), 1);
+
+    if (gs.provs[gs.activeProvId].stage == 2
+        && pol in gs.provs[gs.activeProvId].officials) {
+      gs.parties[gs.pov].votes--;
+      oldParty.votes++;
+    }
+
     this.setState({
       gs: gs
     });
