@@ -338,8 +338,7 @@ class GameState {
 
   // Assign one vote from the given party to the given politician.
   vote(party, pol) {
-    if (this.pols[pol].party == party
-        && this.parties[party].votes > 0
+    if (this.parties[party].votes > 0
         && pol in this.activeProv.officials) {
       this.votes[this.activeProv.officials.indexOf(pol)]++;
       this.parties[party].votes--;
@@ -350,6 +349,7 @@ class GameState {
     this.executeFlips();
     this.executePays();
     this.executeBuys();
+    this.executeVotes();
     this.tallyVotes();
   }
 
@@ -357,13 +357,11 @@ class GameState {
   // all parties votes equal to the number of officials they have in the
   // prov.
   resetVotes() {
+    this.votes = Array(this.activeProv.officials.length).fill(0);
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].votes = 0;
     }
-
-    this.votes = Array(this.activeProv.officials.length);
-    for (let i = 0; i < this.votes.length; i++) {
-      this.votes[i] = 0;
+    for (let i = 0; i < this.activeProv.officials.length; i++) {
       this.parties[this.pols[this.activeProv.officials[i]].party].votes++;
     }
   }
@@ -528,6 +526,11 @@ class GameState {
       this.pols[pol].party = party;
       this.sympOrder.push(pol);
       shuffle(this.sympOrder);
+
+      if (this.activeProv.stage == 2 && pol in this.activeProv.officials) {
+        newParty.votes++;
+        oldParty.votes--;
+      }
     }
   }
 
