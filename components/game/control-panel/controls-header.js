@@ -1,6 +1,6 @@
 import React from 'react';
 
-import general from '../general.module.css';
+import general from '../../general.module.css';
 import styles from './controls-header.module.css';
 
 const READY_MSGS = [

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import general from '../general.module.css';
+import general from '../../general.module.css';
 import styles from './player.module.css';
 
 function activityStyle(props) {
@@ -19,8 +19,7 @@ function gsInfo(props) {
       <h4>
         ${self.funds}{numVotes(props)}
       </h4>
-      {props.gs.pov >= 0 ? payButton(props) : null}
-      {replaceButton(props)}
+      {buyButton(props)}
     </div>
   );
 }
@@ -40,45 +39,32 @@ function numVotes(props) {
   return null;
 }
 
-function replaceButton(props) {
+function buyButton(props) {
   const self = props.gs.parties[props.index];
-  if (props.gs.pov < 0 && !self.connected && !props.gs.ended) {
-    return (
-      <button onClick={e => props.callback('replace', props.index)}>
-        Replace
-      </button>
-    );
-  }
-  return null;
-}
-
-function payButton(props) {
-  if (props.gs.parties[props.gs.pov].funds >= 1
-      && props.gs.started
-      && !props.gs.ended) {
+  if (self.funds >= 5 && props.gs.started && !props.gs.ended) {
     return (
       <button className={general.actionBtn}
-              onClick={e => props.callback('pay', props.index)}>
-        Pay $1
+              onClick={e => props.callback('buy', {})}>
+        Buy symp ($5)
       </button>
     );
   }
   return null;
 }
 
-function OtherPlayer(props) {
+function OwnPlayer(props) {
   const self = props.gs.parties[props.index];
   return (
     <div className={activityStyle(props)}>
-      <h2 className={styles.name + " " + styles.otherName}>
+      <h2 className={styles.name + " " + styles.ownName}>
         {self.name}
       </h2>
-      <h4 className={styles.abbr + " " + styles.otherName}>
+      <h4 className={styles.abbr + " " + styles.ownName}>
         {self.abbr}
       </h4>
-      {gsInfo(props, self)}
+      {gsInfo(props)}
     </div>
   );
 }
 
-export default OtherPlayer;
+export default OwnPlayer;

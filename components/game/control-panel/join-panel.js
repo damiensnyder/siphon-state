@@ -1,7 +1,7 @@
 import React from 'react';
 
 import InviteLink from './invite-link';
-import general from '../general.module.css';
+import general from '../../general.module.css';
 import styles from './join-panel.module.css';
 
 class JoinPanel extends React.Component {
