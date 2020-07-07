@@ -339,7 +339,7 @@ class GameState {
   // Assign one vote from the given party to the given politician.
   vote(party, pol) {
     if (this.parties[party].votes > 0
-        && pol in this.activeProv.officials) {
+        && this.activeProv.officials.includes(pol)) {
       this.votes[this.activeProv.officials.indexOf(pol)]++;
       this.parties[party].votes--;
     }
@@ -519,7 +519,7 @@ class GameState {
     const oldParty = this.parties[this.pols[pol].party];
     const newParty = this.parties[party];
 
-    if (pol in newParty.symps) {
+    if (newParty.symps.includes(pol)) {
       newParty.pols.push(pol);
       newParty.symps.splice(newParty.symps.indexOf(pol), 1);
       oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
@@ -527,7 +527,8 @@ class GameState {
       this.sympOrder.push(pol);
       shuffle(this.sympOrder);
 
-      if (this.activeProv.stage == 2 && pol in this.activeProv.officials) {
+      if (this.activeProv.stage == 2
+          && this.activeProv.officials.includes(pol)) {
         newParty.votes++;
         oldParty.votes--;
       }

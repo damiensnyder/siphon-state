@@ -200,7 +200,7 @@ class GameView extends React.Component {
     gs.pols[pol].oldParty = oldParty;
 
     if (gs.provs[gs.activeProvId].stage == 2
-        && pol in gs.provs[gs.activeProvId].officials) {
+        && gs.provs[gs.activeProvId].officials.includes(pol)) {
       gs.parties[gs.pov].votes++;
       oldParty.votes--;
     }
@@ -264,7 +264,7 @@ class GameView extends React.Component {
     gs.parties[gs.pov].pols.splice(gs.parties[gs.pov].pols.indexOf(pol), 1);
 
     if (gs.provs[gs.activeProvId].stage == 2
-        && pol in gs.provs[gs.activeProvId].officials) {
+        && gs.provs[gs.activeProvId].officials.includes(pol)) {
       gs.parties[gs.pov].votes--;
       oldParty.votes++;
     }

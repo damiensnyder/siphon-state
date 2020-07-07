@@ -10,11 +10,11 @@ function ControlPanel(props) {
       <JoinPanel callback={props.callback}
                  gameCode={props.gameCode} />
     );
-  } else if (props.gs.ended) {
+  } else if (props.gs.pov >= 0 && props.gs.ended) {
     return (
       <div>
         {props.gs.parties[props.gs.winner].name} wins
-        <button onClick={e => props.callback('rematch', {})}>
+        <button onClick={e => props.callback('ready', {})}>
           Rematch
         </button>
       </div>
