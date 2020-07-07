@@ -62,13 +62,11 @@ class OtherPlayer extends React.Component {
         && !this.props.gs.ended) {
       return (
         <button className={general.actionBtn}
-                onClick={e =>
-          this.props.callback('pay', { p2: this.props.index, amount: 1 })}>
+                onClick={e => this.props.callback('pay', this.props.index)}>
           Pay $1
         </button>
       );
     }
-
     return null;
   }
 

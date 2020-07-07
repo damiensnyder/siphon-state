@@ -11,7 +11,7 @@ function actionButton(props) {
   const stage = gs.provs[gs.activeProvId].stage;
   const callback = props.callback;
 
-  if (gs.pov < 0) {
+  if (gs.pov < 0 || gs.parties[gs.pov].ready) {
     return null;
   }
   if (gs.parties[gs.pov].symps.includes(props.index)

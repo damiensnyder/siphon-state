@@ -212,8 +212,8 @@ class GameView extends React.Component {
 
   payHandler(party) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds -= party.amount;
-    gs.parties[party].funds += party.amount;
+    gs.parties[gs.pov].funds--;
+    gs.parties[party].funds++;
     this.setState({
       gs: gs
     });
@@ -221,7 +221,7 @@ class GameView extends React.Component {
 
   buyHandler() {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds += 5;
+    gs.parties[gs.pov].funds -= 5;
     this.setState({
       gs: gs
     });
@@ -276,8 +276,8 @@ class GameView extends React.Component {
 
   unpayHandler(party) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds += data.amount;
-    gs.parties[party].funds -= data.amount;
+    gs.parties[gs.pov].funds++;
+    gs.parties[party].funds--;
     this.setState({
       gs: gs
     });

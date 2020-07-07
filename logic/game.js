@@ -180,6 +180,7 @@ class GameManager {
     }
 
     if (viewer.pov >= 0) {
+      this.gs.parties[viewer.pov].ready = false;
       this.removePlayer(viewer.pov);
     }
   }
