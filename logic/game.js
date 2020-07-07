@@ -3,7 +3,7 @@ const Viewer = require('./viewer.js');
 
 class GameManager {
   constructor(io, gameCode) {
-    this.io = io;
+    this.io = io.of('/game/' + gameCode);
     this.gs = new GameState();
 
     this.viewers = [];
