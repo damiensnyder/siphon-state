@@ -118,9 +118,13 @@ class GameView extends React.Component {
     });
 
     this.socket.on('update', (gs) => {
-      this.setState({
-        gs: gs
-      });
+      this.setState({gs: gs});
+    });
+
+    this.socket.on('newready', (readyInfo) => {
+      const gs = this.state.gs;
+      gs.parties[readyInfo.party].ready = readyInfo.isReady;
+      this.setState({gs: gs});
     });
   }
 

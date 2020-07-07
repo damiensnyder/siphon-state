@@ -105,6 +105,10 @@ class GameManager {
 
   handleReady(viewer, isReady) {
     this.gs.parties[viewer.pov].ready = isReady;
+    viewer.socket.broadcast.emit('newready', {
+      party: viewer.pov,
+      isReady: isReady
+    });
     if (this.gs.allReady()) {
       if (this.gs.ended) {
         this.restart();
