@@ -7,8 +7,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  font-family: "Source Sans Pro", "Droid Sans", Roboto, -apple-system,
+  font-family: "Source Sans Pro", Whitney, "Droid Sans", Roboto, -apple-system,
     "Helvetica Neue", Helvetica, Arial, Inter, sans-serif;
+  font-variant-alternates: normal;
   color: #ccc;
   background-color: #444;
 }

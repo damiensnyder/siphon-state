@@ -1,4 +1,6 @@
 import React from 'react';
+
+import general from '../general.module.css';
 import styles from './player.module.css';
 
 class OwnPlayer extends React.Component {
@@ -15,16 +17,13 @@ class OwnPlayer extends React.Component {
   }
 
   gsInfo(self) {
-    if (!this.props.gs.started) {
-      return this.readyIndicator(self);
-    }
     return (
       <div>
+        {this.readyIndicator(self)}
         <h4>
           ${self.funds}{this.numVotes(self)}
         </h4>
         {this.buyButton(self)}
-        {this.passButton()}
       </div>
     );
   }
@@ -38,30 +37,18 @@ class OwnPlayer extends React.Component {
   }
 
   numVotes(self) {
-    if (this.props.gs.provinces[this.props.gs.activeProvince].stage == 2) {
+    if (this.props.gs.provs[this.props.gs.activeProvId].stage == 2) {
       return `, ${self.votes} votes`;
     }
     return null;
   }
 
   buyButton(self) {
-    if (self.funds >= 5
-        && this.props.gs.pov == this.props.gs.turn
-        && !this.props.gs.ended) {
+    if (self.funds >= 5 && !this.props.gs.ended) {
       return (
-        <button onClick={e => this.props.callback('buy', {})}>
+        <button className={general.actionBtn}
+                onClick={e => this.props.callback('buy', {})}>
           Buy symp ($5)
-        </button>
-      );
-    }
-    return null;
-  }
-
-  passButton() {
-    if (this.props.gs.pov == this.props.gs.turn && !this.props.gs.ended) {
-      return (
-        <button onClick={e => this.props.callback('pass', {})}>
-          Pass
         </button>
       );
     }

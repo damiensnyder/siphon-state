@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './province.module.css';
+import styles from './prov.module.css';
 import PolCategory from './pol-category';
 
-class Province extends React.Component {
+class Prov extends React.Component {
   constructor(props) {
     super(props);
 
@@ -11,10 +11,10 @@ class Province extends React.Component {
   }
 
   activityStyle(self) {
-    if (this.props.gs.activeProvince === this.props.index) {
-      return styles.province + " " + styles.activeProvince;
+    if (this.props.gs.activeProv === this.props.index) {
+      return styles.prov + " " + styles.activeProv;
     } else {
-      return styles.province + " " + styles.inactiveProvince;
+      return styles.prov + " " + styles.inactiveProv;
     }
   }
 
@@ -23,25 +23,25 @@ class Province extends React.Component {
                                   callback={this.props.callback}
                                   pols={self.dropouts}
                                   type={'Dropouts'}
-                                  inProvince={true}
+                                  inProv={true}
                                   key={0} />;
     const candidates = <PolCategory gs={this.props.gs}
                                     callback={this.props.callback}
                                     pols={self.candidates}
                                     type={'Candidates'}
-                                    inProvince={true}
+                                    inProv={true}
                                     key={1} />;
     const officials = <PolCategory gs={this.props.gs}
                                    callback={this.props.callback}
                                    pols={self.officials}
                                    type={'Officials'}
-                                   inProvince={true}
+                                   inProv={true}
                                    key={2} />;
     const governors = <PolCategory gs={this.props.gs}
                                    callback={this.props.callback}
                                    pols={self.governors}
                                    type={'Governors'}
-                                   inProvince={true}
+                                   inProv={true}
                                    key={3} />;
 
     if (self.stage == 0) {
@@ -58,14 +58,14 @@ class Province extends React.Component {
   }
 
   render() {
-    const self = this.props.gs.provinces[this.props.index];
+    const self = this.props.gs.provs[this.props.index];
     return (
       <div className={this.activityStyle()}>
-        <h2 className={styles.provinceName}>{self.name}</h2>
+        <h2 className={styles.provName}>{self.name}</h2>
         {this.polCategoriesToJsx(self)}
       </div>
     );
   }
 }
 
-export default Province;
+export default Prov;

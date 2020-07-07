@@ -1,4 +1,6 @@
 import React from 'react';
+
+import general from '../general.module.css';
 import styles from './player.module.css';
 
 class OtherPlayer extends React.Component {
@@ -15,16 +17,14 @@ class OtherPlayer extends React.Component {
   }
 
   gsInfo(self) {
-    if (!this.props.gs.started) {
-      return this.readyIndicator(self);
-    }
     return (
       <div>
+        {this.readyIndicator(self)}
         <h4>
           ${self.funds}{this.numVotes(self)}
         </h4>
         {this.props.gs.pov >= 0 ? this.payButton() : null}
-        {this.replaceButton()}
+        {this.replaceButton(self)}
       </div>
     );
   }
@@ -38,36 +38,35 @@ class OtherPlayer extends React.Component {
   }
 
   numVotes(self) {
-    if (this.props.gs.provinces[this.props.gs.activeProvince].stage == 2) {
+    if (this.props.gs.provs[this.props.gs.activeProvId].stage == 2) {
       return `, ${self.votes} votes`;
     }
     return null;
   }
 
-  replaceButton() {
-    if (this.props.gs.pov < 0 && !self.connected && !this.props.gs.ended) {
+  replaceButton(self) {
+    if (this.props.gs.pov < 0
+        && !self.connected
+        && !this.props.gs.ended) {
       return (
         <button onClick={e => this.props.callback('replace', this.props.index)}>
           Replace
         </button>
       );
     }
-
     return null;
   }
 
   payButton() {
-    if (this.props.gs.pov == this.props.gs.turn
-        && this.props.gs.parties[this.props.gs.pov].funds >= 1
+    if (this.props.gs.parties[this.props.gs.pov].funds >= 1
         && !this.props.gs.ended) {
       return (
-        <button onClick={e =>
-          this.props.callback('pay', { p2: this.props.index, amount: 1 })}>
+        <button className={general.actionBtn}
+                onClick={e => this.props.callback('pay', this.props.index)}>
           Pay $1
         </button>
       );
     }
-
     return null;
   }
 

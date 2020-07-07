@@ -1,0 +1,28 @@
+#outerHeader {
+  width: 100%;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#messageBar {
+  flex-grow: 1;
+
+  padding: 4px;
+
+  font-size: 16px;
+  border-radius: 4px;
+  background-color: #666;
+}
+
+.headerItem {
+  margin: 4px;
+  margin-right: 0;
+}
+
+#readyBtn {
+  margin-right: 4px;
+  width: 72px;
+}

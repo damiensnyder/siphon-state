@@ -1,6 +1,8 @@
 import React from 'react';
-import styles from './chat.module.css';
+
 import ChatMessage from './chat-message';
+import general from '../general.module.css';
+import styles from './chat.module.css';
 
 class Chat extends React.Component {
   constructor(props) {
@@ -8,7 +10,7 @@ class Chat extends React.Component {
 
     this.state = {
       currentMsg: ""
-    }
+    };
 
     this.textInput = React.createRef();
     this.messagesInner = React.createRef();
@@ -58,9 +60,9 @@ class Chat extends React.Component {
   // themselves or they are already scrolled to within 50 pixels of the bottom
   // of the chat log.
   scrollToBottom() {
-    var e = this.messagesInner.current;
+    var p = this.messagesInner.current;
     if (this.messageJustSent ||
-        e.scrollHeight - e.scrollTop > e.clientHeight - 50) {
+        p.scrollHeight - p.scrollTop < p.clientHeight + 50) {
       this.bottomMessage.current.scrollIntoView(false);
       this.messageJustSent = false;
     }
@@ -88,7 +90,8 @@ class Chat extends React.Component {
                  onChange={this.handleTyping}
                  onKeyDown={this.checkIfEnterPressed}
                  ref={this.textInput} />
-          <button id={styles.sendBtn}
+          <button className={general.actionBtn}
+                  id={styles.sendBtn}
                   onClick={this.sendMsg}>
             Send
           </button>

@@ -33,7 +33,10 @@ class Error404 extends React.Component {
 
   render() {
     return (
-      <p>Page not found. Redirecting to <Link href="/"><a>home page</a></Link> in {this.state.secondsUntilRedirect} seconds.</p>
+      <p>
+        Page not found. Redirecting to <Link href="/"><a>home page</a></Link>
+        in {this.state.secondsUntilRedirect} seconds.
+      </p>
     );
   }
 }

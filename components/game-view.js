@@ -1,10 +1,11 @@
 import React from 'react';
 import io from 'socket.io-client';
+
+import Prov from './prov';
+import PlayersSidebar from './players-sidebar/players-sidebar';
+import ControlPanel from './control-panel/panel-switcher';
+import Chat from './chat/chat';
 import styles from './game-view.module.css';
-import Province from './province';
-import PlayersSidebar from './players-sidebar';
-import ControlPanel from './control-panel';
-import Chat from './chat';
 
 class GameView extends React.Component {
   constructor(props) {
@@ -15,13 +16,14 @@ class GameView extends React.Component {
 
     this.state = {
       gs: {
-        provinces: [
+        provs: [
           { name: '', isActive: false },
           { name: '', isActive: false },
           { name: '', isActive: false },
           { name: '', isActive: false },
           { name: '', isActive: false }
         ],
+        activeProv: {},
         parties: [],
         pov: -1
       },
@@ -36,14 +38,18 @@ class GameView extends React.Component {
       'replace': this.replaceHandler,
       'ready': this.readyHandler,
       'msg': this.msgHandler,
-      'pass': this.passHandler,
+      'flip': this.flipHandler,
       'pay': this.payHandler,
       'buy': this.buyHandler,
-      'flip': this.flipHandler,
       'run': this.runHandler,
       'fund': this.fundHandler,
       'vote': this.voteHandler,
-      'rematch': this.rematchHandler
+      'unflip': this.unflipHandler,
+      'unpay': this.unpayHandler,
+      'unbuy': this.unbuyHandler,
+      'unrun': this.unrunHandler,
+      'unfund': this.unfundHandler,
+      'unvote': this.unvoteHandler
     };
 
     for (let key in this.handlers) {
@@ -81,9 +87,13 @@ class GameView extends React.Component {
     });
   }
 
+  // Creates the socket connection to the server and handlers for when messages
+  // are received from the server.
   initializeSocket() {
     this.socket = io.connect('/game/' + this.props.gameCode);
-    this.connected = true;
+    this.setState({
+      connected: true
+    });
 
     this.socket.on('connection', () => {
       this.setState({
@@ -114,18 +124,18 @@ class GameView extends React.Component {
     });
   }
 
-  // Converts the array of provinces in the game to an array of JSX objects.
-  provincesToJsx() {
-    const provincesJsx = [];
-    for (var i = 0; i < this.state.gs.provinces.length; i++) {
-      provincesJsx.push(
-        <Province gs={this.state.gs}
-                  callback={this.callback}
-                  index={i}
-                  key={i} />
+  // Converts the array of provs in the game to an array of JSX objects.
+  provsToJsx() {
+    const provsJsx = [];
+    for (var i = 0; i < this.state.gs.provs.length; i++) {
+      provsJsx.push(
+        <Prov gs={this.state.gs}
+              callback={this.callback}
+              index={i}
+              key={i} />
       );
     }
-    return provincesJsx;
+    return provsJsx;
   }
 
   // Passed to child components. Assigns the callback to the proper handler
@@ -139,27 +149,29 @@ class GameView extends React.Component {
   // Passed to the control panel and called when the player joins the game.
   // Sends the player's info to the server and shows a system chat message to
   // the player.
-  joinHandler(data) {
+  joinHandler(partyInfo) {
     this.addMsg({
       sender: 'Client',
-      text: `You have joined the game as '${data.name}' (${data.abbr}).`,
+      text: `You have joined the game as '${partyInfo.name}' ` +
+            `(${partyInfo.abbr}).`,
       isSelf: false,
       isSystem: true
     });
   }
 
-  replaceHandler(data) {
+  replaceHandler(target) {
     const gs = this.state.gs;
-    gs.pov = data;
-    gs.parties[data].connected = true;
+    gs.pov = target;
+    gs.parties[target].connected = true;
+    gs.parties[target].symps = [];
     this.setState({
       gs: gs
     });
   }
 
-  readyHandler(data) {
+  readyHandler(isReady) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].ready = data;
+    gs.parties[gs.pov].ready = isReady;
     this.setState({
       gs: gs
     });
@@ -178,21 +190,36 @@ class GameView extends React.Component {
     });
   }
 
-  passHandler(data) {
-    // Might do this later, but this is way too much to try to implement
-    // client-side as well.
-  }
-
-  payHandler(data) {
+  flipHandler(pol) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds -= data.amount;
-    gs.parties[data.p2].funds += data.amount;
+    const oldParty = gs.parties[gs.pols[pol].party];
+    oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
+    gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(pol), 1);
+    gs.parties[gs.pov].pols.push(pol);
+    gs.pols[pol].party = gs.pov;
+    gs.pols[pol].oldParty = oldParty;
+
+    if (gs.provs[gs.activeProvId].stage == 2
+        && gs.provs[gs.activeProvId].officials.includes(pol)) {
+      gs.parties[gs.pov].votes++;
+      oldParty.votes--;
+    }
+
     this.setState({
       gs: gs
     });
   }
 
-  buyHandler(data) {
+  payHandler(party) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds--;
+    gs.parties[party].funds++;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  buyHandler() {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds -= 5;
     this.setState({
@@ -200,46 +227,96 @@ class GameView extends React.Component {
     });
   }
 
-  flipHandler(data) {
+  runHandler(pol) {
     const gs = this.state.gs;
-    const oldParty = gs.parties[gs.pols[data].party];
-    oldParty.pols.splice(oldParty.pols.indexOf(data), 1);
-    gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(data), 1);
-    gs.parties[gs.pov].pols.push(data);
+    gs.pols[pol].runnable = false;
+    gs.provs[gs.activeProvId].candidates.push(pol);
     this.setState({
       gs: gs
     });
   }
 
-  runHandler(data) {
-    const gs = this.state.gs;
-    gs.pols[data].runnable = false;
-    gs.provinces[gs.activeProvince].candidates.push(data);
-    this.setState({
-      gs: gs
-    });
-  }
-
-  fundHandler(data) {
+  fundHandler(pol) {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds--;
-    gs.pols[data].funded = true;
+    gs.pols[pol].funded = true;
     this.setState({
       gs: gs
     });
   }
 
-  voteHandler(data) {
+  voteHandler(pol) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].votes--;
+    gs.pols[pol].votes++;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unflipHandler(pol) {
+    const gs = this.state.gs;
+    const oldParty = gs.parties[gs.pols[pol].party];
+    oldParty.pols.push(pol);
+    gs.pols[pol].party = gs.pols[pol].oldParty;
+    delete gs.pols[pol].oldParty;
+    gs.parties[gs.pov].symps.push(pol, 1);
+    gs.parties[gs.pov].pols.splice(gs.parties[gs.pov].pols.indexOf(pol), 1);
+
+    if (gs.provs[gs.activeProvId].stage == 2
+        && gs.provs[gs.activeProvId].officials.includes(pol)) {
+      gs.parties[gs.pov].votes--;
+      oldParty.votes++;
+    }
+
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unpayHandler(party) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds++;
+    gs.parties[party].funds--;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unbuyHandler() {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds += 5;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unrunHandler(pol) {
+    const gs = this.state.gs;
+    gs.pols[pol].runnable = true;
+    gs.provs[gs.activeProvId].candidates.splice(
+        gs.provs[gs.activeProvId].candidates.indexOf(pol), 1);
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unfundHandler(pol) {
+    const gs = this.state.gs;
+    gs.parties[gs.pov].funds++;
+    gs.pols[pol].funded = false;
+    this.setState({
+      gs: gs
+    });
+  }
+
+  unvoteHandler(data) {
     const gs = this.state.gs;
     gs.parties[gs.pov].votes--;
     gs.pols[data].votes++;
     this.setState({
       gs: gs
     });
-  }
-
-  rematchHandler(data) {
-
   }
 
   // Adds a message to the Chat component.
@@ -256,7 +333,7 @@ class GameView extends React.Component {
       <div id={styles.root}>
         <div id={styles.gameContainer}
              className={styles.containerLevel2}>
-          {this.provincesToJsx()}
+          {this.provsToJsx()}
         </div>
         <Chat messages={this.state.messages}
               callback={this.callback} />

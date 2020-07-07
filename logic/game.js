@@ -22,14 +22,6 @@ class GameManager {
       'replace': this.handleReplace,
       'ready': this.handleReady,
       'msg': this.handleMsg,
-      'pass': this.handlePass,
-      'pay': this.handlePay,
-      'buy': this.handleBuy,
-      'flip': this.handleFlip,
-      'run': this.handleRun,
-      'fund': this.handleFund,
-      'vote': this.handleVote,
-      'rematch': this.handleRematch,
       'disconnect': this.handleDisconnect
     }
     for (var type in this.handlers) {
@@ -84,42 +76,52 @@ class GameManager {
     viewer.emitGameState(this.gs);
   }
 
-  handleJoin(viewer, data) {
-    viewer.join(this.players.length, data.name);
+  handleJoin(viewer, partyInfo) {
+    viewer.join(this.players.length, partyInfo.name);
     this.players.push(viewer);
-    this.gs.addParty(data.name, data.abbr);
+    this.gs.addParty(partyInfo.name, partyInfo.abbr);
 
     this.broadcastSystemMsg(
       viewer.socket,
-      `Player '${data.name}' (${data.abbr}) has joined the game.`
+      `Player '${partyInfo.name}' (${partyInfo.abbr}) has joined the game.`
     );
     this.emitGameStateToAll();
   }
 
-  handleReplace(viewer, data) {
-    viewer.join(data.target, this.gs.parties[data.target].name);
-    viewer.begin();
-    this.players.splice(data.target, 0, viewer);
-    this.gs.parties[data.target].connected = true;
+  handleReplace(viewer, target) {
+    if (this.gs.started && !this.gs.parties[target].connected) {
+      viewer.join(target, this.gs.parties[target].name);
+      viewer.begin();
+      this.players.splice(target, 0, viewer);
+      this.gs.parties[target].connected = true;
 
-    this.broadcastSystemMsg(
-      viewer.socket,
-      `Player '${viewer.name}' has been replaced.`
-    );
-    this.emitGameStateToAll();
-  }
-
-  handleReady(viewer, data) {
-    this.gs.parties[viewer.pov].ready = data.ready;
-    if (this.gs.allReady()) {
-      this.gs.begin();
-      this.begin();
+      this.broadcastSystemMsg(
+        viewer.socket,
+        `Player '${viewer.name}' has been replaced.`
+      );
     }
     this.emitGameStateToAll();
   }
 
-  handleMsg(viewer, data) {
-    const msg = data.msg;
+  handleReady(viewer, isReady) {
+    this.gs.parties[viewer.pov].ready = isReady;
+    if (this.gs.allReady()) {
+      if (this.gs.ended) {
+        this.restart();
+      } else if (!this.gs.started) {
+        for (let i = 0; i < this.players.length; i++) {
+          this.players[i].begin();
+        }
+        this.gs.commitAll();
+      } else {
+        this.enqueueAllActions();
+        this.gs.commitAll();
+      }
+      this.emitGameStateToAll();
+    }
+  }
+
+  handleMsg(viewer, msg) {
     if (typeof(msg) == 'string' &&
         msg.trim().length > 0 &&
         viewer.pov >= 0) {
@@ -132,65 +134,36 @@ class GameManager {
     }
   }
 
-  handlePass(viewer, data) {
-    this.gs.advanceTurn();
-    this.emitGameStateToAll();
-  }
+  enqueueAllActions() {
+    for (let i = 0; i < this.players.length; i++) {
+      for (let j = 0; j < this.players[i].flipQueue.length; j++) {
+        this.gs.enqueueFlip(i, this.players[i].flipQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].payQueue.length; j++) {
+        this.gs.enqueuePay(i, this.players[i].payQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].buyCounter; j++) {
+        this.gs.enqueueBuy(i);
+      }
+      for (let j = 0; j < this.players[i].runQueue.length; j++) {
+        this.gs.enqueueRun(i, this.players[i].runQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].fundQueue.length; j++) {
+        this.gs.enqueueFund(i, this.players[i].fundQueue[j]);
+      }
+      for (let j = 0; j < this.players[i].voteQueue.length; j++) {
+        this.gs.enqueueVote(i, this.players[i].voteQueue[j]);
+      }
 
-  handlePay(viewer, data) {
-    if (this.gs.parties[viewer.pov].funds >= data.amount) {
-      this.gs.pay(viewer.pov, data.p2, data.amount);
-      this.emitGameStateToAll();
+      this.players[i].createActionListeners();
+      this.players[i].resetActionQueues();
     }
   }
 
-  handleBuy(viewer, data) {
-    if (this.gs.parties[viewer.pov].funds >= 5) {
-      this.gs.buySymp(viewer.pov);
-      this.emitGameStateToAll();
+  restart() {
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].reset();
     }
-  }
-
-  handleFlip(viewer, data) {
-    if (this.gs.parties[viewer.pov].symps.includes(data)
-        && this.gs.turn == viewer.pov) {
-      this.gs.flipSymp(viewer.pov, data);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleRun(viewer, data) {
-    if (this.gs.parties[viewer.pov].pols.includes(data)
-        && this.gs.pols[data].runnable
-        && this.gs.turn == viewer.pov) {
-      this.gs.run(data);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleFund(viewer, data) {
-    if (this.gs.parties[viewer.pov].pols.includes(data)
-        && this.gs.provinces[this.gs.activeProvince].candidates.includes(data)
-        && this.gs.parties[viewer.pov].funds >= 1
-        && this.gs.turn == viewer.pov) {
-      this.gs.fund(viewer.pov, data);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleVote(viewer, data) {
-    if (this.gs.provinces[this.gs.activeProvince].officials.includes(data)
-        && this.gs.parties[viewer.pov].votes >= 1) {
-      this.gs.vote(viewer.pov, data);
-      this.emitGameStateToAll();
-    }
-  }
-
-  handleRematch(viewer, data) {
-    for (let i = 0; i < this.viewers.length; i++) {
-      this.viewers[i].reset();
-    }
-
     this.gs = new GameState();
     this.players = [];
     this.actionQueue = [];
@@ -199,7 +172,7 @@ class GameManager {
 
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
-  handleDisconnect(viewer, data) {
+  handleDisconnect(viewer) {
     let index = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
     for (let i = index; i < this.viewers.length; i++) {
@@ -207,19 +180,13 @@ class GameManager {
     }
 
     if (viewer.pov >= 0) {
+      this.gs.parties[viewer.pov].ready = false;
       this.removePlayer(viewer.pov);
-    }
-  }
-
-  begin() {
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].begin();
     }
   }
 
   // If the game hasn't started, remove the player with the given POV from the
   // game.
-  // TODO: If the game has started, replace them with a bot.
   removePlayer(pov) {
     const name = this.gs.parties[pov].name;
     this.players.splice(pov, 1);

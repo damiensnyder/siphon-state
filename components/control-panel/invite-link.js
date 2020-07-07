@@ -1,4 +1,6 @@
 import React from 'react';
+
+import general from '../general.module.css';
 import styles from './invite-link.module.css';
 
 class InviteLink extends React.Component {
@@ -18,6 +20,12 @@ class InviteLink extends React.Component {
     this.linkArea.current.select();
     document.execCommand('copy');
 
+    if (window.getSelection !== undefined) {        // All browsers except IE <9
+      window.getSelection().removeAllRanges();
+    } else if (document.selection !== undefined) {  // IE <9
+      document.selection.empty();
+    }
+
     this.setState({
       copied: true
     });
@@ -26,7 +34,7 @@ class InviteLink extends React.Component {
       this.setState({
         copied: false
       });
-    }, 3000);
+    }, 2500);
   }
 
   render() {
@@ -39,7 +47,7 @@ class InviteLink extends React.Component {
                   value={'https://filter-state.herokuapp.com/game/' +
                          this.props.gameCode}>
         </textarea>
-        <button className={styles.actionBtn}
+        <button className={styles.actionBtn + ' ' + general.priorityBtn}
                 id={styles.copyBtn}
                 onClick={this.copyInviteLink}>
           {this.state.copied ? 'Copied!' : 'Copy'}

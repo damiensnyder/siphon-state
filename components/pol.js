@@ -1,72 +1,70 @@
 import React from 'react';
+
+import general from './general.module.css';
 import styles from './pol.module.css';
 
-class Pol extends React.Component {
-  constructor(props) {
-    super(props);
+// Return the appropriate action button for the pol (e.g., "Flip"), or none
+// if no action is applicable or the viewer is not playing.
+function actionButton(props) {
+  const gs = props.gs;
+  const self = gs.pols[props.index];
+  const stage = gs.provs[gs.activeProvId].stage;
+  const callback = props.callback;
 
-    this.actionButton = this.actionButton.bind(this);
-  }
-
-  // Return the appropriate action button for the pol (e.g., "Flip"), or none
-  // if no action is applicable or it is not the player's turn.
-  actionButton() {
-    const gs = this.props.gs;
-    const self = gs.pols[this.props.index];
-    const stage = gs.provinces[gs.activeProvince].stage;
-    const callback = this.props.callback;
-
-    if (gs.turn !== gs.pov) {
-      return null;
-    }
-    if (gs.parties[gs.pov].symps.includes(this.props.index)
-        && !this.props.inProvince) {
-      return (
-        <button onClick={e => callback('flip', this.props.index)}>
-          Flip
-        </button>
-      );
-    }
-    if (stage == 0
-        && self.party === gs.pov
-        && self.runnable) {
-      return (
-        <button onClick={e => callback('run', this.props.index)}>
-          Run
-        </button>
-      );
-    }
-    if (gs.provinces[gs.activeProvince].candidates.includes(this.props.index)
-        && stage == 1
-        && self.party === gs.pov
-        && !self.funded) {
-      return (
-        <button onClick={e => callback('fund', this.props.index)}>
-          Fund
-        </button>
-      );
-    }
-    if (gs.provinces[gs.activeProvince].officials.includes(this.props.index)
-        && gs.parties[gs.pov].votes > 0
-        && stage == 2) {
-      return (
-        <button onClick={e => callback('vote', this.props.index)}>
-          Vote
-        </button>
-      );
-    }
+  if (gs.pov < 0 || gs.parties[gs.pov].ready) {
     return null;
   }
-
-  render() {
-    const self = this.props.gs.pols[this.props.index];
+  if (gs.parties[gs.pov].symps.includes(props.index)
+      && !props.inProv) {
     return (
-      <div className={styles.sameLine}>
-        <div>{self.name} ({this.props.gs.parties[self.party].abbr})</div>
-        {this.actionButton()}
-      </div>
+      <button className={general.actionBtn}
+              onClick={e => callback('flip', props.index)}>
+        Flip
+      </button>
     );
   }
+  if (stage == 0
+      && self.party === gs.pov
+      && self.runnable) {
+    return (
+      <button className={general.actionBtn}
+              onClick={e => callback('run', props.index)}>
+        Run
+      </button>
+    );
+  }
+  if (gs.provs[gs.activeProvId].candidates.includes(props.index)
+      && stage == 1
+      && self.party === gs.pov
+      && !self.funded) {
+    return (
+      <button className={general.actionBtn}
+              onClick={e => callback('fund', props.index)}>
+        Fund
+      </button>
+    );
+  }
+  if (gs.provs[gs.activeProvId].officials.includes(props.index)
+      && gs.parties[gs.pov].votes > 0
+      && stage == 2) {
+    return (
+      <button className={general.actionBtn}
+              onClick={e => callback('vote', props.index)}>
+        Vote
+      </button>
+    );
+  }
+  return null;
+}
+
+function Pol(props) {
+  const self = props.gs.pols[props.index];
+  return (
+    <div className={styles.sameLine}>
+      <div>{self.name} ({props.gs.parties[self.party].abbr})</div>
+      {actionButton(props)}
+    </div>
+  );
 }
 
 export default Pol;

@@ -12,13 +12,17 @@ class PolCategory extends React.Component {
   polsToJsx() {
     const polsJsx = [];
     for (let i = 0; i < this.props.pols.length; i++) {
-      polsJsx.push(
-        <Pol gs={this.props.gs}
-             callback={this.props.callback}
-             index={this.props.pols[i]}
-             inProvince={this.props.inProvince}
-             key={i} />
-      )
+      if (this.props.pols[i] < 0) {
+        polsJsx.push(<div>uh</div>);
+      } else {
+        polsJsx.push(
+          <Pol gs={this.props.gs}
+               callback={this.props.callback}
+               index={this.props.pols[i]}
+               inProvince={this.props.inProvince}
+               key={i} />
+        );
+      }
     }
 
     return polsJsx;

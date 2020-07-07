@@ -71,14 +71,8 @@
 
   color: #4c8;
   background-color: #333;
-  border: none;
-  border-radius: 4px;
 }
 
 #sendBtn:hover {
   background-color: #222;
-}
-
-#sendBtn:active {
-  color: #aac;
 }
