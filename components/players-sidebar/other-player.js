@@ -3,87 +3,82 @@ import React from 'react';
 import general from '../general.module.css';
 import styles from './player.module.css';
 
-class OtherPlayer extends React.Component {
-  constructor(props) {
-    super(props);
+function activityStyle(props) {
+  if (props.gs.turn == props.index) {
+    return styles.player + " " + styles.activePlayer;
+  } else {
+    return styles.player + " " + styles.inactivePlayer;
   }
+}
 
-  activityStyle(self) {
-    if (this.props.gs.turn == this.props.index) {
-      return styles.player + " " + styles.activePlayer;
-    } else {
-      return styles.player + " " + styles.inactivePlayer;
-    }
-  }
-
-  gsInfo(self) {
-    return (
-      <div>
-        {this.readyIndicator(self)}
-        <h4>
-          ${self.funds}{this.numVotes(self)}
-        </h4>
-        {this.props.gs.pov >= 0 ? this.payButton() : null}
-        {this.replaceButton(self)}
-      </div>
-    );
-  }
-
-  readyIndicator(self) {
-    return (
+function gsInfo(props) {
+  const self = props.gs.parties[props.index];
+  return (
+    <div>
+      {readyIndicator(self)}
       <h4>
-        Ready: {self.ready ? '✓' : '╳'}
+        ${self.funds}{numVotes(props)}
       </h4>
-    );
-  }
+      {props.gs.pov >= 0 ? payButton(props) : null}
+      {replaceButton(props)}
+    </div>
+  );
+}
 
-  numVotes(self) {
-    if (this.props.gs.provs[this.props.gs.activeProvId].stage == 2) {
-      return `, ${self.votes} votes`;
-    }
-    return null;
-  }
+function readyIndicator(self) {
+  return (
+    <h4>
+      Ready: {self.ready ? '✓' : '╳'}
+    </h4>
+  );
+}
 
-  replaceButton(self) {
-    if (this.props.gs.pov < 0
-        && !self.connected
-        && !this.props.gs.ended) {
-      return (
-        <button onClick={e => this.props.callback('replace', this.props.index)}>
-          Replace
-        </button>
-      );
-    }
-    return null;
+function numVotes(props) {
+  if (props.gs.provs[props.gs.activeProvId].stage == 2) {
+    return `, ${props.gs.parties[props.index].votes} votes`;
   }
+  return null;
+}
 
-  payButton() {
-    if (this.props.gs.parties[this.props.gs.pov].funds >= 1
-        && !this.props.gs.ended) {
-      return (
-        <button className={general.actionBtn}
-                onClick={e => this.props.callback('pay', this.props.index)}>
-          Pay $1
-        </button>
-      );
-    }
-    return null;
-  }
-
-  render() {
-    const self = this.props.gs.parties[this.props.index];
+function replaceButton(props) {
+  const self = props.gs.parties[props.index];
+  if (props.gs.pov < 0 && !self.connected && !props.gs.ended) {
     return (
-      <div className={this.activityStyle()}>
-        <h2 className={styles.name + " " + styles.otherName}>
-          {self.name}
-        </h2>
-        <h4 className={styles.abbr + " " + styles.otherName}>
-          {self.abbr}
-        </h4>
-        {this.gsInfo(self)}
-      </div>
+      <button onClick={e => props.callback('replace', props.index)}>
+        Replace
+      </button>
     );
   }
+  return null;
+}
+
+function payButton(props) {
+  if (props.gs.parties[props.gs.pov].funds >= 1
+      && props.gs.started
+      && !props.gs.ended) {
+    return (
+      <button className={general.actionBtn}
+              onClick={e => props.callback('pay', props.index)}>
+        Pay $1
+      </button>
+    );
+  }
+  return null;
+}
+
+function OtherPlayer(props) {
+  const self = props.gs.parties[props.index];
+  return (
+    <div className={activityStyle(props)}>
+      <h2 className={styles.name + " " + styles.otherName}>
+        {self.name}
+      </h2>
+      <h4 className={styles.abbr + " " + styles.otherName}>
+        {self.abbr}
+      </h4>
+      {gsInfo(props, self)}
+    </div>
+  );
 }
 
 export default OtherPlayer;

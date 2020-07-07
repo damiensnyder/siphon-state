@@ -3,72 +3,68 @@ import React from 'react';
 import general from '../general.module.css';
 import styles from './player.module.css';
 
-class OwnPlayer extends React.Component {
-  constructor(props) {
-    super(props);
+function activityStyle(props) {
+  if (props.gs.turn == props.index) {
+    return styles.player + " " + styles.activePlayer;
+  } else {
+    return styles.player + " " + styles.inactivePlayer;
   }
+}
 
-  activityStyle(self) {
-    if (this.props.gs.turn == this.props.index) {
-      return styles.player + " " + styles.activePlayer;
-    } else {
-      return styles.player + " " + styles.inactivePlayer;
-    }
-  }
-
-  gsInfo(self) {
-    return (
-      <div>
-        {this.readyIndicator(self)}
-        <h4>
-          ${self.funds}{this.numVotes(self)}
-        </h4>
-        {this.buyButton(self)}
-      </div>
-    );
-  }
-
-  readyIndicator(self) {
-    return (
+function gsInfo(props) {
+  const self = props.gs.parties[props.index];
+  return (
+    <div>
+      {readyIndicator(self)}
       <h4>
-        Ready: {self.ready ? '✓' : '╳'}
+        ${self.funds}{numVotes(props)}
       </h4>
-    );
-  }
+      {buyButton(props)}
+    </div>
+  );
+}
 
-  numVotes(self) {
-    if (this.props.gs.provs[this.props.gs.activeProvId].stage == 2) {
-      return `, ${self.votes} votes`;
-    }
-    return null;
-  }
+function readyIndicator(self) {
+  return (
+    <h4>
+      Ready: {self.ready ? '✓' : '╳'}
+    </h4>
+  );
+}
 
-  buyButton(self) {
-    if (self.funds >= 5 && !this.props.gs.ended) {
-      return (
-        <button className={general.actionBtn}
-                onClick={e => this.props.callback('buy', {})}>
-          Buy symp ($5)
-        </button>
-      );
-    }
-    return null;
+function numVotes(props) {
+  if (props.gs.provs[props.gs.activeProvId].stage == 2) {
+    return `, ${props.gs.parties[props.index].votes} votes`;
   }
+  return null;
+}
 
-  render() {
-    const self = this.props.gs.parties[this.props.index];
+function buyButton(props) {
+  const self = props.gs.parties[props.index];
+  if (self.funds >= 5 && props.gs.started && !props.gs.ended) {
     return (
-      <div className={this.activityStyle()}>
-        <h2 className={styles.name + " " + styles.ownName}>
-          {self.name}
-        </h2>
-        <h4 className={styles.abbr + " " + styles.ownName}>
-          {self.abbr}
-        </h4>
-        {this.gsInfo(self)}
-      </div>
+      <button className={general.actionBtn}
+              onClick={e => props.callback('buy', {})}>
+        Buy symp ($5)
+      </button>
     );
   }
+  return null;
+}
+
+function OwnPlayer(props) {
+  const self = props.gs.parties[props.index];
+  return (
+    <div className={activityStyle(props)}>
+      <h2 className={styles.name + " " + styles.ownName}>
+        {self.name}
+      </h2>
+      <h4 className={styles.abbr + " " + styles.ownName}>
+        {self.abbr}
+      </h4>
+      {gsInfo(props)}
+    </div>
+  );
 }
 
 export default OwnPlayer;
