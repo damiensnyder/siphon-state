@@ -112,10 +112,11 @@ class GameManager {
         for (let i = 0; i < this.players.length; i++) {
           this.players[i].begin();
         }
+        this.gs.commitAll();
       } else {
         this.enqueueAllActions();
+        this.gs.commitAll();
       }
-      this.gs.commitAll();
     }
     this.emitGameStateToAll();
   }
