@@ -246,7 +246,7 @@ class GameState {
 
   // The given politician becomes funded for the turn, and their party loses $1.
   enqueueFund(party, pol) {
-    this.fundQueue.push(party, pol);
+    this.fundQueue.push([party, pol]);
   }
 
   executeFunds() {
