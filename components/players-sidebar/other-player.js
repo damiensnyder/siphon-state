@@ -1,5 +1,6 @@
 import React from 'react';
 
+import general from '../general.module.css';
 import styles from './player.module.css';
 
 class OtherPlayer extends React.Component {
@@ -57,11 +58,11 @@ class OtherPlayer extends React.Component {
   }
 
   payButton() {
-    if (this.props.gs.pov == this.props.gs.turn
-        && this.props.gs.parties[this.props.gs.pov].funds >= 1
+    if (this.props.gs.parties[this.props.gs.pov].funds >= 1
         && !this.props.gs.ended) {
       return (
-        <button onClick={e =>
+        <button className={general.actionBtn}
+                onClick={e =>
           this.props.callback('pay', { p2: this.props.index, amount: 1 })}>
           Pay $1
         </button>

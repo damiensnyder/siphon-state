@@ -117,8 +117,8 @@ class GameManager {
         this.enqueueAllActions();
         this.gs.commitAll();
       }
+      this.emitGameStateToAll();
     }
-    this.emitGameStateToAll();
   }
 
   handleMsg(viewer, msg) {

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import general from '../general.module.css';
 import styles from './player.module.css';
 
 class OwnPlayer extends React.Component {
@@ -43,11 +44,10 @@ class OwnPlayer extends React.Component {
   }
 
   buyButton(self) {
-    if (self.funds >= 5
-        && this.props.gs.pov == this.props.gs.turn
-        && !this.props.gs.ended) {
+    if (self.funds >= 5 && !this.props.gs.ended) {
       return (
-        <button onClick={e => this.props.callback('buy', {})}>
+        <button className={general.actionBtn}
+                onClick={e => this.props.callback('buy', {})}>
           Buy symp ($5)
         </button>
       );
