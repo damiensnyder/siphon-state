@@ -25,12 +25,15 @@ class GameControls extends React.Component {
     const gs = this.props.gs;
     const self = gs.parties[gs.pov];
     const runnable = [];
+    const unrunnable = [];
     const symps = [];
 
     for (let i = 0; i < self.pols.length; i++) {
       let pol = self.pols[i];
       if (gs.pols[pol].runnable) {
         runnable.push(pol);
+      } else {
+        unrunnable.push(pol);
       }
     }
 
@@ -41,20 +44,21 @@ class GameControls extends React.Component {
                         isTabbed={true}
                         tabCallback={this.switchTab} />
         <div className={general.horizWrapper}>
-          <div>
-            <PolCategory gs={gs}
-                         callback={this.props.callback}
-                         type={"Available"}
-                         inProvince={false}
-                         pols={runnable} />
-          </div>
-          <div>
-            <PolCategory gs={gs}
-                         callback={this.props.callback}
-                         type={"Sympathizers"}
-                         inProvince={false}
-                         pols={self.symps} />
-          </div>
+          <PolCategory gs={gs}
+                       callback={this.props.callback}
+                       type={"Available"}
+                       inProvince={false}
+                       pols={runnable} />
+          <PolCategory gs={gs}
+                       callback={this.props.callback}
+                       type={"Unavailable"}
+                       inProvince={false}
+                       pols={unrunnable} />
+          <PolCategory gs={gs}
+                       callback={this.props.callback}
+                       type={"Sympathizers"}
+                       inProvince={false}
+                       pols={self.symps} />
         </div>
       </div>
     );

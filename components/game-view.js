@@ -130,9 +130,9 @@ class GameView extends React.Component {
     for (var i = 0; i < this.state.gs.provs.length; i++) {
       provsJsx.push(
         <Prov gs={this.state.gs}
-                  callback={this.callback}
-                  index={i}
-                  key={i} />
+              callback={this.callback}
+              index={i}
+              key={i} />
       );
     }
     return provsJsx;
@@ -195,7 +195,7 @@ class GameView extends React.Component {
     const oldParty = gs.parties[gs.pols[pol].party];
     oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
     gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(pol), 1);
-    gs.parties[gs.pov].pols.push(data);
+    gs.parties[gs.pov].pols.push(pol);
     gs.pols[pol].party = gs.pov;
     gs.pols[pol].oldParty = oldParty;
 
@@ -212,8 +212,8 @@ class GameView extends React.Component {
 
   payHandler(party) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].funds -= data.amount;
-    gs.parties[party].funds += data.amount;
+    gs.parties[gs.pov].funds -= party.amount;
+    gs.parties[party].funds += party.amount;
     this.setState({
       gs: gs
     });

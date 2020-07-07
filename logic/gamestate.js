@@ -496,8 +496,7 @@ class GameState {
       i++;
     }
     if (i < this.sympOrder.length) {
-      const polIndex = this.pols.indexOf(this.sympOrder[i]);
-      this.parties[party].symps.push(polIndex);
+      this.parties[party].symps.push(this.sympOrder[i]);
       this.sympOrder.splice(i, 1);
     }
   }
