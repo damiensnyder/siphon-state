@@ -1,8 +1,8 @@
 import React from 'react';
-import io from 'socket.io-client';
+import HomeView from '../components/home/main';
 
 function Home() {
-  return <div>Click <a href={'/game/oaxm'}>here</a> to play a game.</div>;
+  return <HomeView />;
 }
 
 export default Home;

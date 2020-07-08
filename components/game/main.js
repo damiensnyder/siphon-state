@@ -5,7 +5,7 @@ import Prov from './prov';
 import PlayersSidebar from './players-sidebar/players-sidebar';
 import ControlPanel from './control-panel/panel-switcher';
 import Chat from './chat/chat';
-import styles from './game-view.module.css';
+import styles from './main.module.css';
 
 class GameView extends React.Component {
   constructor(props) {

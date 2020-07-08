@@ -1,10 +1,11 @@
 const GameState = require('./gamestate.js');
 const Viewer = require('./viewer.js');
 
-class GameManager {
-  constructor(io, gameCode) {
+class GameRoom {
+  constructor(io, gameCode, callback) {
     this.io = io.of('/game/' + gameCode);
     this.gs = new GameState();
+    this.gmCallback = callback;
 
     this.viewers = [];
     this.players = [];
@@ -236,4 +237,4 @@ class GameManager {
   }
 }
 
-module.exports = GameManager;
+module.exports = GameRoom;

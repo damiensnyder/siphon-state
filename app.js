@@ -1,22 +1,35 @@
-const app = require('express')();
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
-const next = require('next');
+const expressApp = require('express')();
+const bodyParser = require('body-parser');
+expressApp.use(bodyParser.urlencoded({extended: true}));
+expressApp.use(bodyParser.json());
 
-const nextApp = next({ dev: process.env.NODE_ENV != 'production' });
+const server = require('http').Server(expressApp);
+const io = require('socket.io')(server);
+
+const nextJs = require('next');
+const nextApp = nextJs({ dev: process.env.NODE_ENV != 'production' });
 const nextHandler = nextApp.getRequestHandler();
 
-var envPort = parseInt(process.env.PORT);
-const port = envPort >= 0 ? envPort : 3000;
-
-const gameCode = 'oaxm';
-const newGame = new Game(io, gameCode);
+const GameManager = require('./logic/game-manager');
+const gm = new GameManager(io);
 
 nextApp.prepare().then(() => {
-  app.get('*', (req, res) => {
+  expressApp.post('/create', (req, res) => {
+    gm.createGame(req, res);
+  });
+
+  // Send people who join the game to the game room
+  expressApp.get('/game/:gameCode', (req, res) => {
+    gm.sendToGame(req, res, nextHandler);
+  });
+
+  expressApp.get('*', (req, res) => {
     return nextHandler(req, res);
   });
 
+  // Start the server for socket.io
+  const envPort = parseInt(process.env.PORT);
+  const port = envPort >= 0 ? envPort : 3000;
   server.listen(port, (err) => {
     if (err) throw err;
     console.log("Listening on port " + port);
