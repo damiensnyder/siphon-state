@@ -1,0 +1,10 @@
+.menuOuter {
+  width: 20%;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  background-color: #333;
+}
