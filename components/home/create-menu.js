@@ -8,33 +8,34 @@ class CreateMenu extends React.Component {
   constructor(props) {
     super(props);
 
-    this.textInput = React.createRef();
+    this.gameCodeInput = React.createRef();
   }
 
-  async createGame(gameCode) {
+  async createGame(settings) {
     let res = await fetch('/create', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({gameCode: gameCode})
+      body: JSON.stringify({settings: settings})
     });
 
-    if (res.status === 200) {
-      Router.push('/game/' + gameCode);
-    } else {
-      console.log('failed');
+    if (res.status == 200) {
+      Router.push('/game/' + settings.gameCode);
     }
   }
 
   createHandler() {
-    let gameCode = this.textInput.current.value;
-    if (!gameCode) gameCode = "boof";
-    this.createGame(gameCode);
+    const settings = {
+      name: this.gameCodeInput.current.value,
+      private: false,
+      gameCode: this.gameCodeInput.current.value
+    };
+    this.createGame(settings);
   }
 
   render() {
     return (
       <div className={styles.menuOuter}>
-        <input ref={this.textInput} />
+        <input ref={this.gameCodeInput} />
         <button className={general.actionBtn + ' ' + general.priorityBtn}
                 onClick={this.createHandler.bind(this)}>
           Create Game

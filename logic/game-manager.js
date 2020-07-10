@@ -13,7 +13,8 @@ class GameManager {
   }
 
   createGame(req, res) {
-    const gameCode = req.body.gameCode;
+    const settings = req.body.settings;
+    const gameCode = settings.gameCode;
 
     // Send error code 400 if the game code is already in use or is invalid.
     // Otherwise, create a game at that game code and send status code 200.
@@ -22,9 +23,23 @@ class GameManager {
         || gameCode.length < 1) {
       res.sendStatus(400);
     } else {
-      this.activeGames[gameCode] = new Game(this.io, gameCode, this.callback);
+      this.activeGames[gameCode] = new Game(this.io, settings, this.callback);
       res.sendStatus(200);
     }
+  }
+
+  getActiveGames(req, res) {
+    let foundGames = [];
+
+    for (const [gameCode, game] of Object.entries(this.activeGames)) {
+      if (!game.settings.hidden) {
+        foundGames.push(game.joinInfo());
+      }
+    }
+
+    res.status = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(foundGames));
   }
 
   sendToGame(req, res, nextHandler) {

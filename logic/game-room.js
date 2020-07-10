@@ -2,9 +2,10 @@ const GameState = require('./gamestate.js');
 const Viewer = require('./viewer.js');
 
 class GameRoom {
-  constructor(io, gameCode, callback) {
-    this.io = io.of('/game/' + gameCode);
-    this.gs = new GameState();
+  constructor(io, settings, callback) {
+    this.io = io.of('/game/' + settings.gameCode);
+    this.settings = settings;
+    this.gs = new GameState(settings);
     this.gmCallback = callback;
 
     this.viewers = [];
@@ -18,22 +19,15 @@ class GameRoom {
     });
 
     this.handlers = {
-      'connect': this.handleConnect,
-      'join': this.handleJoin,
-      'replace': this.handleReplace,
-      'ready': this.handleReady,
-      'msg': this.handleMsg,
-      'disconnect': this.handleDisconnect
+      'connect': this.handleConnect.bind(this),
+      'join': this.handleJoin.bind(this),
+      'replace': this.handleReplace.bind(this),
+      'ready': this.handleReady.bind(this),
+      'msg': this.handleMsg.bind(this),
+      'disconnect': this.handleDisconnect.bind(this)
     }
-    for (var type in this.handlers) {
-      if (this.handlers.hasOwnProperty(type)) {
-          this.handlers[type] = this.handlers[type].bind(this);
-      }
-    }
-
     this.actionQueue = [];
     this.handlingAction = false;
-
     this.enqueueAction = this.enqueueAction.bind(this);
   }
 
@@ -112,7 +106,7 @@ class GameRoom {
     });
     if (this.gs.allReady()) {
       if (this.gs.ended) {
-        this.restart();
+        this.rematch();
       } else if (!this.gs.started) {
         for (let i = 0; i < this.players.length; i++) {
           this.players[i].begin();
@@ -165,7 +159,7 @@ class GameRoom {
     }
   }
 
-  restart() {
+  rematch() {
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].reset();
     }
@@ -234,6 +228,16 @@ class GameRoom {
     for (let i = 0; i < this.viewers.length; i++) {
       this.viewers[i].emitGameState(this.gs);
     }
+  }
+
+  joinInfo() {
+    return {
+      name: this.settings.name,
+      gameCode: this.settings.gameCode,
+      players: this.players.length,
+      started: this.gs.started,
+      ended: this.gs.ended
+    };
   }
 }
 

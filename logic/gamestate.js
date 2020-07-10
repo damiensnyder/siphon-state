@@ -63,7 +63,7 @@ const POL_NAMES = [
 const PROVINCE_NAMES = ["Germany 5", "Arkanzas", "wilfreed", "NONONONO", "ian"];
 
 class GameState {
-  constructor() {
+  constructor(settings) {
     this.started = false;
     this.ended = false;
     this.activeProvId = 4;

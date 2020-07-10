@@ -18,6 +18,10 @@ nextApp.prepare().then(() => {
     gm.createGame(req, res);
   });
 
+  expressApp.get('/api/activeGames', (req, res) => {
+    gm.getActiveGames(req, res);
+  });
+
   // Send people who join the game to the game room
   expressApp.get('/game/:gameCode', (req, res) => {
     gm.sendToGame(req, res, nextHandler);
