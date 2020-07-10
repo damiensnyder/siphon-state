@@ -8,6 +8,7 @@ class CreateMenu extends React.Component {
   constructor(props) {
     super(props);
 
+    this.nameInput = React.createRef();
     this.gameCodeInput = React.createRef();
   }
 
@@ -35,7 +36,9 @@ class CreateMenu extends React.Component {
   render() {
     return (
       <div className={styles.menuOuter}>
-        <input ref={this.gameCodeInput} />
+        <div className={general.sameLine}>
+          Game code: <input ref={this.gameCodeInput} />
+        </div>
         <button className={general.actionBtn + ' ' + general.priorityBtn}
                 onClick={this.createHandler.bind(this)}>
           Create Game

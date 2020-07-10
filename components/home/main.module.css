@@ -5,4 +5,17 @@
   flex-flow: column;
   justify-content: flex-start;
   align-items: center;
+
+  background-color: #555;
+}
+
+.menuOuter {
+  width: 25%;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: stretch;
+
+  background-color: #444;
 }

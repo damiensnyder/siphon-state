@@ -3,7 +3,8 @@ import Router from 'next/router';
 
 import GameItem from './game-item';
 import general from '../general.module.css';
-import styles from './menu.module.css';
+import styles from './main.module.css';
+import joinStyles from './join-menu.module.css';
 
 class JoinMenu extends React.Component {
   constructor(props) {
@@ -60,13 +61,16 @@ class JoinMenu extends React.Component {
   render() {
     return (
       <div className={styles.menuOuter}>
-        <div>
+        <h2>Active Games</h2>
+        <div id={joinStyles.activeGamesWindow}>
           {this.gamesToJsx.bind(this)()}
         </div>
-        <input ref={this.gameCodeInput} />
-        <button className={general.actionBtn + ' ' + general.priorityBtn}>
-          Join
-        </button>
+        <div className={general.sameLine}>
+          <div>Game code: <input ref={this.gameCodeInput} /></div>
+          <button className={general.actionBtn + ' ' + general.priorityBtn}>
+            Join
+          </button>
+        </div>
       </div>
     );
   }

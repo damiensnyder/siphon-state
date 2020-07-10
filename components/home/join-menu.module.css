@@ -1,0 +1,28 @@
+#activeGamesWindow {
+  max-height: 250px;
+  flex-grow: 1;
+  margin: 16px;
+
+  overflow-y: scroll;
+}
+
+.gameItemOuter {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.gameItemInner {
+  flex-grow: 1;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: #555;
+  padding: 8px;
+  border-radius: 4px;
+}
