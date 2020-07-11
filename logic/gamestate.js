@@ -273,18 +273,21 @@ class GameState {
     while (!allFunded) {
       allFunded = true;
       for (let i = 0; i < this.parties.length; i++) {
+        let candidateRemoved = false;
         for (let j = this.activeProv.candidates.length - 1; j >= 0; j--) {
           let candidate = this.pols[this.activeProv.candidates[j]];
 
           // If the candidate is unfunded and a member of the party to remove
           // from, and there are still more than 5 candidates remaining, they
           // become a dropout.
-          if (!candidate.funded &&
-              candidate.party == (i + this.priority) % this.parties.length &&
-              this.activeProv.candidates.length > 5) {
+          if (!candidate.funded
+              && candidate.party == (i + this.priority) % this.parties.length
+              && this.activeProv.candidates.length > 5
+              && !candidateRemoved) {
             this.activeProv.dropouts.push(this.activeProv.candidates[j]);
             this.activeProv.candidates.splice(j, 1);
             allFunded = false;
+            candidateRemoved = true;
           }
         }
       }
