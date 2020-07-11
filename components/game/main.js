@@ -193,12 +193,13 @@ class GameView extends React.Component {
 
   flipHandler(pol) {
     const gs = this.state.gs;
-    const oldParty = gs.parties[gs.pols[pol].party];
+    const oldPartyIndex = gs.pols[pol].party;
+    const oldParty = gs.parties[oldPartyIndex];
     oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
     gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(pol), 1);
     gs.parties[gs.pov].pols.push(pol);
     gs.pols[pol].party = gs.pov;
-    gs.pols[pol].oldParty = oldParty;
+    gs.pols[pol].oldPartyIndex = oldPartyIndex;
 
     if (gs.provs[gs.activeProvId].stage == 2
         && gs.provs[gs.activeProvId].officials.includes(pol)) {
@@ -249,6 +250,7 @@ class GameView extends React.Component {
   voteHandler(pol) {
     const gs = this.state.gs;
     gs.parties[gs.pov].votes--;
+    if (!gs.pols[pol].hasOwnProperty('votes')) gs.pols[pol].votes = 0;
     gs.pols[pol].votes++;
     this.setState({
       gs: gs
@@ -257,11 +259,12 @@ class GameView extends React.Component {
 
   unflipHandler(pol) {
     const gs = this.state.gs;
-    const oldParty = gs.parties[gs.pols[pol].party];
+    const oldParty = gs.parties[gs.pols[pol].oldPartyIndex];
     oldParty.pols.push(pol);
-    gs.pols[pol].party = gs.pols[pol].oldParty;
-    delete gs.pols[pol].oldParty;
-    gs.parties[gs.pov].symps.push(pol, 1);
+    gs.pols[pol].party = gs.pols[pol].oldPartyIndex;
+    delete gs.pols[pol].oldPartyIndex;
+
+    gs.parties[gs.pov].symps.push(pol);
     gs.parties[gs.pov].pols.splice(gs.parties[gs.pov].pols.indexOf(pol), 1);
 
     if (gs.provs[gs.activeProvId].stage == 2
@@ -313,8 +316,8 @@ class GameView extends React.Component {
 
   unvoteHandler(data) {
     const gs = this.state.gs;
-    gs.parties[gs.pov].votes--;
-    gs.pols[data].votes++;
+    gs.parties[gs.pov].votes++;
+    gs.pols[data].votes--;
     this.setState({
       gs: gs
     });

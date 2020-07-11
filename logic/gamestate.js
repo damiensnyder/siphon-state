@@ -554,6 +554,8 @@ class GameState {
     delete this.sympOrder;
     delete this.votes;
 
+    delete this.flipQueue;
+
     return {
       symps: symps,
       sympOrder: sympOrder,

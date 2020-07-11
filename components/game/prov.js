@@ -23,25 +23,21 @@ class Prov extends React.Component {
                                   callback={this.props.callback}
                                   pols={self.dropouts}
                                   type={'Dropouts'}
-                                  inProv={true}
                                   key={0} />;
     const candidates = <PolCategory gs={this.props.gs}
                                     callback={this.props.callback}
                                     pols={self.candidates}
                                     type={'Candidates'}
-                                    inProv={true}
                                     key={1} />;
     const officials = <PolCategory gs={this.props.gs}
                                    callback={this.props.callback}
                                    pols={self.officials}
                                    type={'Officials'}
-                                   inProv={true}
                                    key={2} />;
     const governors = <PolCategory gs={this.props.gs}
                                    callback={this.props.callback}
                                    pols={self.governors}
                                    type={'Governors'}
-                                   inProv={true}
                                    key={3} />;
 
     if (self.stage == 0) {
