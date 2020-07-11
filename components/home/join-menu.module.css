@@ -4,10 +4,13 @@
   margin: 16px;
 
   overflow-y: scroll;
+
+  text-align: center;
 }
 
 .gameItemOuter {
   width: 100%;
+  margin: 4px 0;
 
   display: flex;
   justify-content: flex-start;

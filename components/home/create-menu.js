@@ -1,6 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
 
+import SettingText from '../setting-text';
 import general from '../general.module.css';
 import styles from './main.module.css';
 
@@ -8,39 +9,48 @@ class CreateMenu extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      gameCode: ""
+    }
+
     this.nameInput = React.createRef();
     this.gameCodeInput = React.createRef();
   }
 
-  async createGame(settings) {
+  gameCodeCallback(text) {
+    this.setState({
+      gameCode: text
+    });
+  }
+
+  async createGame() {
     let res = await fetch('/create', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({settings: settings})
+      body: JSON.stringify({
+        settings: {
+          name: this.state.gameCode,
+          private: false,
+          gameCode: this.state.gameCode
+        }
+      })
     });
 
     if (res.status == 200) {
-      Router.push('/game/' + settings.gameCode);
+      Router.push('/game/' + this.state.gameCode);
     }
-  }
-
-  createHandler() {
-    const settings = {
-      name: this.gameCodeInput.current.value,
-      private: false,
-      gameCode: this.gameCodeInput.current.value
-    };
-    this.createGame(settings);
   }
 
   render() {
     return (
       <div className={styles.menuOuter}>
-        <div className={general.sameLine}>
-          Game code: <input ref={this.gameCodeInput} />
-        </div>
+        <SettingText label={"Game code:"}
+                     maxLength={20}
+                     text={this.state.gameCode}
+                     textCallback={this.gameCodeCallback.bind(this)}
+                     submitCallback={this.createGame.bind(this)} />
         <button className={general.actionBtn + ' ' + general.priorityBtn}
-                onClick={this.createHandler.bind(this)}>
+                onClick={this.createGame.bind(this)}>
           Create Game
         </button>
       </div>

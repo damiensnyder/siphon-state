@@ -2,8 +2,8 @@
   width: 100%;
 
   display: flex;
-  flex-flow: column;
-  justify-content: flex-start;
+  flex-flow: row;
+  justify-content: center;
   align-items: center;
 
   background-color: #555;
@@ -11,6 +11,7 @@
 
 .menuOuter {
   width: 25%;
+  margin: 100px;
 
   display: flex;
   flex-flow: column;
@@ -18,4 +19,19 @@
   align-items: stretch;
 
   background-color: #444;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.settingsInput {
+  margin-left: 8px;
+  margin-right: 16px;
+  width: 60px;
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  padding: 0 8px;
+  background-color: #333;
+  border: none;
+  border-radius: 4px;
 }

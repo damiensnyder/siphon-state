@@ -8,10 +8,8 @@ import styles from './main.module.css';
 function HomeView() {
   return (
     <div id={styles.containerLevel1}>
-      <div className={general.sameLine}>
-        <CreateMenu />
-        <JoinMenu />
-      </div>
+      <CreateMenu />
+      <JoinMenu />
     </div>
   );
 }
