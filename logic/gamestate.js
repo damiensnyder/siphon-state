@@ -270,7 +270,6 @@ class GameState {
   // five or fewer candidates or all remaining candidates are funded.
   removeUnfundedCandidates() {
     var allFunded = false;
-
     while (!allFunded) {
       allFunded = true;
       for (let i = 0; i < this.parties.length; i++) {
@@ -281,7 +280,7 @@ class GameState {
           // from, and there are still more than 5 candidates remaining, they
           // become a dropout.
           if (!candidate.funded &&
-              candidate.party == (i + this.priority) % 5 &&
+              candidate.party == (i + this.priority) % this.parties.length &&
               this.activeProv.candidates.length > 5) {
             this.activeProv.dropouts.push(this.activeProv.candidates[j]);
             this.activeProv.candidates.splice(j, 1);

@@ -88,7 +88,7 @@ class GameRoom {
   }
 
   handleReplace(viewer, target) {
-    viewer.socket.broadcast.emit('newreplace', target);
+    this.io.emit('newreplace', target);
     if (this.gs.started && !this.gs.parties[target].connected) {
       viewer.join(target, this.gs.parties[target].name);
       viewer.begin();
@@ -201,7 +201,7 @@ class GameRoom {
       this.emitGameStateToAll();
     } else {
       this.gs.parties[pov].connected = false;
-      removedPlayer.socket.broadcast.emit('newdisconnect', pov);
+      this.io.emit('newdisconnect', pov);
     }
 
     this.emitSystemMsg(`Player '${name}' has disconnected.`);
