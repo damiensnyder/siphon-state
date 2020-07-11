@@ -39,19 +39,24 @@ class InviteLink extends React.Component {
 
   render() {
     return (
-      <div className={general.horizWrapper}>
-        <textarea rows={1}
-                  ref={this.linkArea}
-                  className={styles.gameLink}
-                  onChange={() => {}} // suppresses warning
-                  value={'https://www.siphonstate.com/game/' +
-                         this.props.gameCode}>
-        </textarea>
-        <button className={general.actionBtn + ' ' + general.priorityBtn}
-                id={styles.copyBtn}
-                onClick={this.copyInviteLink}>
-          {this.state.copied ? 'Copied!' : 'Copy'}
-        </button>
+      <div className={general.menu}>
+        <div className={general.spacer}>
+          <div className={general.horizWrapper}>
+            <textarea rows={1}
+                      ref={this.linkArea}
+                      className={styles.gameLink}
+                      onChange={() => {}} // suppresses warning
+                      value={'https://www.siphonstate.com/game/' +
+                             this.props.gameCode}>
+            </textarea>
+            <button className={general.actionBtn + ' ' + general.priorityBtn}
+                    id={styles.copyBtn}
+                    onClick={this.copyInviteLink}>
+              {this.state.copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+        </div>
+        <span id={styles.inviteFriend}>invite a friend</span>
       </div>
     );
   }

@@ -68,12 +68,7 @@ class JoinPanel extends React.Component {
           </div>
         </div>
         <div id={styles.orDiv}>or</div>
-        <div className={general.menu}>
-          <div className={general.spacer}>
-            <InviteLink gameCode={this.props.gameCode} />
-          </div>
-          <span id={styles.inviteFriend}>invite a friend</span>
-        </div>
+        <InviteLink gameCode={this.props.gameCode} />
       </div>
     );
   }
