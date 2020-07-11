@@ -84,6 +84,7 @@ class GameRoom {
   }
 
   handleReplace(viewer, target) {
+    viewer.socket.broadcast.emit('newreplace', target);
     if (this.gs.started && !this.gs.parties[target].connected) {
       viewer.join(target, this.gs.parties[target].name);
       viewer.begin();
@@ -95,7 +96,6 @@ class GameRoom {
         `Player '${viewer.name}' has been replaced.`
       );
     }
-    this.emitGameStateToAll();
   }
 
   handleReady(viewer, isReady) {
@@ -188,18 +188,18 @@ class GameRoom {
   // game.
   removePlayer(pov) {
     const name = this.gs.parties[pov].name;
-    this.players.splice(pov, 1);
+    const [removedPlayer] = this.players.splice(pov, 1);
     if (!this.gs.started) {
       this.gs.parties.splice(pov, 1);
-
       for (let i = pov; i < this.players.length; i++) {
         this.players[i].pov = i;
       }
+      this.emitGameStateToAll();
     } else {
       this.gs.parties[pov].connected = false;
+      removedPlayer.socket.broadcast.emit('newdisconnect', pov);
     }
 
-    this.emitGameStateToAll();
     this.emitSystemMsg(`Player '${name}' has disconnected.`);
   }
 

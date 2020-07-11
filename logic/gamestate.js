@@ -555,6 +555,11 @@ class GameState {
     delete this.votes;
 
     delete this.flipQueue;
+    delete this.payQueue;
+    delete this.buyQueue;
+    delete this.runQueue;
+    delete this.fundQueue;
+    delete this.voteQueue;
 
     return {
       symps: symps,
@@ -574,6 +579,13 @@ class GameState {
 
     this.sympOrder = hiddenInfo.sympOrder;
     this.votes = hiddenInfo.votes;
+
+    this.flipQueue = [];
+    this.payQueue = [];
+    this.buyQueue = [];
+    this.runQueue = [];
+    this.fundQueue = [];
+    this.voteQueue = [];
   }
 }
 

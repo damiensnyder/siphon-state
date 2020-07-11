@@ -20,6 +20,7 @@ function gsInfo(props) {
         ${self.funds}{numVotes(props)}
       </h4>
       {props.gs.pov >= 0 ? payButton(props) : null}
+      {props.gs.pov >= 0 ? unpayButton(props) : null}
       {replaceButton(props)}
     </div>
   );
@@ -44,7 +45,8 @@ function replaceButton(props) {
   const self = props.gs.parties[props.index];
   if (props.gs.pov < 0 && !self.connected && !props.gs.ended) {
     return (
-      <button onClick={e => props.callback('replace', props.index)}>
+      <button className={general.actionBtn}
+          onClick={e => props.callback('replace', props.index)}>
         Replace
       </button>
     );
@@ -54,12 +56,26 @@ function replaceButton(props) {
 
 function payButton(props) {
   if (props.gs.parties[props.gs.pov].funds >= 1
+      && !props.gs.parties[props.gs.pov].ready
       && props.gs.started
       && !props.gs.ended) {
     return (
       <button className={general.actionBtn}
               onClick={e => props.callback('pay', props.index)}>
         Pay $1
+      </button>
+    );
+  }
+  return null;
+}
+
+function unpayButton(props) {
+  if (props.gs.parties[props.index].paid > 0
+      && !props.gs.parties[props.gs.pov].ready) {
+    return (
+      <button className={general.actionBtn}
+              onClick={e => props.callback('unpay', props.index)}>
+        Unpay $1
       </button>
     );
   }

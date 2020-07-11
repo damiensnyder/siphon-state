@@ -123,6 +123,19 @@ class GameView extends React.Component {
       gs.parties[readyInfo.party].ready = readyInfo.isReady;
       this.setState({gs: gs});
     });
+
+    this.socket.on('newreplace', (party) => {
+      const gs = this.state.gs;
+      gs.parties[party].connected = true;
+      this.setState({gs: gs});
+    });
+
+    this.socket.on('newdisconnect', (party) => {
+      const gs = this.state.gs;
+      gs.parties[party].ready = false;
+      gs.parties[party].connected = false;
+      this.setState({gs: gs});
+    });
   }
 
   // Converts the array of provs in the game to an array of JSX objects.
@@ -216,6 +229,8 @@ class GameView extends React.Component {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds--;
     gs.parties[party].funds++;
+    if (!gs.parties[party].hasOwnProperty('paid')) gs.parties[party].paid = 0;
+    gs.parties[party].paid++;
     this.setState({
       gs: gs
     });
@@ -224,6 +239,8 @@ class GameView extends React.Component {
   buyHandler() {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds -= 5;
+    if (!gs.hasOwnProperty('sympsBought')) gs.sympsBought = 0;
+    gs.sympsBought++;
     this.setState({
       gs: gs
     });
@@ -282,6 +299,7 @@ class GameView extends React.Component {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds++;
     gs.parties[party].funds--;
+    gs.parties[party].paid--;
     this.setState({
       gs: gs
     });
@@ -290,6 +308,7 @@ class GameView extends React.Component {
   unbuyHandler() {
     const gs = this.state.gs;
     gs.parties[gs.pov].funds += 5;
+    gs.sympsBought--;
     this.setState({
       gs: gs
     });
