@@ -91,9 +91,6 @@ class GameView extends React.Component {
   // are received from the server.
   initializeSocket() {
     this.socket = io.connect('/game/' + this.props.gameCode);
-    this.setState({
-      connected: true
-    });
 
     this.socket.on('connection', () => {
       this.setState({

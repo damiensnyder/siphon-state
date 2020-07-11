@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
 
-import SettingText from '../setting-text';
+import TextInput from '../text-input';
 import general from '../general.module.css';
 import styles from './main.module.css';
 
@@ -44,11 +44,11 @@ class CreateMenu extends React.Component {
   render() {
     return (
       <div className={styles.menuOuter}>
-        <SettingText label={"Game code:"}
-                     maxLength={20}
-                     text={this.state.gameCode}
-                     textCallback={this.gameCodeCallback.bind(this)}
-                     submitCallback={this.createGame.bind(this)} />
+        <TextInput label={"Game code:"}
+                   maxLength={20}
+                   text={this.state.gameCode}
+                   textCallback={this.gameCodeCallback.bind(this)}
+                   submitCallback={this.createGame.bind(this)} />
         <button className={general.actionBtn + ' ' + general.priorityBtn}
                 onClick={this.createGame.bind(this)}>
           Create Game

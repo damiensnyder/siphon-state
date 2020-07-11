@@ -5,7 +5,7 @@ import general from '../../general.module.css';
 
 function WaitingPanel(props) {
   return (
-    <div className={general.outerWrapper}>
+    <div className={general.outerWrapper + ' ' + general.vertWrapper}>
       <ControlsHeader gs={props.gs}
                       callback={props.callback} />
     </div>

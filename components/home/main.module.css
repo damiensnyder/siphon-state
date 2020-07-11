@@ -1,11 +1,4 @@
-#containerLevel1 {
-  width: 100%;
-
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-  align-items: center;
-
+#mainBody {
   background-color: #555;
 }
 
@@ -17,21 +10,9 @@
   flex-flow: column;
   justify-content: space-between;
   align-items: stretch;
+  padding: 16px;
 
   background-color: #444;
   text-align: center;
-  border-radius: 4px;
-}
-
-.settingsInput {
-  margin-left: 8px;
-  margin-right: 16px;
-  width: 60px;
-  flex-grow: 1;
-  flex-shrink: 1;
-
-  padding: 0 8px;
-  background-color: #333;
-  border: none;
   border-radius: 4px;
 }

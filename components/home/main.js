@@ -7,7 +7,8 @@ import styles from './main.module.css';
 
 function HomeView() {
   return (
-    <div id={styles.containerLevel1}>
+    <div className={general.horizWrapper}
+         id={styles.mainBody}>
       <CreateMenu />
       <JoinMenu />
     </div>

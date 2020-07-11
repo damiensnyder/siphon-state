@@ -1,7 +1,7 @@
 import React from 'react';
 
 import general from '../../general.module.css';
-import styles from './invite-link.module.css';
+import styles from './join-panel.module.css';
 
 class InviteLink extends React.Component {
   constructor(props) {
@@ -39,15 +39,15 @@ class InviteLink extends React.Component {
 
   render() {
     return (
-      <div className={styles.sameLine}>
+      <div className={general.horizWrapper}>
         <textarea rows={1}
                   ref={this.linkArea}
                   className={styles.gameLink}
                   onChange={() => {}} // suppresses warning
-                  value={'https://filter-state.herokuapp.com/game/' +
+                  value={'https://www.siphonstate.com/game/' +
                          this.props.gameCode}>
         </textarea>
-        <button className={styles.actionBtn + ' ' + general.priorityBtn}
+        <button className={general.actionBtn + ' ' + general.priorityBtn}
                 id={styles.copyBtn}
                 onClick={this.copyInviteLink}>
           {this.state.copied ? 'Copied!' : 'Copy'}

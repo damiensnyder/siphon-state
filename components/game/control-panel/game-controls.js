@@ -38,7 +38,7 @@ class GameControls extends React.Component {
     }
 
     return (
-      <div className={general.outerWrapper}>
+      <div className={general.outerWrapper + ' ' + general.vertWrapper}>
         <ControlsHeader gs={gs}
                         callback={this.props.callback}
                         isTabbed={true}

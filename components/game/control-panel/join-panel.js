@@ -1,5 +1,6 @@
 import React from 'react';
 
+import TextInput from '../../text-input';
 import InviteLink from './invite-link';
 import general from '../../general.module.css';
 import styles from './join-panel.module.css';
@@ -9,9 +10,9 @@ class JoinPanel extends React.Component {
     super(props);
 
     this.state = {
-      partyName: '',
-      abbr: '',
-      abbrPlaceholder: ''
+      partyName: "",
+      abbr: "",
+      abbrPlaceholder: ""
     }
 
     this.partyAbbr = React.createRef();
@@ -20,22 +21,21 @@ class JoinPanel extends React.Component {
     this.joinGame = this.joinGame.bind(this);
   }
 
-  updatePartyName(e) {
-    const partyName = e.target.value;
+  updatePartyName(text) {
     this.setState({
-      partyName: partyName,
-      abbrPlaceholder: partyName.trim().substring(0, 4).toUpperCase()
+      partyName: text,
+      abbrPlaceholder: text.trim().substring(0, 4).toUpperCase()
     });
   }
 
-  updateAbbr(e) {
+  updateAbbr(text) {
     this.setState({
-      abbr: e.target.value
+      abbr: text
     });
   }
 
   joinGame() {
-    const abbr = this.state.abbr === '' ?
+    const abbr = this.state.abbr === "" ?
         this.state.abbrPlaceholder :
         this.state.abbr;
 
@@ -47,24 +47,20 @@ class JoinPanel extends React.Component {
 
   render() {
     return (
-      <div className={general.horizWrapper}>
-        <div className={general.containerLevel5}>
-          <div className={general.sameLine}>
-            <div className={styles.joinLabel}>Party:</div>
-            <input className={styles.joinInput}
-                   onChange={this.updatePartyName}
-                   value={this.state.partyName}
-                   maxLength={40} />
-          </div>
-          <div className={general.sameLine}>
-            <div className={styles.joinLabel}>Abbreviation:</div>
-            <input className={styles.joinInput}
-                   placeholder={this.state.abbrPlaceholder}
-                   onChange={this.updateAbbr}
-                   value={this.state.abbr}
-                   maxLength={4} />
-          </div>
-          <div className={general.sameLine}>
+      <div className={general.outerWrapper + ' ' + general.horizWrapper}>
+        <div className={general.menu}>
+          <TextInput label={"Party name:"}
+                     maxLength={40}
+                     text={this.state.partyName}
+                     textCallback={this.updatePartyName}
+                     submitCallback={this.joinGame} />
+          <TextInput label={"Abbreviation:"}
+                     maxLength={4}
+                     text={this.state.abbr}
+                     placeholder={this.state.abbrPlaceholder}
+                     textCallback={this.updateAbbr}
+                     submitCallback={this.joinGame} />
+          <div className={general.spacer}>
             <button className={general.actionBtn + ' ' + general.priorityBtn}
                     onClick={this.joinGame}>
               Join Game
@@ -72,8 +68,10 @@ class JoinPanel extends React.Component {
           </div>
         </div>
         <div id={styles.orDiv}>or</div>
-        <div className={general.containerLevel5}>
-          <InviteLink gameCode={this.props.gameCode} />
+        <div className={general.menu}>
+          <div className={general.spacer}>
+            <InviteLink gameCode={this.props.gameCode} />
+          </div>
           <span id={styles.inviteFriend}>invite a friend</span>
         </div>
       </div>

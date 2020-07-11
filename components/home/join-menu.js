@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
 
-import SettingText from '../setting-text';
+import TextInput from '../text-input';
 import GameItem from './game-item';
 import general from '../general.module.css';
 import styles from './main.module.css';
@@ -82,16 +82,18 @@ class JoinMenu extends React.Component {
         <div id={joinStyles.activeGamesWindow}>
           {this.gamesToJsx.bind(this)()}
         </div>
-        <div className={general.sameLine}>
-          <SettingText label={"Game code:"}
-                       maxLength={20}
-                       text={this.state.gameCode}
-                       textCallback={this.gameCodeCallback.bind(this)}
-                       submitCallback={this.submitCallback.bind(this)} />
-          <button className={general.actionBtn + ' ' + general.priorityBtn}
-                  onClick={this.submitCallback.bind(this)} >
-            Join
-          </button>
+        <div className={general.horizWrapper}>
+          <TextInput label={"Game code:"}
+                     maxLength={20}
+                     text={this.state.gameCode}
+                     textCallback={this.gameCodeCallback.bind(this)}
+                     submitCallback={this.submitCallback.bind(this)} />
+          <div className={general.spacer}>
+            <button className={general.actionBtn + ' ' + general.priorityBtn}
+                    onClick={this.submitCallback.bind(this)}>
+              Join
+            </button>
+          </div>
         </div>
       </div>
     );
