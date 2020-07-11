@@ -26,6 +26,14 @@ class JoinMenu extends React.Component {
     this.fetchGames();
   }
 
+  componentWillUnmount() {
+    this.setState({
+      gameCode: "",
+      fetched: false,
+      error: false
+    });
+  }
+
   async fetchGames() {
     let res = await fetch('/api/activeGames', {
       method: 'GET'

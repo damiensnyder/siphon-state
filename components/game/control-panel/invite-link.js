@@ -43,6 +43,7 @@ class InviteLink extends React.Component {
         <div className={general.spacer}>
           <div className={general.horizWrapper}>
             <textarea rows={1}
+                      cols={18}
                       ref={this.linkArea}
                       className={styles.gameLink}
                       onChange={() => {}} // suppresses warning

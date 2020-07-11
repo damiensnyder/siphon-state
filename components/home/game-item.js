@@ -23,7 +23,7 @@ function GameItem(props) {
   return (
     <div className={styles.gameItemOuter}>
       <div className={styles.gameItemInner}>
-        <div>
+        <div className={styles.gameInfo}>
           <div>Name: {info.name}</div>
           <div>Players: {info.players}</div>
           <div>Status: {statusString(info.started, info.ended)}</div>
