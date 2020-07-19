@@ -20,7 +20,7 @@ function polsToJsx(props) {
 }
 
 function nameToJsx(name) {
-  if (name.length < 0) {
+  if (name == null) {
     return null;
   }
   return (

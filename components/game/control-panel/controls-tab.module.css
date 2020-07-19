@@ -9,7 +9,7 @@
 
 .activeTab {
   background-color: #555;
-  box-shadow: 0 5px #555;
+  box-shadow: 0 8px #555;
 }
 
 .inactiveTab:hover {

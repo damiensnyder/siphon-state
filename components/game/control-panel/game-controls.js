@@ -3,6 +3,7 @@ import React from 'react';
 import PolCategory from '../pol-category';
 import ControlsHeader from './controls-header';
 import general from '../../general.module.css';
+import styles from './control-panel.module.css';
 
 class GameControls extends React.Component {
   constructor(props) {
@@ -40,19 +41,16 @@ class GameControls extends React.Component {
     var polCategories = [
       <PolCategory gs={gs}
           callback={this.props.callback}
-          name={"Available"}
           key={0}
           inProvince={false}
           pols={runnable} />,
       <PolCategory gs={gs}
           callback={this.props.callback}
-          name={"Busy"}
           key={1}
           inProvince={false}
           pols={unrunnable} />,
       <PolCategory gs={gs}
           callback={this.props.callback}
-          name={"Defectors"}
           key={2}
           inProvince={false}
           pols={self.symps} />
@@ -66,7 +64,8 @@ class GameControls extends React.Component {
             tabCallback={this.switchTab} />
         <div className={general.outerWrapper + ' ' +
             general.vertWrapper + ' ' +
-            general.growable}>
+            general.growable + ' ' +
+            styles.notInGame}>
           {polCategories[this.state.tab]}
         </div>
       </div>
