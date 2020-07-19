@@ -26,10 +26,11 @@ class ProvSwitcher extends React.Component {
       <div className={general.outerWrapper + ' ' +
           general.vertWrapper}>
         <ProvsHeader gs={this.props.gs}
-          tabCallback={this.switchTab} />
+            activeTab={this.state.tab}
+            tabCallback={this.switchTab} />
         <Prov gs={this.props.gs}
-          callback={this.props.callback}
-          index={this.state.tab} />
+            callback={this.props.callback}
+            index={this.state.tab} />
       </div>
     );
   }

@@ -29,7 +29,7 @@ class GameRoom {
     this.actionQueue = [];
     this.handlingAction = false;
     this.enqueueAction = this.enqueueAction.bind(this);
-    this.teartownTimer = setTimeout(() => {this.gmCallback(this)}, 300000);
+    this.teartownTimer = setTimeout(() => {this.gmCallback(this)}, 900000);
   }
 
   // Sends actions to a queue that can be handled one at a time so they don't
@@ -54,7 +54,7 @@ class GameRoom {
     this.handlers[action.type](action.viewer, action.data);
 
     clearTimeout(this.teartownTimer);
-    this.teartownTimer = setTimeout(() => {this.gmCallback(this)}, 300000);
+    this.teartownTimer = setTimeout(() => {this.gmCallback(this)}, 900000);
 
     this.actionQueue.splice(0, 1);
     if (this.actionQueue.length > 0) {
