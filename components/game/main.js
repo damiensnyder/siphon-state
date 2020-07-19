@@ -1,7 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-import ProvSwitcher from './prov-switcher';
+import ProvSwitcher from './provs/prov-switcher';
 import PlayersSidebar from './players-sidebar/players-sidebar';
 import ControlPanel from './control-panel/panel-switcher';
 import Chat from './chat/chat';

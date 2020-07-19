@@ -1,20 +1,20 @@
-.prov {
-  height: 100%;
-
+.provBg {
   border-radius: 4px;
-}
-
-.inactiveProv {
   background-color: #666;
 }
 
-.activeProv {
-  background-color: #707066;
+.allCategories {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 8px;
+  padding-left: 0;
 }
 
-.provName {
+.categoryContainer {
+  flex-grow: 1;
+  height: calc(33.3% - 4px);
   margin: 8px;
-  text-align: center;
-  font-size: 32px;
-  color: #aac;
+  margin-left: 0;
 }

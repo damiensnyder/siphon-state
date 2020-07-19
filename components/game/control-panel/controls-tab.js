@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './controls-tab.module.css';
+import styles from './controls-header.module.css';
 
 function ControlsTab(props) {
   return (

@@ -4,7 +4,7 @@
   display: flex;
   flex-flow: row;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
 }
 
 #messageBar {
@@ -25,4 +25,23 @@
 #readyBtn {
   width: 72px;
   margin-right: 0;
+}
+
+.tabOuter {
+  padding: 4px;
+  margin-right: 4px;
+
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.activeTab {
+  background-color: #555;
+  box-shadow: 0 8px #555;
+}
+
+.inactiveTab:hover {
+  background-color: #333;
+  box-shadow: 0 4px #333;
 }
