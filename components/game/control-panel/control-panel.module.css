@@ -1,3 +1,8 @@
+.notInGame {
+  background-color: #555;
+  border-radius: 4px;
+}
+
 #orDiv {
   margin: 16px;
 

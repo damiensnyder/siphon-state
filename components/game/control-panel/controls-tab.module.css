@@ -1,0 +1,18 @@
+.tabOuter {
+  padding: 4px;
+  margin-right: 4px;
+
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.activeTab {
+  background-color: #555;
+  box-shadow: 0 5px #555;
+}
+
+.inactiveTab:hover {
+  background-color: #333;
+  box-shadow: 0 4px #333;
+}

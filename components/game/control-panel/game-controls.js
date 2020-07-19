@@ -8,9 +8,9 @@ class GameControls extends React.Component {
   constructor(props) {
     super(props);
 
-    this.setState({
+    this.state = {
       tab: 0
-    });
+    };
 
     this.switchTab = this.switchTab.bind(this);
   }
@@ -37,28 +37,37 @@ class GameControls extends React.Component {
       }
     }
 
+    var polCategories = [
+      <PolCategory gs={gs}
+          callback={this.props.callback}
+          name={"Available"}
+          key={0}
+          inProvince={false}
+          pols={runnable} />,
+      <PolCategory gs={gs}
+          callback={this.props.callback}
+          name={"Busy"}
+          key={1}
+          inProvince={false}
+          pols={unrunnable} />,
+      <PolCategory gs={gs}
+          callback={this.props.callback}
+          name={"Defectors"}
+          key={2}
+          inProvince={false}
+          pols={self.symps} />
+    ];
+
     return (
       <div className={general.outerWrapper + ' ' + general.vertWrapper}>
         <ControlsHeader gs={gs}
-                        callback={this.props.callback}
-                        isTabbed={true}
-                        tabCallback={this.switchTab} />
-        <div className={general.horizWrapper}>
-          <PolCategory gs={gs}
-                       callback={this.props.callback}
-                       type={"Available"}
-                       inProvince={false}
-                       pols={runnable} />
-          <PolCategory gs={gs}
-                       callback={this.props.callback}
-                       type={"Unavailable"}
-                       inProvince={false}
-                       pols={unrunnable} />
-          <PolCategory gs={gs}
-                       callback={this.props.callback}
-                       type={"Sympathizers"}
-                       inProvince={false}
-                       pols={self.symps} />
+            callback={this.props.callback}
+            activeTab={this.state.tab}
+            tabCallback={this.switchTab} />
+        <div className={general.outerWrapper + ' ' +
+            general.vertWrapper + ' ' +
+            general.growable}>
+          {polCategories[this.state.tab]}
         </div>
       </div>
     );

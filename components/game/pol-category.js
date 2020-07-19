@@ -1,43 +1,46 @@
 import React from 'react';
 
-import styles from './pol-category.module.css';
 import Pol from './pol';
+import styles from './pol-category.module.css';
 
-class PolCategory extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.polsToJsx = this.polsToJsx.bind(this);
+function polsToJsx(props) {
+  const polsJsx = [];
+  for (let i = 0; i < props.pols.length; i++) {
+    // if (this.props.pols[i] >= 0) {
+      polsJsx.push(
+        <Pol gs={props.gs}
+            callback={props.callback}
+            index={props.pols[i]}
+            key={i} />
+      );
+    // }
   }
 
-  polsToJsx() {
-    const polsJsx = [];
-    for (let i = 0; i < this.props.pols.length; i++) {
-      if (this.props.pols[i] < 0) {
-        polsJsx.push(<div>uh</div>);
-      } else {
-        polsJsx.push(
-          <Pol gs={this.props.gs}
-               callback={this.props.callback}
-               index={this.props.pols[i]}
-               key={i} />
-        );
-      }
-    }
+  return polsJsx;
+}
 
-    return polsJsx;
+function nameToJsx(name) {
+  if (name.length < 0) {
+    return null;
   }
+  return (
+    <h3 className={styles.categoryName}>
+      {name}
+    </h3>
+  );
+}
 
-  render() {
-    return (
-      <div className={styles.outerWrapper}>
-        <h3 className={styles.categoryName}>
-          {this.props.type}
-        </h3>
-        {this.polsToJsx()}
+function PolCategory(props) {
+  return (
+    <div className={styles.categoryWrapper}>
+      {nameToJsx(props.name)}
+      <div className={styles.polsOuter}>
+        <div className={styles.polsInner}>
+          {polsToJsx(props)}
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default PolCategory;

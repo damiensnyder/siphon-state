@@ -1,5 +1,6 @@
 import React from 'react';
 
+import ControlsTab from './controls-tab';
 import general from '../../general.module.css';
 import styles from './controls-header.module.css';
 
@@ -31,15 +32,15 @@ function readyBtn(props) {
   return (
     <button id={styles.readyBtn}
             className={general.actionBtn + ' ' +
-                       general.priorityBtn + ' ' +
-                       styles.headerItem}
-            onClick={() => {props.callback('ready', !isReady)}}>
+                general.priorityBtn + ' ' +
+                styles.headerItem}
+            onClick={() => props.callback('ready', !isReady)}>
       {btnLabel}
     </button>
   );
 }
 
-function ControlsHeader(props) {
+function helperMsg(props) {
   var helperMsg = "Click ready when you're ready to start.";
 
   if (props.gs.pov >= 0) {
@@ -63,11 +64,34 @@ function ControlsHeader(props) {
     helperMsg = "Enjoy the show!";
   }
 
+  return helperMsg;
+}
+
+function ControlsHeader(props) {
+  const tabs = [
+    <ControlsTab name={"Available"}
+        index={0}
+        key={0}
+        active={props.activeTab == 0}
+        tabCallback={props.tabCallback} />,
+    <ControlsTab name={"Busy"}
+        index={1}
+        key={1}
+        active={props.activeTab == 1}
+        tabCallback={props.tabCallback} />,
+    <ControlsTab name={"Defectors"}
+        index={2}
+        key={2}
+        active={props.activeTab == 2}
+        tabCallback={props.tabCallback} />
+  ];
+
   return (
     <div id={styles.outerHeader}>
+      {props.gs.started ? tabs : null}
       <div id={styles.messageBar}
            className={styles.headerItem}>
-        {helperMsg}
+        {helperMsg(props)}
       </div>
       {readyBtn(props)}
     </div>

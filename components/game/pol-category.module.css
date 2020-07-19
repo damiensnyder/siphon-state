@@ -1,8 +1,39 @@
-.outerWrapper {
-  column-width: 200px;
+.categoryWrapper {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.polsOuter {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+}
+
+.polsInner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-x: scroll;
 }
 
 .categoryName {
+  flex-grow: 0;
   margin: 4px;
   margin-bottom: 2px;
 }

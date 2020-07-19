@@ -76,3 +76,15 @@
 #sendBtn:hover {
   background-color: #222;
 }
+
+.sender {
+  color: #cc9;
+}
+
+.selfSender {
+  color: #aac;
+}
+
+.systemMsg {
+  color: #999;
+}

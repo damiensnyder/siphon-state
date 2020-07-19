@@ -5,6 +5,7 @@ import WaitingPanel from './waiting-panel';
 import GameControls from './game-controls';
 import InviteLink from './invite-link';
 import general from '../../general.module.css';
+import styles from './control-panel.module.css';
 
 function ControlPanel(props) {
   if (props.gs.pov < 0 && !props.gs.started) {
@@ -25,7 +26,9 @@ function ControlPanel(props) {
     );
   } else {
     return (
-      <div className={general.outerWrapper + ' ' + general.horizWrapper}>
+      <div className={general.outerWrapper + ' ' +
+          general.horizWrapper + ' ' +
+          styles.notInGame}>
         <InviteLink gameCode={props.gameCode} />
       </div>
     );
