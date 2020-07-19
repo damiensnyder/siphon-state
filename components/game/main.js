@@ -1,7 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-import Prov from './prov';
+import ProvSwitcher from './prov-switcher';
 import PlayersSidebar from './players-sidebar/players-sidebar';
 import ControlPanel from './control-panel/panel-switcher';
 import Chat from './chat/chat';
@@ -136,20 +136,6 @@ class GameView extends React.Component {
       gs.parties[party].connected = false;
       this.setState({gs: gs});
     });
-  }
-
-  // Converts the array of provs in the game to an array of JSX objects.
-  provsToJsx() {
-    const provsJsx = [];
-    for (var i = 0; i < this.state.gs.provs.length; i++) {
-      provsJsx.push(
-        <Prov gs={this.state.gs}
-              callback={this.callback}
-              index={i}
-              key={i} />
-      );
-    }
-    return provsJsx;
   }
 
   // Passed to child components. Assigns the callback to the proper handler
@@ -355,21 +341,22 @@ class GameView extends React.Component {
     return (
       <div id={styles.root}>
         <div id={styles.gameContainer}
-             className={styles.containerLevel2}>
-          {this.provsToJsx()}
+            className={styles.containerLevel2}>
+          <ProvSwitcher gs={this.state.gs}
+              callback={this.callback} />
         </div>
         <Chat messages={this.state.messages}
-              callback={this.callback} />
+            callback={this.callback} />
         <div id={styles.playersSidebar}
-             className={styles.containerLevel2}>
+            className={styles.containerLevel2}>
           <PlayersSidebar gs={this.state.gs}
-                          callback={this.callback} />
+              callback={this.callback} />
         </div>
         <div id={styles.controlPanel}
-             className={styles.containerLevel2}>
+            className={styles.containerLevel2}>
           <ControlPanel gs={this.state.gs}
-                        callback={this.callback}
-                        gameCode={this.gameCode} />
+              callback={this.callback}
+              gameCode={this.gameCode} />
         </div>
       </div>
     );

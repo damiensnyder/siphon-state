@@ -10,14 +10,12 @@ function polsToJsx(props) {
 
   const polsJsx = [];
   for (let i = 0; i < props.pols.length; i++) {
-    // if (this.props.pols[i] >= 0) {
-      polsJsx.push(
-        <Pol gs={props.gs}
-            callback={props.callback}
-            index={props.pols[i]}
-            key={i} />
-      );
-    // }
+    polsJsx.push(
+      <Pol gs={props.gs}
+          callback={props.callback}
+          index={props.pols[i]}
+          key={i} />
+    );
   }
 
   return polsJsx;
