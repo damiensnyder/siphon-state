@@ -41,19 +41,22 @@ class GameControls extends React.Component {
     var polCategories = [
       <PolCategory gs={gs}
           callback={this.props.callback}
-          key={0}
+          emptyMsg={"All your politicians are busy right now."}
           inProvince={false}
-          pols={runnable} />,
+          pols={runnable}
+          key={0} />,
       <PolCategory gs={gs}
           callback={this.props.callback}
-          key={1}
+          emptyMsg={"None of your politicians are busy right now."}
           inProvince={false}
-          pols={unrunnable} />,
+          pols={unrunnable}
+          key={1} />,
       <PolCategory gs={gs}
           callback={this.props.callback}
-          key={2}
+          emptyMsg={"You don't have any sympathizers right now."}
           inProvince={false}
-          pols={self.symps} />
+          pols={self.symps}
+          key={2} />
     ];
 
     return (

@@ -18,8 +18,8 @@
 
 .polsInner {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
+  top: 0;
+  bottom: 0;
   left: 8px;
   right: 8px;
 
@@ -38,4 +38,9 @@
   flex-grow: 0;
   margin: 4px;
   margin-bottom: 2px;
+}
+
+.emptyMsg {
+  width: 100%;
+  text-align: center;
 }

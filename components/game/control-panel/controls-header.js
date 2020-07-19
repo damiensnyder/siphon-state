@@ -79,7 +79,7 @@ function ControlsHeader(props) {
         key={1}
         active={props.activeTab == 1}
         tabCallback={props.tabCallback} />,
-    <ControlsTab name={"Defectors"}
+    <ControlsTab name={"Sympathizers"}
         index={2}
         key={2}
         active={props.activeTab == 2}

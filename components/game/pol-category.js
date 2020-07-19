@@ -4,6 +4,10 @@ import Pol from './pol';
 import styles from './pol-category.module.css';
 
 function polsToJsx(props) {
+  if (props.pols.length == 0) {
+    return <div className={styles.emptyMsg}>{props.emptyMsg}</div>;
+  }
+
   const polsJsx = [];
   for (let i = 0; i < props.pols.length; i++) {
     // if (this.props.pols[i] >= 0) {
