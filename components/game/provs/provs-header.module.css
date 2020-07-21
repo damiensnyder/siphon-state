@@ -28,6 +28,9 @@
   padding: 8px;
   margin-right: 8px;
 
+  white-space: nowrap;
+  overflow-x: hidden;
+
   font-size: 20px;
   text-align: center;
   cursor: pointer;

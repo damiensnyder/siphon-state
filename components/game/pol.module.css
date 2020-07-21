@@ -1,7 +1,36 @@
-.sameLine {
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px;
+.outer {
+  position: relative;
+  width: min-content;
+  height: 100%;
+
+  background-color: blue;
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+
+  overflow-x: hidden;
+  background-color: red;
+}
+
+.bgImg {
+  height: 100%;
+  width: auto;
+
+  border-radius: 4px;
+}
+
+.name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+
+  white-space: nowrap;
+
+  text-align: center;
+  color: black;
 }

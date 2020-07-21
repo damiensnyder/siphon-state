@@ -101,10 +101,17 @@ function actionButtons(props) {
 
 function Pol(props) {
   const self = props.gs.pols[props.index];
+  /*
+  <div>{self.name} ({props.gs.parties[self.party].abbr})</div>
+  {actionButtons(props)}
+  */
   return (
-    <div className={styles.sameLine}>
-      <div>{self.name} ({props.gs.parties[self.party].abbr})</div>
-      {actionButtons(props)}
+    <div className={styles.outer}>
+      <div className={styles.inner}>
+        <img className={styles.bgImg}
+            src={'/politicians/pol.png'}
+            alt={self.name} />
+      </div>
     </div>
   );
 }
