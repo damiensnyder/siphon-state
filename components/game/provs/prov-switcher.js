@@ -24,7 +24,7 @@ class ProvSwitcher extends React.Component {
   }
 
   currentProvOrPlaceholder() {
-    if (this.props.started) {
+    if (!this.props.gs.started) {
       return <PregamePlaceholder />;
     }
     return (

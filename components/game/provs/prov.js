@@ -6,10 +6,19 @@ import styles from './prov.module.css';
 
 function polCategoriesToJsx(props) {
   const self = props.gs.provs[props.index];
+  const sympathetic = (
+    <div className={styles.categoryContainer}>
+      <PolCategory gs={props.gs}
+          name={"Sympathetic"}
+          callback={props.callback}
+          pols={[]}
+          key={0} />
+    </div>
+  )
   const candidates = (
     <div className={styles.categoryContainer}>
       <PolCategory gs={props.gs}
-          name={"Candidates"}
+          name={self.stage <= 1 ? "Candidates" : "Also-ran"}
           callback={props.callback}
           pols={self.candidates}
           key={1} />
@@ -33,15 +42,14 @@ function polCategoriesToJsx(props) {
           key={3} />
     </div>
   );
+  const emptyContainer = <div className={styles.categoryContainer} />;
 
   if (self.stage <= 1) {
-    return [candidates];
+    return [candidates, sympathetic];
   } else if (self.stage == 2) {
     return [officials, candidates];
   } else if (self.stage == 3) {
-    return [governors, officials, candidates];
-  } else {
-    return [];
+    return [officials, candidates];
   }
 }
 

@@ -36,8 +36,7 @@
 
 .categoryName {
   flex-grow: 0;
-  margin: 4px;
-  margin-bottom: 2px;
+  margin: 0 8px 2px 8px;
 }
 
 .emptyMsg {

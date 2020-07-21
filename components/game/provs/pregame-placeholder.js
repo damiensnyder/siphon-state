@@ -1,6 +1,7 @@
 import React from 'react';
 
 import general from '../../general.module.css';
+import styles from './prov.module.css';
 
 function PregamePlaceholder(props) {
   return (
