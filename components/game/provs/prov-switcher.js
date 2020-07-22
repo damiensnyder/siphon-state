@@ -4,7 +4,6 @@ import ProvsHeader from './provs-header';
 import Prov from './prov';
 import PregamePlaceholder from './pregame-placeholder';
 import general from '../../general.module.css';
-import styles from './provs.module.css';
 
 class ProvSwitcher extends React.Component {
   constructor(props) {

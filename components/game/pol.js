@@ -107,11 +107,9 @@ function Pol(props) {
   */
   return (
     <div className={styles.outer}>
-      <div className={styles.inner}>
         <img className={styles.bgImg}
             src={'/politicians/pol.png'}
             alt={self.name} />
-      </div>
     </div>
   );
 }

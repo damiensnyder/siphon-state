@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 
 import Pol from './pol';
 import styles from './pol-category.module.css';
@@ -37,8 +37,10 @@ function PolCategory(props) {
     <div className={styles.categoryWrapper}>
       {nameToJsx(props.name)}
       <div className={styles.polsOuter}>
-        <div className={styles.polsInner}>
-          {polsToJsx(props)}
+        <div className={styles.polsMiddle}>
+          <div className={styles.polsInner}>
+            {polsToJsx(props)}
+          </div>
         </div>
       </div>
     </div>

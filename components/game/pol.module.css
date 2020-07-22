@@ -1,26 +1,13 @@
 .outer {
   position: relative;
-  width: min-content;
-  height: 100%;
-
-  background-color: blue;
-}
-
-.inner {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-
-  overflow-x: hidden;
-  background-color: red;
+  width: 150px;
+  height: 150px;
+  margin-right: 0;
 }
 
 .bgImg {
+  width: 100%;
   height: 100%;
-  width: auto;
-
-  border-radius: 4px;
 }
 
 .name {
@@ -32,5 +19,4 @@
   white-space: nowrap;
 
   text-align: center;
-  color: black;
 }
