@@ -173,7 +173,9 @@ class GameRoom {
       }
     }
 
-    this.players[i].resetActionQueues(this.gs.activeProv.stage);
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].resetActionQueues(this.gs.activeProv.stage);
+    }
   }
 
   rematch() {

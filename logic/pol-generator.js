@@ -1,5 +1,5 @@
 const fs = require('fs');
-const pols = JSON.parse(fs.readFileSync('pols.json'));
+const pols = JSON.parse(fs.readFileSync('./pols.json'));
 
 class PolGenerator {
   constructor() {
