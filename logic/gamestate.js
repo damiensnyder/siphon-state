@@ -20,7 +20,7 @@ class GameState {
       officials: [],
       candidates: []
     }});
-    shuffle(this.provs);
+    generator.shuffle(this.provs);
     this.activeProv = this.provs[4];
   }
 
@@ -121,7 +121,7 @@ class GameState {
 
       // Give a symp to each party with at least one candidate in the race.
       let sympOrder = this.activeProv.candidates.slice();
-      shuffle(sympOrder);
+      generator.shuffle(sympOrder);
       for (let i = 0; i < this.parties.length; i++) {
         for (let j = 0; j < this.activeProv.candidates.length; j++) {
           let givenSymp = false;
@@ -349,13 +349,6 @@ class GameState {
       this.parties[i].symps = hiddenInfo.symps[i];
       this.parties[i].funds = hiddenInfo.funds[i];
     }
-  }
-}
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }
 
