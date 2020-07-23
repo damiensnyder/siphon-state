@@ -19,7 +19,7 @@ class PolGenerator {
     this.unused = pols.slice():
     this.resets++;
     for (let i = 0; i < this.unused.length; i++) {
-      this.unused[i].id = this.unused[i].id + i;
+      this.unused[i].id += this.unused.length;
       this.unused[i].name = this.unused[i].id + ' ' + i;
     }
   }
