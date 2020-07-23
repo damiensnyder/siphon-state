@@ -5,13 +5,23 @@ class PolGenerator {
   constructor() {
     this.unused = pols.slice():
     shuffle(this.unused);
+    this.resets = 0;
   }
 
   newPol() {
     if (this.unused.length == 0) {
-      this.unused = pols.slice():
+      this.redeal()
     }
     return this.unused.pop();
+  }
+
+  redeal() {
+    this.unused = pols.slice():
+    this.resets++;
+    for (let i = 0; i < this.unused.length; i++) {
+      this.unused[i].id = this.unused[i].id + i;
+      this.unused[i].name = this.unused[i].id + ' ' + i;
+    }
   }
 
   shuffle(arr) {

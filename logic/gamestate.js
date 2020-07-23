@@ -133,7 +133,7 @@ class GameState {
             givenSymp = true;
           }
         }
-        this.parties[i].pols = [];
+        this.parties[i].candidates = [];
       }
     }
   }
@@ -279,20 +279,21 @@ class GameState {
   }
 
   // Pay the given amount of funds from party 1 to party 2.
-  pay(p1, p2, amount) {
-    if (this.parties[p1].funds > amount
-        && p2 < this.parties.length
-        && p2 >= 0) {
-      this.parties[p1].funds -= amount;
-      this.parties[p2].funds += amount;
+  pay(party, paymentInfo) {
+    if (this.parties[party].funds > paymentInfo.amount
+        && paymentInfo.target < this.parties.length
+        && paymentInfo.target >= 0) {
+      this.parties[party].funds -= paymentInfo.amount;
+      this.parties[paymentInfo.target].funds += paymentInfo.amount;
     }
   }
 
-  bribe(partyIndex, sympIndex) {
+  bribe(partyIndex) {
     const party = this.parties[partyIndex];
-    if (sympIndex < party.symps.length && sympIndex >= 0) {
+    if (party.symps.length > 0 && party.funds >= (2 + this.rounds) * 10) {
       party.bribed.push(party.symps[sympIndex]);
       party.symps.splice(sympIndex, 1);
+      party.funds -= (2 + this.rounds) * 10;
     }
   }
 
