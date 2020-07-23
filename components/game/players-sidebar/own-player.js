@@ -19,8 +19,6 @@ function gsInfo(props) {
       <h4>
         ${self.funds}{numVotes(props)}
       </h4>
-      {buyButton(props)}
-      {unbuyButton(props)}
     </div>
   );
 }
@@ -36,33 +34,6 @@ function readyIndicator(self) {
 function numVotes(props) {
   if (props.gs.provs[props.gs.activeProvId].stage == 2) {
     return `, ${props.gs.parties[props.index].votes} votes`;
-  }
-  return null;
-}
-
-function buyButton(props) {
-  if (props.gs.started
-      && !props.gs.ended
-      && !props.gs.parties[props.gs.pov].ready) {
-    return (
-      <button className={general.actionBtn}
-              onClick={e => props.callback('buy', {})}>
-        Buy symp ($5)
-      </button>
-    );
-  }
-  return null;
-}
-
-function unbuyButton(props) {
-  if (props.gs.sympsBought > 0
-      && !props.gs.parties[props.gs.pov].ready) {
-    return (
-      <button className={general.actionBtn}
-              onClick={e => props.callback('unbuy', {})}>
-        Unbuy symp
-      </button>
-    );
   }
   return null;
 }

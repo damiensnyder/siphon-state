@@ -16,9 +16,7 @@ function gsInfo(props) {
   return (
     <div>
       {readyIndicator(self)}
-      <h4>
-        ${self.funds}{numVotes(props)}
-      </h4>
+      {numVotes(props)}
       {props.gs.pov >= 0 ? payButton(props) : null}
       {props.gs.pov >= 0 ? unpayButton(props) : null}
       {replaceButton(props)}
