@@ -103,13 +103,21 @@ function Pol(props) {
   const self = props.gs.pols[props.index];
   /*
   <div>{self.name} ({props.gs.parties[self.party].abbr})</div>
-  {actionButtons(props)}
   */
   return (
     <div className={styles.outer}>
-        <img className={styles.bgImg}
-            src={'/politicians/pol.png'}
-            alt={self.name} />
+      <div className={styles.inner}>
+        <span class={styles.name + ' ' +
+            (self.party == props.gs.pov ? styles.ownPol : null)}>
+          {self.name}
+        </span>
+        <div class={styles.pct}>
+          100%
+        </div>
+        <div className={styles.actionContainer}>
+          {actionButtons(props)}
+        </div>
+      </div>
     </div>
   );
 }
