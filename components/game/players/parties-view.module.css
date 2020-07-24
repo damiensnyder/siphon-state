@@ -1,0 +1,46 @@
+#playersWrapper {
+  flex-basis: 0;
+  flex-grow: 2;
+  margin-bottom: 16px;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.playerOuter {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: stretch;
+
+  border-radius: 6px;
+  background-color: #555;
+}
+
+.nameAndAbbr {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px;
+}
+
+.controlsAndInfo {
+  flex-grow: 0;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.name {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.abbr {
+  font-size: 16px;
+}

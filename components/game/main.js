@@ -1,8 +1,10 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-import PlayersView from './players/players-view';
+import PartiesView from './players/parties-view';
+import ProvsView from './provs/prov-switcher';
 import Chat from './chat/chat';
+import JoinPanel from './join-panel';
 import styles from './main.module.css';
 import gsAfter from './gamestate-manager';
 
@@ -187,17 +189,32 @@ class GameView extends React.Component {
     });
   }
 
+  leftPanelJsx() {
+    if (this.state.gs.started && !this.state.gs.ended) {
+      return (
+        <ProvsView gs={this.state.gs}
+            callback={this.callback} />
+      );
+    } else if (!this.state.gs.started && this.state.gs.pov < 0) {
+      return (
+        <JoinPanel callback={this.callback}
+            gameCode={this.props.gameCode} />
+      );
+    }
+    return null;
+  }
+
   render() {
     return (
       <div id={styles.root}>
         <div id={styles.sidebar}>
-          <PlayersView gs={this.state.gs}
+          <PartiesView gs={this.state.gs}
               callback={this.callback} />
           <Chat messages={this.state.messages}
               callback={this.callback} />
         </div>
         <div id={styles.gamePane}>
-          yo
+          {this.leftPanelJsx.bind(this)()}
         </div>
       </div>
     );

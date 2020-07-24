@@ -1,13 +1,14 @@
 import React from 'react';
 
 import Party from './party';
-import styles from './players-view.module.css';
+import styles from './parties-view.module.css';
 
 function partiesToJsx(gs, callback) {
   const partiesJsx = [];
   for (let i = 0; i < gs.parties.length; i++) {
     partiesJsx.push(
-      <Player key={i}
+      <Party key={i}
+          index={i}
           gs={gs}
           callback={callback} />
     );
@@ -15,7 +16,7 @@ function partiesToJsx(gs, callback) {
   return partiesJsx;
 }
 
-function PlayersView(props) {
+function PartiesView(props) {
   return (
     <div id={styles.playersWrapper}>
       {partiesToJsx(props.gs, props.callback)}
@@ -23,4 +24,4 @@ function PlayersView(props) {
   );
 }
 
-export default PlayersView;
+export default PartiesView;

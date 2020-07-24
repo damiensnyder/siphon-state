@@ -115,8 +115,12 @@ class GameState {
     if (this.activeProv.candidates.length <= 5) {
       this.beginVoting();
     } else {
+      const countSoFar = Array(this.parties.length).fill(0);
       for (let i = 0; i < this.activeProv.candidates.length; i++) {
-        this.activeProv.candidates[i].support = 0;
+        let party = this.activeProv.candidates[i].party;
+        countSoFar[party]++;
+        this.activeProv.candidates[i].support = -0.001 *
+            (this.parties.length * countSoFar[party] + party);
       }
 
       // Give a symp to each party with at least one candidate in the race.
@@ -164,10 +168,12 @@ class GameState {
 
   beginVoting() {
     // All remaining candidates become officials.
-    this.activeProv.officials = this.activeProv.candidates;
-    this.activeProv.candidates = [];
-    this.activeProv.stage = 2;
+    this.activeProv.candidates.sort((pol) => {
+      return -pol.support;
+    });
 
+    this.activeProv.officials = this.activeProv.candidates.splice(0, 5);
+    this.activeProv.stage = 2;
     this.rounds = 0;
     this.resetVotes();
 

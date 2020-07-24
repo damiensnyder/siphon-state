@@ -1,6 +1,6 @@
-.notInGame {
+.panelContainer {
   background-color: #555;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 #orDiv {

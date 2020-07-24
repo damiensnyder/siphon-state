@@ -1,8 +1,8 @@
 #root {
-  top: 8px;
-  left: 8px;
-  bottom: 8px;
-  right: 8px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   position: fixed;
 
   display: flex;
@@ -16,6 +16,8 @@
 #sidebar {
   flex-basis: 0;
   flex-grow: 1;
+  margin: 16px;
+  margin-right: 0;
 
   display: flex;
   flex-flow: column;
@@ -26,11 +28,10 @@
 #gamePane {
   flex-basis: 0;
   flex-grow: 2;
+  margin: 16px;
 
   display: flex;
   flex-flow: column;
   align-items: stretch;
   justify-content: space-between;
-
-  text-align: center;
 }
