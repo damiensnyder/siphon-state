@@ -1,11 +1,9 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-import ProvSwitcher from './provs/prov-switcher';
-import PlayersSidebar from './players-sidebar/players-sidebar';
-import ControlPanel from './control-panel/panel-switcher';
 import Chat from './chat/chat';
 import styles from './main.module.css';
+import gsAfter from './gamestate-manager';
 
 class GameView extends React.Component {
   constructor(props) {
@@ -16,21 +14,13 @@ class GameView extends React.Component {
 
     this.state = {
       gs: {
-        provs: [
-          { name: '', isActive: false },
-          { name: '', isActive: false },
-          { name: '', isActive: false },
-          { name: '', isActive: false },
-          { name: '', isActive: false }
-        ],
-        activeProv: {},
         parties: [],
-        pov: -1
+        pov: -1,
+        started: false,
+        ended: false
       },
       messages: [],
-      connected: false,
-      started: false,
-      ended: false
+      connected: false
     };
 
     this.handlers = {
@@ -38,18 +28,7 @@ class GameView extends React.Component {
       'replace': this.replaceHandler,
       'ready': this.readyHandler,
       'msg': this.msgHandler,
-      'flip': this.flipHandler,
-      'pay': this.payHandler,
-      'buy': this.buyHandler,
-      'run': this.runHandler,
-      'fund': this.fundHandler,
-      'vote': this.voteHandler,
-      'unflip': this.unflipHandler,
-      'unpay': this.unpayHandler,
-      'unbuy': this.unbuyHandler,
-      'unrun': this.unrunHandler,
-      'unfund': this.unfundHandler,
-      'unvote': this.unvoteHandler
+      'action': this.actionHandler
     };
 
     for (let key in this.handlers) {
@@ -153,7 +132,7 @@ class GameView extends React.Component {
     this.addMsg({
       sender: 'Client',
       text: `You have joined the game as '${partyInfo.name}' ` +
-            `(${partyInfo.abbr}).`,
+          `(${partyInfo.abbr}).`,
       isSelf: false,
       isSystem: true
     });
@@ -164,6 +143,7 @@ class GameView extends React.Component {
     gs.pov = target;
     gs.parties[target].connected = true;
     gs.parties[target].symps = [];
+    gs.parties[target].bribed = [];
     this.setState({
       gs: gs
     });
@@ -181,151 +161,20 @@ class GameView extends React.Component {
   // message. Shows the message client-side instantly while the initial callback
   // function sends the message to the server to be broadcasted to everyone
   // else.
-  msgHandler(data) {
+  msgHandler(msg) {
     this.addMsg({
       sender: 'You',
-      text: data,
+      text: msg,
       isSelf: true,
       isSystem: false
     });
   }
 
-  flipHandler(pol) {
-    const gs = this.state.gs;
-    const oldPartyIndex = gs.pols[pol].party;
-    const oldParty = gs.parties[oldPartyIndex];
-    oldParty.pols.splice(oldParty.pols.indexOf(pol), 1);
-    gs.parties[gs.pov].symps.splice(gs.parties[gs.pov].symps.indexOf(pol), 1);
-    gs.parties[gs.pov].pols.push(pol);
-    gs.pols[pol].party = gs.pov;
-    gs.pols[pol].oldPartyIndex = oldPartyIndex;
-
-    if (gs.provs[gs.activeProvId].stage == 2
-        && gs.provs[gs.activeProvId].officials.includes(pol)) {
-      gs.parties[gs.pov].votes++;
-      oldParty.votes--;
-    }
-
+  actionHandler(data) {
     this.setState({
-      gs: gs
+      gs: gsAfter(this.state.gs, data.type, data.actionInfo)
     });
-  }
-
-  payHandler(party) {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].funds--;
-    gs.parties[party].funds++;
-    if (!gs.parties[party].hasOwnProperty('paid')) gs.parties[party].paid = 0;
-    gs.parties[party].paid++;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  buyHandler() {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].funds -= 5;
-    if (!gs.hasOwnProperty('sympsBought')) gs.sympsBought = 0;
-    gs.sympsBought++;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  runHandler(pol) {
-    const gs = this.state.gs;
-    gs.pols[pol].runnable = false;
-    gs.provs[gs.activeProvId].candidates.push(pol);
-    this.setState({
-      gs: gs
-    });
-  }
-
-  fundHandler(pol) {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].funds--;
-    gs.pols[pol].funded = true;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  voteHandler(pol) {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].votes--;
-    if (!gs.pols[pol].hasOwnProperty('votes')) gs.pols[pol].votes = 0;
-    gs.pols[pol].votes++;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  unflipHandler(pol) {
-    const gs = this.state.gs;
-    const oldParty = gs.parties[gs.pols[pol].oldPartyIndex];
-    oldParty.pols.push(pol);
-    gs.pols[pol].party = gs.pols[pol].oldPartyIndex;
-    delete gs.pols[pol].oldPartyIndex;
-
-    gs.parties[gs.pov].symps.push(pol);
-    gs.parties[gs.pov].pols.splice(gs.parties[gs.pov].pols.indexOf(pol), 1);
-
-    if (gs.provs[gs.activeProvId].stage == 2
-        && gs.provs[gs.activeProvId].officials.includes(pol)) {
-      gs.parties[gs.pov].votes--;
-      oldParty.votes++;
-    }
-
-    this.setState({
-      gs: gs
-    });
-  }
-
-  unpayHandler(party) {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].funds++;
-    gs.parties[party].funds--;
-    gs.parties[party].paid--;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  unbuyHandler() {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].funds += 5;
-    gs.sympsBought--;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  unrunHandler(pol) {
-    const gs = this.state.gs;
-    gs.pols[pol].runnable = true;
-    gs.provs[gs.activeProvId].candidates.splice(
-        gs.provs[gs.activeProvId].candidates.indexOf(pol), 1);
-    this.setState({
-      gs: gs
-    });
-  }
-
-  unfundHandler(pol) {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].funds++;
-    gs.pols[pol].funded = false;
-    this.setState({
-      gs: gs
-    });
-  }
-
-  unvoteHandler(data) {
-    const gs = this.state.gs;
-    gs.parties[gs.pov].votes++;
-    gs.pols[data].votes--;
-    this.setState({
-      gs: gs
-    });
+    this.socket.emit(data.type, data.actionInfo);
   }
 
   // Adds a message to the Chat component.
@@ -340,24 +189,8 @@ class GameView extends React.Component {
   render() {
     return (
       <div id={styles.root}>
-        <div id={styles.gameContainer}
-            className={styles.containerLevel2}>
-          <ProvSwitcher gs={this.state.gs}
-              callback={this.callback} />
-        </div>
         <Chat messages={this.state.messages}
             callback={this.callback} />
-        <div id={styles.playersSidebar}
-            className={styles.containerLevel2}>
-          <PlayersSidebar gs={this.state.gs}
-              callback={this.callback} />
-        </div>
-        <div id={styles.controlPanel}
-            className={styles.containerLevel2}>
-          <ControlPanel gs={this.state.gs}
-              callback={this.callback}
-              gameCode={this.gameCode} />
-        </div>
       </div>
     );
   }
