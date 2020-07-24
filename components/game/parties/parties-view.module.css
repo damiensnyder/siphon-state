@@ -1,7 +1,6 @@
 #playersWrapper {
   flex-basis: 0;
   flex-grow: 2;
-  margin-bottom: 16px;
 
   display: flex;
   flex-flow: column;
@@ -10,6 +9,8 @@
 }
 
 .playerOuter {
+  margin-bottom: 16px;
+
   display: flex;
   flex-flow: row;
   justify-content: space-between;
@@ -43,4 +44,12 @@
 
 .abbr {
   font-size: 16px;
+}
+
+.ownParty {
+  color: #3ac;
+}
+
+.priority {
+  color: #5c3;
 }

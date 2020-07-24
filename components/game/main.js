@@ -3,8 +3,8 @@ import io from 'socket.io-client';
 
 import PartiesView from './players/parties-view';
 import ProvsView from './provs/prov-switcher';
+import PregameView from './pregame/pregame-view';
 import Chat from './chat/chat';
-import JoinPanel from './join-panel';
 import styles from './main.module.css';
 import gsAfter from './gamestate-manager';
 
@@ -189,15 +189,16 @@ class GameView extends React.Component {
     });
   }
 
-  leftPanelJsx() {
+  rightPanelJsx() {
     if (this.state.gs.started && !this.state.gs.ended) {
       return (
         <ProvsView gs={this.state.gs}
             callback={this.callback} />
       );
-    } else if (!this.state.gs.started && this.state.gs.pov < 0) {
+    } else if (!this.state.gs.started) {
       return (
-        <JoinPanel callback={this.callback}
+        <PregameView joined={this.state.gs.pov >= 0}
+            callback={this.callback}
             gameCode={this.props.gameCode} />
       );
     }
@@ -214,7 +215,7 @@ class GameView extends React.Component {
               callback={this.callback} />
         </div>
         <div id={styles.gamePane}>
-          {this.leftPanelJsx.bind(this)()}
+          {this.rightPanelJsx.bind(this)()}
         </div>
       </div>
     );
