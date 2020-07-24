@@ -1,26 +1,32 @@
 const fs = require('fs');
-const pols = JSON.parse(fs.readFileSync('./pols.json'));
+const path = require('path');
+const info = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'pols.json')));
 
 class PolGenerator {
   constructor() {
-    this.unused = pols.slice():
-    shuffle(this.unused);
+    this.unused = info.pols.slice();
+    this.shuffle(this.unused);
     this.resets = 0;
   }
 
-  newPol() {
+  newPol(party) {
     if (this.unused.length == 0) {
-      this.redeal()
+      this.redeal();
     }
-    return this.unused.pop();
+    const newPol = this.unused.pop();
+    newPol.party = party;
+    return newPol;
   }
 
   redeal() {
-    this.unused = pols.slice():
+    this.unused = info.pols.slice();
+    this.shuffle(this.unused);
     this.resets++;
     for (let i = 0; i < this.unused.length; i++) {
-      this.unused[i].id += this.unused.length;
-      this.unused[i].name = this.unused[i].id + ' ' + i;
+      const repeatPol = {};
+      repeatPol.id = this.unused[i].id + this.unused.length * this.resets;
+      repeatPol.name = this.unused[i].name + " " + i;
+      this.unused[i] = repeatPol;
     }
   }
 

@@ -75,11 +75,11 @@ class GameState {
     this.priority = (this.priority + 1) % this.parties.length;
     this.activeProv.stage = 0;
 
-    for (let i = 0; i < this.activeProv.candidates.length) {
+    for (let i = 0; i < this.activeProv.candidates.length; i++) {
       let pol = this.activeProv.candidates[i];
       this.parties[pol.party].candidates.push(pol);
     }
-    for (let i = 0; i < this.activeProv.officials.length) {
+    for (let i = 0; i < this.activeProv.officials.length; i++) {
       let pol = this.activeProv.officials[i];
       this.parties[pol.party].candidates.push(pol);
     }
@@ -126,7 +126,7 @@ class GameState {
         for (let j = 0; j < this.activeProv.candidates.length; j++) {
           let givenSymp = false;
           if (this.activeProv.candidates[j].party != j
-              && !givenSymp)
+              && !givenSymp
               && this.parties[i].pols.length > 0) {
             this.parties[i].symps.push(this.activeProv.candidates[j]);
             sympOrder.splice(j, 1);
@@ -185,7 +185,7 @@ class GameState {
     if (this.parties[party].votes > 0
         && polIndex < this.activeProv.officials.length
         && polIndex >= 0) {
-      this.activeProv.officials[polIndex]].votes++;
+      this.activeProv.officials[polIndex].votes++;
       this.parties[party].votes--;
     }
   }
