@@ -1,6 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 
+import PlayersView from './players/players-view';
 import Chat from './chat/chat';
 import styles from './main.module.css';
 import gsAfter from './gamestate-manager';
@@ -190,6 +191,8 @@ class GameView extends React.Component {
     return (
       <div id={styles.root}>
         <div id={styles.sidebar}>
+          <PlayersView gs={this.state.gs}
+              callback={this.callback} />
           <Chat messages={this.state.messages}
               callback={this.callback} />
         </div>
