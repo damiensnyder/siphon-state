@@ -189,8 +189,13 @@ class GameView extends React.Component {
   render() {
     return (
       <div id={styles.root}>
-        <Chat messages={this.state.messages}
-            callback={this.callback} />
+        <div id={styles.sidebar}>
+          <Chat messages={this.state.messages}
+              callback={this.callback} />
+        </div>
+        <div id={styles.gamePane}>
+          yo
+        </div>
       </div>
     );
   }
