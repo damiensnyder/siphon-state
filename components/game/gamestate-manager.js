@@ -54,7 +54,6 @@ class GamestateManager {
     } else if (!this.gs.started || this.gs.ended) {
       return true;
     } else {
-      console.log(this.actionQueue);
       return this.actionQueue;
     }
   }

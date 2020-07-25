@@ -142,7 +142,6 @@ class GameRoom {
 
   executeAllActions() {
     for (let i = 0; i < this.players.length; i++) {
-      console.log(this.players[i].actionQueue);
       for (let j = 0; j < this.players[i].actionQueue.flipQueue.length; j++) {
         this.gs.flip(i, this.players[i].actionQueue.flipQueue[j]);
       }
@@ -177,10 +176,6 @@ class GameRoom {
           this.gs.vote(i, this.players[i].actionQueue.voteQueue[j]);
         }
       }
-    }
-
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].resetActionQueues(this.gs.activeProv.stage);
     }
   }
 
