@@ -38,8 +38,10 @@
 }
 
 .name {
-  font-size: 24px;
   margin-bottom: 4px;
+
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .abbr {
@@ -47,9 +49,9 @@
 }
 
 .ownParty {
-  color: #3ac;
+  color: #aaf;
 }
 
 .priority {
-  color: #5c3;
+  color: #7c7;
 }

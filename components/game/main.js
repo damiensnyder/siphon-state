@@ -1,9 +1,10 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-import PartiesView from './players/parties-view';
+import PartiesView from './parties/parties-view';
 import ProvsView from './provs/prov-switcher';
 import PregameView from './pregame/pregame-view';
+import HelperBar from './helper-bar';
 import Chat from './chat/chat';
 import styles from './main.module.css';
 import gsAfter from './gamestate-manager';
@@ -205,6 +206,16 @@ class GameView extends React.Component {
     return null;
   }
 
+  helperBarJsx() {
+    if (this.state.gs.pov >= 0) {
+      return (
+        <HelperBar gs={this.state.gs}
+            callback={this.callback} />
+      );
+    }
+    return null;
+  }
+
   render() {
     return (
       <div id={styles.root}>
@@ -216,6 +227,7 @@ class GameView extends React.Component {
         </div>
         <div id={styles.gamePane}>
           {this.rightPanelJsx.bind(this)()}
+          {this.helperBarJsx.bind(this)()}
         </div>
       </div>
     );

@@ -67,11 +67,11 @@
 }
 
 .actionBtn:active {
-  color: #aac;
+  color: #99d;
 }
 
 .priorityBtn {
-  border: 4px solid #4c8;
+  border: 4px solid #7c7;
 }
 
 .inactiveBtn {

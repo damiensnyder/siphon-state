@@ -1,0 +1,12 @@
+.barWrapper {
+  margin-top: 16px;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+
+  border-radius: 6px;
+  background-color: #555;
+}
