@@ -105,17 +105,17 @@ class GameView extends React.Component {
   // function and passes the data along. Sends the type and data via the socket
   // to the server.
   callback(type, data) {
-    if (type != 'msg') {
-      this.gamestateManager.updateAfter(type, data);
-      this.setState({
-        gs: this.gamestateManager.gs
-      });
-    } else {
+    if (type == 'msg') {
       this.addMsg({
         sender: 'You',
         text: msg,
         isSelf: true,
         isSystem: false
+      });
+    } else {
+      this.gamestateManager.updateAfter(type, data);
+      this.setState({
+        gs: this.gamestateManager.gs
       });
     }
 

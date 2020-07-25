@@ -36,7 +36,7 @@ class Viewer {
     if (readyInfo === false || readyInfo === true) {
       this.callback(this, 'ready', readyInfo);
     } else {
-      this.actionQueue = readyInfo.actionQueue;
+      this.actionQueue = readyInfo;
       this.callback(this, 'ready', true);
     }
   }
