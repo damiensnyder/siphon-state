@@ -5,7 +5,7 @@ import Prov from './prov';
 import PregamePlaceholder from './pregame-placeholder';
 import general from '../../general.module.css';
 
-class ProvSwitcher extends React.Component {
+class ProvsView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -46,4 +46,4 @@ class ProvSwitcher extends React.Component {
   }
 }
 
-export default ProvSwitcher;
+export default ProvsView;

@@ -114,8 +114,8 @@ class GamestateManager {
 
   }
 
-  handleNewDisconnect() {
-
+  handleNewDisconnect(party) {
+    this.gs.parties[party].connected = false;
   }
 }
 

@@ -3,6 +3,26 @@ import React from 'react';
 import general from '../../general.module.css';
 import styles from './parties-view.module.css';
 
+function formatMoneyString(amount) {
+  return ("$" + (amount * 100000)).replace(/000/g, ",000");
+}
+
+function controlsAndInfoJsx(props) {
+  const self = props.gs.parties[props.index];
+  if (props.gs.started && props.gs.pov == props.index) {
+    return formatMoneyString(self.funds);
+  }
+  if (props.gs.pov < 0 && !self.connected) {
+    return (
+      <button className={general.actionBtn}
+          onClick={() => props.callback('replace', props.index)}>
+        Replace
+      </button>
+    );
+  }
+  return null;
+}
+
 function Party(props) {
   const self = props.gs.parties[props.index];
   var nameStyle = styles.nameAndAbbr;
@@ -21,6 +41,9 @@ function Party(props) {
         <span className={styles.abbr}>
           {self.abbr}
         </span>
+      </div>
+      <div className={styles.controlsAndInfo}>
+        {controlsAndInfoJsx(props)}
       </div>
     </div>
   );

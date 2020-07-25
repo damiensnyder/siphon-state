@@ -25,7 +25,7 @@ class PolGenerator {
     for (let i = 0; i < this.unused.length; i++) {
       const repeatPol = {};
       repeatPol.id = this.unused[i].id + this.unused.length * this.resets;
-      repeatPol.name = this.unused[i].name + " " + i;
+      repeatPol.name = this.unused[i].name + " " + this.resets;
       this.unused[i] = repeatPol;
     }
   }

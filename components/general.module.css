@@ -38,7 +38,7 @@
   padding: 8px;
 
   background-color: #444;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .containerLevel5 {
@@ -52,14 +52,14 @@
 
   font-size: 16px;
   background-color: #444;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .actionBtn {
   flex-grow: 0;
 
   background-color: #444;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .actionBtn:hover {
@@ -76,7 +76,7 @@
 
 .inactiveBtn {
   background-color: rgba(0.25, 0.25, 0.25, 0.25);
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: default;
 }
 
@@ -98,5 +98,5 @@
   padding: 0 4px;
   background-color: #333;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
 }

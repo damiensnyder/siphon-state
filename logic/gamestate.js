@@ -88,7 +88,7 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].funds += 25;
       for (let j = this.parties[i].candidates.length; j < 5; j++) {
-        this.parties[i].candidates.push(generator.newPol(j));
+        this.parties[i].candidates.push(generator.newPol(i));
       }
     }
 
