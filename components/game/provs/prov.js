@@ -5,60 +5,48 @@ import general from '../../general.module.css';
 import styles from './provs.module.css';
 
 function polCategoriesToJsx(props) {
-  return null;
   const self = props.gs.provs[props.index];
-  const sympathetic = (
-    <div className={styles.categoryContainer}>
-      <PolCategory gs={props.gs}
-          name={"Sympathetic"}
-          callback={props.callback}
-          pols={[]}
-          key={0} />
-    </div>
-  )
-  const candidates = (
-    <div className={styles.categoryContainer}>
-      <PolCategory gs={props.gs}
-          name={self.stage <= 1 ? "Candidates" : "Also-ran"}
-          callback={props.callback}
-          pols={self.candidates}
-          key={1} />
-    </div>
-  );
-  const officials = (
-    <div className={styles.categoryContainer}>
-      <PolCategory gs={props.gs}
-          name={"Officials"}
-          callback={props.callback}
-          pols={self.officials}
-          key={2} />
-    </div>
-  );
-  const governors = (
-    <div className={styles.categoryContainer}>
-      <PolCategory gs={props.gs}
-          name={"Governor"}
-          callback={props.callback}
-          pols={self.governors}
-          key={3} />
-    </div>
-  );
-  const emptyContainer = <div className={styles.categoryContainer} />;
 
-  if (self.stage <= 1) {
-    return [candidates, sympathetic];
-  } else if (self.stage == 2) {
-    return [officials, candidates];
-  } else if (self.stage == 3) {
+  if (props.gs.pov < 0 && self.stage == 0) {
+    return null;
+  }
+
+  const candidates = (
+    <PolCategory gs={props.gs}
+        name={self.stage == 0 ? "Nominees" : "Candidates"}
+        callback={props.callback}
+        pols={self.candidates}
+        key={0} />
+  );
+  if (props.gs.pov >= 0) {
+    var available = (
+      <PolCategory gs={props.gs}
+          name={"Available"}
+          callback={props.callback}
+          pols={props.gs.parties[props.gs.pov].candidates}
+          key={1} />
+    );
+  }
+  const officials = (
+    <PolCategory gs={props.gs}
+        name={"Officials"}
+        callback={props.callback}
+        pols={self.officials}
+        key={2} />
+  );
+
+  if (self.stage == 0) {
+    return [candidates, available];
+  } else if (self.stage <= 1) {
+    return [candidates];
+  } else {
     return [officials, candidates];
   }
 }
 
 function Prov(props) {
   return (
-    <div className={general.outerWrapper + ' ' +
-        styles.allCategories + ' ' +
-        styles.provOuter}>
+    <div className={general.outerWrapper + ' ' + styles.provOuter}>
       {polCategoriesToJsx(props)}
     </div>
   );

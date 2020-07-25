@@ -7,7 +7,6 @@ import styles from './pol.module.css';
 // if no action is applicable or the viewer is not playing.
 function actionButtons(props) {
   const gs = props.gs;
-  const self = gs.pols[props.index];
   const stage = gs.provs[gs.activeProvId].stage;
   const callback = props.callback;
 
@@ -24,7 +23,7 @@ function actionButtons(props) {
       </button>
     );
   }
-  if (self.hasOwnProperty('oldPartyIndex')) {
+  if (props.self.hasOwnProperty('oldPartyIndex')) {
     buttons.push(
       <button className={general.actionBtn}
               onClick={e => callback('unflip', props.index)}>
@@ -33,9 +32,7 @@ function actionButtons(props) {
     );
   }
 
-  if (stage == 0
-      && self.party === gs.pov
-      && self.runnable) {
+  if (stage == 0 && props.self.party === gs.pov) {
     buttons.push(
       <button className={general.actionBtn}
               onClick={e => callback('run', props.index)}>
@@ -44,7 +41,7 @@ function actionButtons(props) {
     );
   }
   if (stage == 0
-      && self.party === gs.pov
+      && props.self.party === gs.pov
       && gs.provs[gs.activeProvId].candidates.includes(props.index)) {
     buttons.push(
       <button className={general.actionBtn}
@@ -56,8 +53,7 @@ function actionButtons(props) {
 
   if (gs.provs[gs.activeProvId].candidates.includes(props.index)
       && stage == 1
-      && self.party === gs.pov
-      && !self.funded) {
+      && props.self.party === gs.pov) {
     buttons.push(
       <button className={general.actionBtn}
               onClick={e => callback('fund', props.index)}>
@@ -100,22 +96,18 @@ function actionButtons(props) {
 }
 
 function Pol(props) {
-  const self = props.gs.pols[props.index];
-  /*
-  <div>{self.name} ({props.gs.parties[self.party].abbr})</div>
-  */
   return (
     <div className={styles.outer}>
       <div className={styles.inner}>
         <span class={styles.name + ' ' +
-            (self.party == props.gs.pov ? styles.ownPol : null)}>
-          {self.name}
+            (props.self.party == props.gs.pov ? styles.ownPol : null)}>
+          {props.self.name}
         </span>
-        <div class={styles.pct}>
-          100%
+        <div class={styles.support}>
+          {0}
         </div>
         <div className={styles.actionContainer}>
-          {actionButtons(props)}
+          {/*actionButtons(props)*/}
         </div>
       </div>
     </div>

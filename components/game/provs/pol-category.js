@@ -13,7 +13,7 @@ function polsToJsx(props) {
     polsJsx.push(
       <Pol gs={props.gs}
           callback={props.callback}
-          index={props.pols[i]}
+          self={props.pols[i]}
           key={i} />
     );
   }
@@ -37,11 +37,7 @@ function PolCategory(props) {
     <div className={styles.categoryWrapper}>
       {nameToJsx(props.name)}
       <div className={styles.polsOuter}>
-        <div className={styles.polsMiddle}>
-          <div className={styles.polsInner}>
-            {polsToJsx(props)}
-          </div>
-        </div>
+        {polsToJsx(props)}
       </div>
     </div>
   );

@@ -1,20 +1,6 @@
 .provOuter {
-  border-radius: 6px;
-  background-color: #555;
-}
-
-.allCategories {
   display: flex;
   flex-flow: column;
   justify-content: flex-start;
   align-items: stretch;
-  padding-bottom: 8px;
-}
-
-.categoryContainer {
-  flex-grow: 1;
-  height: 50%;
-  margin: 8px;
-  margin-top: 0;
-  margin-left: 0;
 }

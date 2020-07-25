@@ -54,26 +54,27 @@
 }
 
 .ownPol {
-  color: #cce;
+  color: #aaf;
 }
 
-.pct {
+.support {
   position: absolute;
-  top: -28px;
-  right: -28px;
-  height: 40px;
-  width: 40px;
+  top: -24px;
+  right: -24px;
+  height: 32px;
+  width: 32px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  user-select: none;
+  font-size: 24px;
   font-weight: 700;
-  color: #cec;
+  user-select: none;
+  color: #ccc;
   background-color: #555;
-  border-radius: 32px;
-  border: 4px solid #444;
+  border-radius: 24px;
+  border: 4px solid #c77;
 }
 
 .actionContainer {
