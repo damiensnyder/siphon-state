@@ -14,6 +14,7 @@ function polsToJsx(props) {
       <Pol gs={props.gs}
           callback={props.callback}
           self={props.pols[i]}
+          index={i}
           key={i} />
     );
   }

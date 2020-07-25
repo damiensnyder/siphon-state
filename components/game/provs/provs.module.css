@@ -1,4 +1,6 @@
 .provOuter {
+  flex-shrink: 1;
+
   display: flex;
   flex-flow: column;
   justify-content: flex-start;

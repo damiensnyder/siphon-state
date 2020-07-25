@@ -1,4 +1,13 @@
-.outer {
+.polWrapper {
+  max-width: 200px;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.cardOuter {
   position: relative;
 
   display: flex;
@@ -28,7 +37,7 @@
   transition: all 0.15s ease-in-out;
 }
 
-.darkenOnHover:hover {
+.cardOuter:hover > .darkenOnHover {
   background-color: rgba(0, 0, 0, 0.4);
   transition: all 0.15s ease-in-out;
 }
@@ -45,6 +54,7 @@
   text-align: center;
   padding: 0 4px;
 
+  z-index: 1;
   font-weight: 600;
   color: #eeb;
   background-color: rgba(68, 68, 68, 0.9);
@@ -66,6 +76,7 @@
   justify-content: center;
   align-items: center;
 
+  z-index: 1;
   font-size: 24px;
   font-weight: 800;
   user-select: none;
@@ -85,4 +96,10 @@
   align-items: stretch;
 
   color: #eee;
+}
+
+.btnRow {
+  margin-top: 8px;
+  display: grid;
+  grid-gap: 8px;
 }

@@ -20,6 +20,13 @@ class GamestateManager {
       'smear': this.handleSmear,
       'bribe': this.handleBribe,
       'vote': this.handleVote,
+      'unflip': this.handleUndoFlip,
+      'unpay': this.handleUndoPay,
+      'unrun': this.handleUndoRun,
+      'unad': this.handleUndoAd,
+      'unsmear': this.handleUndoSmear,
+      'unbribe': this.handleUndoBribe,
+      'unvote': this.handleUndoVote,
       'newreplace': this.handleNewReplace,
       'newready': this.handleNewReady,
       'newdisconnect': this.handleNewDisconnect
@@ -87,8 +94,10 @@ class GamestateManager {
 
   }
 
-  handleRun() {
-
+  handleRun(targetIndex) {
+    const targetPol = this.gs.parties[this.gs.pov].candidates[targetIndex];
+    this.gs.provs[this.gs.activeProvId].candidates.push(targetPol);
+    this.actionQueue.runQueue.push(targetPol);
   }
 
   handleAd() {
@@ -104,6 +113,34 @@ class GamestateManager {
   }
 
   handleVote() {
+
+  }
+
+  handleUndoFlip() {
+
+  }
+
+  handleUndoPay() {
+
+  }
+
+  handleUndoRun() {
+
+  }
+
+  handleUndoAd() {
+
+  }
+
+  handleUndoSmear() {
+
+  }
+
+  handleUndoBribe() {
+
+  }
+
+  handleUndoVote() {
 
   }
 
