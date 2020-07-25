@@ -72,6 +72,9 @@ class GameRoom {
       isSelf: false,
       isSystem: true
     });
+    if (this.gs.started && !this.gs.ended) {
+      viewer.begin();
+    }
     viewer.emitGameState(this.gs);
   }
 
@@ -91,9 +94,9 @@ class GameRoom {
     this.io.emit('newreplace', target);
     if (this.gs.started && !this.gs.parties[target].connected) {
       viewer.join(target, this.gs.parties[target].name);
-      viewer.begin();
       this.players.splice(target, 0, viewer);
       this.gs.parties[target].connected = true;
+      viewer.emitGameState(this.gs);
 
       this.broadcastSystemMsg(
         viewer.socket,
@@ -112,8 +115,8 @@ class GameRoom {
       if (this.gs.ended) {
         this.rematch();
       } else if (!this.gs.started) {
-        for (let i = 0; i < this.players.length; i++) {
-          this.players[i].begin();
+        for (let i = 0; i < this.viewers.length; i++) {
+          this.viewers[i].begin();
         }
         this.gs.commitAll();
       } else {

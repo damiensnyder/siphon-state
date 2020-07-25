@@ -7,8 +7,6 @@ class Viewer {
 
     this.socket.on('join',
         (partyInfo) => this.callback(this, 'join', partyInfo));
-    this.socket.on('replace',
-        (target) => this.callback(this, 'replace', target));
     this.socket.on('disconnect', () => this.callback(this, 'disconnect'));
   }
 
@@ -23,7 +21,10 @@ class Viewer {
   }
 
   begin() {
-
+    if (this.pov < 0) {
+      this.socket.on('replace',
+          (target) => this.callback(this, 'replace', target));
+    }
   }
 
   end() {

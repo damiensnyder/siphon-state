@@ -66,8 +66,9 @@ class GamestateManager {
 
   }
 
-  handleReplace() {
-
+  handleReplace(target) {
+    this.gs.parties[target].connected = true;
+    this.gs.pov = target;
   }
 
   handleReady() {
@@ -106,12 +107,12 @@ class GamestateManager {
 
   }
 
-  handleNewReplace() {
-
+  handleNewReplace(party) {
+    this.gs.parties[party].connected = true;
   }
 
-  handleNewReady() {
-
+  handleNewReady(readyInfo) {
+    this.gs.parties[readyInfo.party].connected = readyInfo.isReady;
   }
 
   handleNewDisconnect(party) {
