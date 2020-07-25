@@ -110,7 +110,6 @@ class GameView extends React.Component {
       this.setState({
         gs: this.gamestateManager.gs
       });
-      this.handlers[type](data);
     } else {
       this.addMsg({
         sender: 'You',

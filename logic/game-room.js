@@ -139,36 +139,38 @@ class GameRoom {
 
   executeAllActions() {
     for (let i = 0; i < this.players.length; i++) {
-      for (let j = 0; j < this.players[i].flipQueue.length; j++) {
-        this.gs.flip(i, this.players[i].flipQueue[j]);
+      for (let j = 0; j < this.players[i].actionQueue.flipQueue.length; j++) {
+        this.gs.flip(i, this.players[i].actionQueue.flipQueue[j]);
       }
-      for (let j = 0; j < this.players[i].payQueue.length; j++) {
-        this.gs.pay(i, this.players[i].payQueue[j]);
+      for (let j = 0; j < this.players[i].actionQueue.payQueue.length; j++) {
+        this.gs.pay(i, this.players[i].actionQueue.payQueue[j]);
       }
     }
 
     if (this.gs.activeProv.stage == 0) {
       for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < this.players[i].runQueue.length; j++) {
-          this.gs.run(i, this.players[i].runQueue[j]);
+        for (let j = 0; j < this.players[i].actionQueue.runQueue.length; j++) {
+          this.gs.run(i, this.players[i].actionQueue.runQueue[j]);
         }
       }
     } else if (this.gs.activeProv.stage == 1) {
       for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < this.players[i].bribeQueue.length; j++) {
-          this.gs.bribe(i, this.players[i].bribeQueue[j]);
+        for (let j = 0; j < this.players[i].actionQueue.bribeQueue.length;
+            j++) {
+          this.gs.bribe(i, this.players[i].actionQueue.bribeQueue[j]);
         }
-        for (let j = 0; j < this.players[i].adQueue.length; j++) {
-          this.gs.ad(i, this.players[i].adQueue[j]);
+        for (let j = 0; j < this.players[i].actionQueue.adQueue.length; j++) {
+          this.gs.ad(i, this.players[i].actionQueue.adQueue[j]);
         }
-        for (let j = 0; j < this.players[i].smearQueue.length; j++) {
-          this.gs.smear(i, this.players[i].smearQueue[j]);
+        for (let j = 0; j < this.players[i].actionQueue.smearQueue.length;
+            j++) {
+          this.gs.smear(i, this.players[i].actionQueue.smearQueue[j]);
         }
       }
     } else if (this.gs.activeProv.stage == 2) {
       for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < this.players[i].voteQueue.length; j++) {
-          this.gs.vote(i, this.players[i].voteQueue[j]);
+        for (let j = 0; j < this.players[i].actionQueue.voteQueue.length; j++) {
+          this.gs.vote(i, this.players[i].actionQueue.voteQueue[j]);
         }
       }
     }

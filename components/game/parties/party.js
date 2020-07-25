@@ -13,7 +13,7 @@ function Party(props) {
   }
   return (
     <div className={styles.playerOuter + " " +
-        (self.ready ? "" : styles.ready)}>
+        (self.ready ? styles.ready : "")}>
       <div className={nameStyle}>
         <span className={styles.name}>
           {self.name}
