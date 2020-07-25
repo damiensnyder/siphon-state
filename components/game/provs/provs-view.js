@@ -2,7 +2,6 @@ import React from 'react';
 
 import ProvsHeader from './provs-header';
 import Prov from './prov';
-import PregamePlaceholder from './pregame-placeholder';
 import general from '../../general.module.css';
 
 class ProvsView extends React.Component {
@@ -22,17 +21,6 @@ class ProvsView extends React.Component {
     });
   }
 
-  currentProvOrPlaceholder() {
-    if (!this.props.gs.started) {
-      return <PregamePlaceholder />;
-    }
-    return (
-      <Prov gs={this.props.gs}
-          callback={this.props.callback}
-          index={this.state.tab} />
-    );
-  }
-
   render() {
     return (
       <div className={general.outerWrapper + ' ' +
@@ -40,7 +28,9 @@ class ProvsView extends React.Component {
         <ProvsHeader gs={this.props.gs}
             activeTab={this.state.tab}
             tabCallback={this.switchTab} />
-        {this.currentProvOrPlaceholder()}
+        <Prov gs={this.props.gs}
+            callback={this.props.callback}
+            index={this.state.tab} />
       </div>
     );
   }

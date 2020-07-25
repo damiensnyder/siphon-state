@@ -1,6 +1,6 @@
 import React from 'react';
 
-import general from '../general.module.css';
+import general from '../../general.module.css';
 import styles from './pol.module.css';
 
 // Return the appropriate action button for the pol (e.g., "Flip"), or none

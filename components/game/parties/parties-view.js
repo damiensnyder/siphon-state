@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Party from './party';
-import styles from './parties-view.module.css';
+import styles from './parties.module.css';
 
 function partiesToJsx(gs, callback) {
   const partiesJsx = [];

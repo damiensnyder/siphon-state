@@ -15,22 +15,17 @@ function tabsToJsx(props) {
           active={props.gs.activeProvId == i}
           tabCallback={props.tabCallback} />
     );
+    if (i < 4) {
+      tabsJsx.push(<div className={styles.pointer}>➤</div>);
+    }
   }
   return tabsJsx;
 }
 
-function topMsg() {
-  return null;
-}
-
 function ProvsHeader(props) {
   return (
-    <div id={styles.outerHeader}>
+    <div className={styles.outerHeader}>
       {props.gs.started ? tabsToJsx(props) : null}
-      <div id={styles.messageBar}
-           className={styles.headerItem}>
-        {topMsg()}
-      </div>
     </div>
   );
 }

@@ -51,7 +51,7 @@ class GamestateManager {
   currentReady() {
     if (!this.gs.parties[this.gs.pov].ready) {
       return false;
-    } else if (!this.gs.started || thiis.gs.ended) {
+    } else if (!this.gs.started || this.gs.ended) {
       return true;
     } else {
       return this.actionQueue;

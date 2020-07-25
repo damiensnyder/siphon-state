@@ -29,6 +29,7 @@ class Viewer {
 
   end() {
     this.socket.removeAllListeners('msg');
+    this.socket.removeAllListeners('replace');
   }
 
   ready(readyInfo) {
@@ -51,7 +52,6 @@ class Viewer {
 
     this.socket.on('join',
         (partyInfo) => this.callback(this, 'join', partyInfo));
-    this.socket.on('replace', (data) => this.callback(this, 'replace', data));
   }
 
   emitGameState(gs) {

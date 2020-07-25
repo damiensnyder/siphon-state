@@ -1,10 +1,11 @@
 import React from 'react';
 
-import PolCategory from '../pol-category';
+import PolCategory from './pol-category';
 import general from '../../general.module.css';
-import styles from './prov.module.css';
+import styles from './provs.module.css';
 
 function polCategoriesToJsx(props) {
+  return null;
   const self = props.gs.provs[props.index];
   const sympathetic = (
     <div className={styles.categoryContainer}>
@@ -57,7 +58,7 @@ function Prov(props) {
   return (
     <div className={general.outerWrapper + ' ' +
         styles.allCategories + ' ' +
-        styles.provBg}>
+        styles.provOuter}>
       {polCategoriesToJsx(props)}
     </div>
   );
