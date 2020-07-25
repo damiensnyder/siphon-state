@@ -14,6 +14,7 @@ function polCategoriesToJsx(props) {
   const candidates = (
     <PolCategory gs={props.gs}
         name={self.stage == 0 ? "Nominees" : "Candidates"}
+        isTop={self.stage < 2}
         callback={props.callback}
         pols={self.candidates}
         key={0} />
@@ -22,6 +23,7 @@ function polCategoriesToJsx(props) {
     var available = (
       <PolCategory gs={props.gs}
           name={"Available"}
+          isTop={false}
           callback={props.callback}
           pols={props.gs.parties[props.gs.pov].candidates}
           key={1} />
@@ -30,6 +32,7 @@ function polCategoriesToJsx(props) {
   const officials = (
     <PolCategory gs={props.gs}
         name={"Officials"}
+        isTop={true}
         callback={props.callback}
         pols={self.officials}
         key={2} />

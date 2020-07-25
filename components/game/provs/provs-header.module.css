@@ -24,7 +24,7 @@
 }
 
 .tabOuter {
-  flex-basis: 0;
+  max-width: 115px;
   flex-grow: 1;
 
   padding: 8px;

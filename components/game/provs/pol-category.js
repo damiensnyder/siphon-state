@@ -21,21 +21,11 @@ function polsToJsx(props) {
   return polsJsx;
 }
 
-function nameToJsx(name) {
-  if (name == null) {
-    return null;
-  }
-  return (
-    <h3 className={styles.categoryName}>
-      {name}
-    </h3>
-  );
-}
-
 function PolCategory(props) {
   return (
-    <div className={styles.categoryWrapper}>
-      {nameToJsx(props.name)}
+    <div className={styles.categoryWrapper + ' ' +
+        (props.isTop ? styles.topCategory : '')}>
+      <span className={styles.categoryName}>{props.name}</span>
       <div className={styles.polsOuter}>
         {polsToJsx(props)}
       </div>
