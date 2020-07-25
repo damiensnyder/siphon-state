@@ -87,8 +87,8 @@ class GameState {
     // Give all parties $25 and enough candidates to make 5 total.
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].funds += 25;
-      for (let j = this.parties[i].pols.length; j < 5; j++) {
-        this.parties[i].push(generator.newPol(j));
+      for (let j = this.parties[i].candidates.length; j < 5; j++) {
+        this.parties[i].candidates.push(generator.newPol(j));
       }
     }
 
@@ -131,7 +131,7 @@ class GameState {
           let givenSymp = false;
           if (this.activeProv.candidates[j].party != j
               && !givenSymp
-              && this.parties[i].pols.length > 0) {
+              && this.parties[i].candidates.length > 0) {
             this.parties[i].symps.push(this.activeProv.candidates[j]);
             sympOrder.splice(j, 1);
             givenSymp = true;

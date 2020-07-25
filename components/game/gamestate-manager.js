@@ -6,42 +6,56 @@ class GamestateManager {
       started: false,
       ended: false
     };
-    this.actionQueue = [{
-      'flip': [],
-      'pay': [],
-      'run': [],
-      'ad': [],
-      'smear': [],
-      'bribe': [],
-      'vote': []
-    }];
 
     this.handlers = {
-      'connection': this.handleConnect.bind(this),
-      'join': this.handleJoin.bind(this),
-      'replace': this.handleReplace.bind(this),
-      'ready': this.handleReady.bind(this),
-      'disconnect': this.handleDisconnect.bind(this),
-      'flip': this.handleFlip.bind(this),
-      'pay': this.handlePay.bind(this),,
-      'run': this.handleRun.bind(this)
-      'ad': this.handleAd.bind(this),
-      'smear': this.handleSmear.bind(this),
-      'bribe': this.handleBribe.bind(this),
-      'vote': this.handleVote.bind(this),
-      'newreplace': this.handleNewReplace.bind(this),
-      'newready': this.handleNewReady.bind(this),
-      'newdisconnect': this.handleNewDisconnect.bind(this)
+      'connection': this.handleConnect,
+      'join': this.handleJoin,
+      'replace': this.handleReplace,
+      'ready': this.handleReady,
+      'disconnect': this.handleDisconnect,
+      'flip': this.handleFlip,
+      'pay': this.handlePay,
+      'run': this.handleRun,
+      'ad': this.handleAd,
+      'smear': this.handleSmear,
+      'bribe': this.handleBribe,
+      'vote': this.handleVote,
+      'newreplace': this.handleNewReplace,
+      'newready': this.handleNewReady,
+      'newdisconnect': this.handleNewDisconnect
     }
+    this.currentReady = this.currentReady.bind(this);
   }
 
   setGs(gs) {
     this.gs = gs;
-    this.actionQueue = [];
+    this.actionQueue = {
+      flipQueue: [],
+      payQueue: []
+    }
+    if (gs.provs[this.gs.activeProvId].stage == 0) {
+      this.actionQueue.runQueue = [];
+    } else if (gs.provs[this.gs.activeProvId].stage == 1) {
+      this.actionQueue.adQueue = [];
+      this.actionQueue.smearQueue = [];
+      this.actionQueue.bribeQueue = [];
+    } else if (gs.provs[this.gs.activeProvId].stage == 2) {
+      this.actionQueue.voteQueue = [];
+    }
   }
 
   updateAfter(type, actionInfo) {
-    this.handlers[type](actionInfo);
+    this.handlers[type].bind(this)(actionInfo);
+  }
+
+  currentReady() {
+    if (!this.gs.parties[this.gs.pov].ready) {
+      return false;
+    } else if (!this.gs.started || thiis.gs.ended) {
+      return true;
+    } else {
+      return this.actionQueue;
+    }
   }
 
   handleConnect() {
@@ -57,7 +71,7 @@ class GamestateManager {
   }
 
   handleReady() {
-
+    this.gs.parties[this.gs.pov].ready = !this.gs.parties[this.gs.pov].ready;
   }
 
   handleDisconnect() {

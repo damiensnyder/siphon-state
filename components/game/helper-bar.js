@@ -22,7 +22,7 @@ function HelperBar(props) {
         {startMsg(props)}
       </span>
       <button className={general.actionBtn + ' ' + general.priorityBtn}
-          onclick={() => props.callback('ready')}>
+          onClick={() => props.callback('ready')}>
         {buttonMsg(props)}
       </button>
     </div>

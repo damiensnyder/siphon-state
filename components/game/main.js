@@ -122,7 +122,7 @@ class GameView extends React.Component {
     if (type == 'join' || type == 'replace' || type == 'msg') {
       this.socket.emit(type, data);
     } else if (type == 'ready') {
-      this.socket.emit('ready', this.gamestateManager.actionQueue);
+      this.socket.emit('ready', this.gamestateManager.currentReady());
     }
   }
 
