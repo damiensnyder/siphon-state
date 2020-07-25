@@ -12,7 +12,8 @@ function Party(props) {
     nameStyle +=  " " + styles.priority
   }
   return (
-    <div className={styles.playerOuter}>
+    <div className={styles.playerOuter + " " +
+        (self.ready ? "" : styles.ready)}>
       <div className={nameStyle}>
         <span className={styles.name}>
           {self.name}
