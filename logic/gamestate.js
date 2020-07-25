@@ -1,5 +1,4 @@
 const PolGenerator = require('./pol-generator');
-const generator = new PolGenerator();
 const PROVINCE_NAMES = ["Germany 5", "Arkanzas", "wilfreed", "NONONONO", "ian"];
 
 class GameState {
@@ -20,7 +19,8 @@ class GameState {
       officials: [],
       candidates: []
     }});
-    generator.shuffle(this.provs);
+    this.generator = new PolGenerator();
+    this.generator.shuffle(this.provs);
     this.activeProv = this.provs[4];
   }
 
@@ -88,7 +88,7 @@ class GameState {
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].funds += 25;
       for (let j = this.parties[i].candidates.length; j < 5; j++) {
-        this.parties[i].candidates.push(generator.newPol(i));
+        this.parties[i].candidates.push(this.generator.newPol(i));
       }
     }
 
@@ -125,7 +125,7 @@ class GameState {
 
       // Give a symp to each party with at least one candidate in the race.
       let sympOrder = this.activeProv.candidates.slice();
-      generator.shuffle(sympOrder);
+      this.generator.shuffle(sympOrder);
       for (let i = 0; i < this.parties.length; i++) {
         for (let j = 0; j < this.activeProv.candidates.length; j++) {
           let givenSymp = false;

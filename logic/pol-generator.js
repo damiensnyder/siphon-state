@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const info = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'pols.json')));
+const polsPath = path.resolve(__dirname, 'pols.json');
+const pols = JSON.parse(fs.readFileSync(polsPath)).pols;
 
 class PolGenerator {
   constructor() {
-    this.unused = info.pols.slice();
+    this.unused = pols.slice();
     this.shuffle(this.unused);
     this.resets = 0;
   }

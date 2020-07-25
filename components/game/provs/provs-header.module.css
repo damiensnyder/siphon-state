@@ -6,6 +6,8 @@
   flex-flow: row;
   justify-content: space-between;
   align-items: center;
+  
+  user-select: none;
 }
 
 .pointer {
@@ -24,7 +26,7 @@
 }
 
 .tabOuter {
-  max-width: 115px;
+  max-width: 117px;
   flex-grow: 1;
 
   padding: 8px;
@@ -35,7 +37,6 @@
   font-weight: 600;
   text-align: center;
   cursor: pointer;
-  user-select: none;
   border-radius: 6px;
 }
 

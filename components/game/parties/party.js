@@ -4,7 +4,7 @@ import general from '../../general.module.css';
 import styles from './parties.module.css';
 
 function formatMoneyString(amount) {
-  return ("$" + (amount * 100000)).replace(/000/g, ",000");
+  return "$" + (amount * 100000).toLocaleString();
 }
 
 function controlsAndInfoJsx(props) {

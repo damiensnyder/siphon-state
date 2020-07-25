@@ -11,6 +11,7 @@
   align-items: stretch;
 
   background-color: #444;
+  cursor: default;
 }
 
 #sidebar {
