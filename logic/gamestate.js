@@ -294,8 +294,8 @@ class GameState {
   bribe(partyIndex) {
     const party = this.parties[partyIndex];
     if (party.symps.length > 0 && party.funds >= (2 + this.rounds) * 10) {
-      party.bribed.push(party.symps[sympIndex]);
-      party.symps.splice(sympIndex, 1);
+      party.bribed.push(party.symps[0]);
+      party.symps = [];
       party.funds -= (2 + this.rounds) * 10;
     }
   }

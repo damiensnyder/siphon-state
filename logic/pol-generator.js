@@ -7,6 +7,7 @@ class PolGenerator {
   constructor() {
     this.unused = pols.slice();
     this.shuffle(this.unused);
+    this.made = 0;
     this.resets = 0;
   }
 
@@ -15,7 +16,11 @@ class PolGenerator {
       this.redeal();
     }
     const newPol = this.unused.pop();
+    newPol.id = this.made;
+    this.made++;
     newPol.party = party;
+    newPol.url = newPol.replace(' ', '-').toLowerCase();
+    newPol.name = newPol + " " + this.resets;
     return newPol;
   }
 
@@ -23,11 +28,12 @@ class PolGenerator {
     this.unused = pols.slice();
     this.shuffle(this.unused);
     this.resets++;
+
+    // Clone each pol so object comparisons don't match them
     for (let i = 0; i < this.unused.length; i++) {
-      const repeatPol = {};
-      repeatPol.id = this.unused[i].id + this.unused.length * this.resets;
-      repeatPol.name = this.unused[i].name + " " + this.resets;
-      this.unused[i] = repeatPol;
+      this.unused[i] = {
+        name: this.unused[i].name
+      };
     }
   }
 

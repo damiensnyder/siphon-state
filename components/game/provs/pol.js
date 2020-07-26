@@ -104,7 +104,7 @@ function buttonsJsx(props) {
 }
 
 function Pol(props) {
-  const imageUrl = "url('/politicians/" + (props.self.id % 2) + ".png')";
+  const imageUrl = "url('/politicians/" + props.self.url + ".png')";
   return (
     <div className={styles.polWrapper}>
       <div className={styles.cardOuter}

@@ -76,7 +76,9 @@ class GamestateManager {
   }
 
   handleConnect() {
-
+    if (this.gs.ownParty != undefined) {
+      props.gs.ownParty.connected = true;
+    }
   }
 
   handleJoin() {
@@ -92,16 +94,32 @@ class GamestateManager {
     this.gs.parties[this.gs.pov].ready = !this.gs.parties[this.gs.pov].ready;
   }
 
-  handleDisconnect() {
-
+  handleDisconnect(targetIndex) {
+    if (this.gs.ownParty != undefined) {
+      props.gs.ownParty.connected = false;
+    }
   }
 
-  handleFlip() {
+  handleFlip(targetIndex) {
+    const targetPol = this.gs.ownParty.bribed[targetIndex];
+    targetPol.oldParty = targetPol.party;
+    targetPol.party = this.gs.pov;
 
+    // If the flipped politician was an active official, gain a vote.
+    if (this.activeProv.officials.includes(targetPol)
+        && this.activeProv.stage == 2) {
+      this.gs.ownParty.votes++;
+      targetPol.oldParty.votes--;
+    }
+
+    this.actionQueue.flipQueue.push(targetIndex);
   }
 
-  handlePay() {
-
+  handlePay(paymentInfo) {
+    this.gs.ownParty.funds -= paymentInfo.amount;
+    this.gs.parties[paymentInfo.target].funds += paymentInfo.amount;
+    this.gs.parties[paymentInfo.target].paid = true;
+    this.actionQueue.payQueue.push(paymentInfo);
   }
 
   handleRun(targetPol) {
@@ -110,16 +128,28 @@ class GamestateManager {
         this.gs.ownParty.candidates.indexOf(targetPol));
   }
 
-  handleAd() {
-
+  handleAd(targetIndex) {
+    this.gs.ownParty.funds -= 3 + this.gs.activeProv.rounds;
+    if (this.gs.activeProv.candidates[targetIndex].adsBought == undefined) {
+      this.gs.activeProv.candidates[targetIndex].adsBought = 0;
+    }
+    this.gs.activeProv.candidates[targetIndex].adsBought++;
+    this.gs.actionQueue.smearQueue.push(targetIndex);
   }
 
-  handleSmear() {
-
+  handleSmear(targetIndex) {
+    this.gs.ownParty.funds -= 2 + this.gs.activeProv.rounds;
+    if (this.gs.activeProv.candidates[targetIndex].adsBought == undefined) {
+      this.gs.activeProv.candidates[targetIndex].adsBought = 0;
+    }
+    this.gs.activeProv.candidates[targetIndex].adsBought++;
+    this.gs.actionQueue.smearQueue.push(targetIndex);
   }
 
   handleBribe() {
-
+    this.gs.ownParty.funds -= 5 * (3 + this.activeProv.rounds);
+    this.gs.ownParty.bribed.push(this.gs.ownParty.symps[0]);
+    this.actionQueue.bribeQueue.push(true);
   }
 
   handleVote(targetIndex) {
@@ -128,12 +158,38 @@ class GamestateManager {
     this.actionQueue.voteQueue.push(targetIndex);
   }
 
-  handleUndoFlip() {
+  handleUndoFlip(targetIndex) {
+    const targetPol = this.gs.ownParty.bribed[targetIndex];
+    targetPol.party = targetPol.oldParty;
 
+    // If they were an official, give a vote back to their old party, and if
+    // the player's own party has voted with the unflipped politician, take
+    // back the last vote.
+    if (this.activeProv.officials.includes(targetPol)
+        && this.activeProv.stage == 2) {
+      this.gs.ownParty.votes--;
+      targetPol.oldParty.votes++;
+      if (this.gs.voteQueue.length > this.gs.ownParty.votes) {
+        this.gs.voteQueue.splice(this.gs.voteQueue.length - 1, 1);
+      }
+    }
+
+    this.gs.actionQueue.flipQueue.splice(
+        this.gs.actionQueue.flipQueue.indexOf[targetIndex], 1);
   }
 
-  handleUndoPay() {
-
+  handleUndoPay(targetIndex) {
+    var paymentIndex = 0;
+    for (let i = 1; i < this.actionQueue.payQueue.length; i++) {
+      if (this.actionQueue.payQueue[i].target == targetIndex) {
+        paymentIndex = i;
+      }
+    }
+    this.gs.ownParty.funds += this.actionQueue.payQueue[paymentIndex].amount;
+    this.gs.parties[targetIndex].funds -=
+        this.actionQueue.payQueue[paymentIndex].amount;
+    this.gs.parties[targetIndex].paid = false;
+    this.actionQueue.payQueue.splice(paymentIndex, 1);
   }
 
   handleUndoRun(targetPol) {
@@ -144,16 +200,24 @@ class GamestateManager {
         this.actionQueue.runQueue.indexOf(targetIndex), 1);
   }
 
-  handleUndoAd() {
-
+  handleUndoAd(targetIndex) {
+    this.gs.ownParty.funds -= 3 + this.gs.activeProv.rounds;
+    this.gs.activeProv.candidates[targetIndex].adsBought--;
+    this.gs.actionQueue.adQueue.splice(
+        this.gs.actionQueue.adQueue.indexOf(targetIndex), 1);
   }
 
-  handleUndoSmear() {
-
+  handleUndoSmear(targetIndex) {
+    this.gs.ownParty.funds -= 2 + this.gs.activeProv.rounds;
+    this.gs.activeProv.candidates[targetIndex].adsBought--;
+    this.gs.actionQueue.smearQueue.splice(
+        this.gs.actionQueue.smearQueue.indexOf(targetIndex), 1);
   }
 
   handleUndoBribe() {
-
+    this.gs.ownParty.funds += 5 * (3 + this.activeProv.rounds);
+    this.gs.ownParty.bribed.splice(this.gs.ownParty.bribed.length - 1, 1);
+    this.actionQueue.bribeQueue = [];
   }
 
   handleUndoVote(targetIndex) {
