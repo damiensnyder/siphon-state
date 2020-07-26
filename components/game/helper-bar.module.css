@@ -1,5 +1,5 @@
 .barWrapper {
-  flex-shrink: 0;
+  flex: 0;
   margin-top: 16px;
 
   display: flex;

@@ -49,8 +49,10 @@ function polCategoriesToJsx(props) {
 
 function Prov(props) {
   return (
-    <div className={general.outerWrapper + ' ' + styles.provOuter}>
-      {polCategoriesToJsx(props)}
+    <div className={styles.provOuter}>
+      <div className={styles.provInner}>
+        {polCategoriesToJsx(props)}
+      </div>
     </div>
   );
 }

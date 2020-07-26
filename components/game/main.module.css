@@ -27,11 +27,9 @@
 }
 
 #gamePane {
-  height: 100%;
   flex-basis: 0;
   flex-grow: 2;
-  margin: 0 16px;
-  padding: 16px 0;
+  margin: 16px;
 
   display: flex;
   flex-flow: column;
