@@ -3,6 +3,14 @@ import React from 'react';
 import general from '../../general.module.css';
 import styles from './pol.module.css';
 
+function formatMoneyString(amount) {
+  if (amount >= 10) {
+    return "$" + (amount / 10) + "M";
+  } else {
+    return "$" + (amount * 100) + "k";
+  }
+}
+
 function bigNumberJsx(props) {
   if (props.gs.activeProv.candidates.includes(props.self)
       && props.gs.activeProv.stage == 1) {
@@ -39,12 +47,12 @@ function buttonsJsx(props) {
 
   const buttons = [];
 
+  // If they can be nominated, add "Nominate" button
   if (props.self.party == props.gs.pov
       && props.gs.activeProv.stage == 0
       && props.gs.ownParty.candidates.includes(props.self)
       && !props.gs.activeProv.candidates.includes(props.self)
       && props.gs.activeProv.candidates.length < 3) {
-    // If they can be nominated, return "Nominate" button
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('run', props.self)}>
@@ -52,10 +60,11 @@ function buttonsJsx(props) {
       </button>
     );
   }
+
+  // If they are currently nominated, add "Undo" button
   if (props.self.party == props.gs.pov
       && props.gs.activeProv.stage == 0
       && props.gs.activeProv.candidates.includes(props.self)) {
-    // If they are currently nominated, return "Undo" button
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('unrun', props.self)}>
@@ -63,11 +72,12 @@ function buttonsJsx(props) {
       </button>
     );
   }
+
+  // If they are an active official, add "Vote" button
   if (props.self.party == props.gs.pov
       && props.gs.activeProv.stage == 2
       && props.gs.activeProv.officials.includes(props.self)
       && props.gs.ownParty.votes > 0) {
-    // If they are an active official, "Vote" button
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('vote', props.index)}>
@@ -75,6 +85,8 @@ function buttonsJsx(props) {
       </button>
     );
   }
+
+  // If they have votes, add "Undo" button
   if (props.self.party == props.gs.pov
       && props.gs.activeProv.stage == 2
       && props.gs.activeProv.officials.includes(props.self)
@@ -87,39 +99,72 @@ function buttonsJsx(props) {
     );
   }
 
-  if (props.gs.ownParty.bribed.includes(self)) {
-    buttons.push(
-      <button className={general.actionBtn}
-          onClick={() => props.callback('flip', props.self)}>
-        Flip
-      </button>
-    );
+  // If their ID matches a bribed politician's ID, add a flip button or an undo
+  // button depending on whether they have already been flipped.
+  for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
+    if (props.gs.ownParty.bribed[i].id == props.self.id) {
+      const targetIndex = i;
+      if (props.self.party != props.gs.pov) {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('flip', targetIndex)}>
+            Flip
+          </button>
+        );
+      } else {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('unflip', targetIndex)}>
+            Undo
+          </button>
+        );
+      }
+    }
   }
 
-  return (
-    <div className={styles.btnRow}>
-      {buttons}
-    </div>
-  );
+  if (props.gs.ownParty.symps.length > 0
+      && props.gs.ownParty.symps[0].id == props.self.id) {
+    if (props.gs.ownParty.symps[0].flipped) {
+      buttons.push(
+        <button className={general.actionBtn}
+            onClick={() => props.callback('unbribe')}>
+          Undo
+        </button>
+      );
+    } else {
+      buttons.push(
+        <button className={general.actionBtn}
+            onClick={() => props.callback('bribe')}>
+          Bribe: {formatMoneyString(5 * (3 + props.gs.rounds))}
+        </button>
+      );
+    }
+  }
+
+  if (buttons.length > 0) {
+    return (
+      <div className={styles.btnRow}>
+        {buttons}
+      </div>
+    );
+  }
+  return null;
 }
 
 function Pol(props) {
   const imageUrl = "url('/politicians/" + props.self.url + ".png')";
   var nameStyle = styles.name;
-  var isBribed = false;
   if (props.self.party == props.gs.pov) {
     nameStyle += " " + styles.ownPol;
   } else if (props.gs.ownParty != undefined) {
     for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
       if (props.gs.ownParty.bribed[i].id == props.self.id) {
         nameStyle += " " + styles.bribed;
-        isBribed = true;
       }
     }
-    if (!isBribed) {
-      if (props.gs.ownParty.symps[0].id == props.self.id) {
-        nameStyle += " " + styles.symp;
-      }
+    if (props.gs.ownParty.symps[0].id == props.self.id
+        && !props.gs.ownParty.symps[0].flipped) {
+      nameStyle += " " + styles.symp;
     }
   }
 

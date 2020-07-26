@@ -129,7 +129,7 @@ class GamestateManager {
   }
 
   handleAd(targetIndex) {
-    this.gs.ownParty.funds -= 3 + this.gs.activeProv.rounds;
+    this.gs.ownParty.funds -= 3 + this.gs.rounds;
     if (this.gs.activeProv.candidates[targetIndex].adsBought == undefined) {
       this.gs.activeProv.candidates[targetIndex].adsBought = 0;
     }
@@ -138,7 +138,7 @@ class GamestateManager {
   }
 
   handleSmear(targetIndex) {
-    this.gs.ownParty.funds -= 2 + this.gs.activeProv.rounds;
+    this.gs.ownParty.funds -= 2 + this.gs.rounds;
     if (this.gs.activeProv.candidates[targetIndex].adsBought == undefined) {
       this.gs.activeProv.candidates[targetIndex].adsBought = 0;
     }
@@ -147,8 +147,8 @@ class GamestateManager {
   }
 
   handleBribe() {
-    this.gs.ownParty.funds -= 5 * (3 + this.activeProv.rounds);
-    this.gs.ownParty.bribed.push(this.gs.ownParty.symps[0]);
+    this.gs.ownParty.funds -= 5 * (3 + this.gs.rounds);
+    this.gs.ownParty.symps[0].flipped = true;
     this.actionQueue.bribeQueue.push(true);
   }
 
@@ -201,22 +201,22 @@ class GamestateManager {
   }
 
   handleUndoAd(targetIndex) {
-    this.gs.ownParty.funds -= 3 + this.gs.activeProv.rounds;
+    this.gs.ownParty.funds -= 3 + this.gs.rounds;
     this.gs.activeProv.candidates[targetIndex].adsBought--;
     this.gs.actionQueue.adQueue.splice(
         this.gs.actionQueue.adQueue.indexOf(targetIndex), 1);
   }
 
   handleUndoSmear(targetIndex) {
-    this.gs.ownParty.funds -= 2 + this.gs.activeProv.rounds;
+    this.gs.ownParty.funds -= 2 + this.gs.rounds;
     this.gs.activeProv.candidates[targetIndex].adsBought--;
     this.gs.actionQueue.smearQueue.splice(
         this.gs.actionQueue.smearQueue.indexOf(targetIndex), 1);
   }
 
   handleUndoBribe() {
-    this.gs.ownParty.funds += 5 * (3 + this.activeProv.rounds);
-    this.gs.ownParty.bribed.splice(this.gs.ownParty.bribed.length - 1, 1);
+    this.gs.ownParty.funds += 5 * (3 + this.gs.rounds);
+    this.gs.ownParty.symps[0].flipped = false;
     this.actionQueue.bribeQueue = [];
   }
 
