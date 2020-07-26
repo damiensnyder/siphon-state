@@ -96,7 +96,7 @@ class GamestateManager {
 
   handleDisconnect(targetIndex) {
     if (this.gs.ownParty != undefined) {
-      props.gs.ownParty.connected = false;
+      this.gs.ownParty.connected = false;
     }
   }
 

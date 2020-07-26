@@ -5,26 +5,28 @@ const pols = JSON.parse(fs.readFileSync(polsPath)).pols;
 
 class PolGenerator {
   constructor() {
-    this.unused = pols.slice();
-    this.shuffle(this.unused);
     this.made = 0;
     this.resets = 0;
+    this.deal();
   }
 
   newPol(party) {
     if (this.unused.length == 0) {
-      this.redeal();
+      this.deal();
     }
     const newPol = this.unused.pop();
     newPol.id = this.made;
     this.made++;
     newPol.party = party;
-    newPol.url = newPol.replace(' ', '-').toLowerCase();
-    newPol.name = newPol + " " + this.resets;
+    newPol.url = newPol.name.replace(' ', '-').toLowerCase();
+    newPol.url = newPol.url.replace(/[,\.]/, '');
+    if (this.resets > 1) {
+      newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
+    }
     return newPol;
   }
 
-  redeal() {
+  deal() {
     this.unused = pols.slice();
     this.shuffle(this.unused);
     this.resets++;
@@ -43,6 +45,10 @@ class PolGenerator {
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
   }
+}
+
+function toRomanNumerals(num) {
+  return num;
 }
 
 module.exports = PolGenerator;
