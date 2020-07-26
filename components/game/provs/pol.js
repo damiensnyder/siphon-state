@@ -151,8 +151,7 @@ function buttonsJsx(props) {
   return null;
 }
 
-function Pol(props) {
-  const imageUrl = "url('/politicians/" + props.self.url + ".png')";
+function nameStyle(props) {
   var nameStyle = styles.name;
   if (props.self.party == props.gs.pov) {
     nameStyle += " " + styles.ownPol;
@@ -168,13 +167,23 @@ function Pol(props) {
     }
   }
 
+  return nameStyle;
+}
+
+function Pol(props) {
+  const imageUrl = "url('/politicians/" + props.self.url + ".png')";
+
   return (
     <div className={styles.polWrapper}>
       <div className={styles.cardOuter}
           style={{backgroundImage: imageUrl}}>
         <div className={styles.darkenOnHover} />
         <div className={styles.spacer} />
-        <span className={nameStyle}>
+        <span className={styles.partyAbbr + ' ' +
+            (props.self.party == props.gs.pov ? styles.ownPol : '')}>
+          {props.gs.parties[props.self.party].abbr}
+        </span>
+        <span className={nameStyle(props)}>
           {props.self.name}
         </span>
         {bigNumberJsx(props)}
