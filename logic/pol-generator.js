@@ -20,7 +20,7 @@ class PolGenerator {
   }
 
   redeal() {
-    this.unused = info.pols.slice();
+    this.unused = pols.slice();
     this.shuffle(this.unused);
     this.resets++;
     for (let i = 0; i < this.unused.length; i++) {

@@ -21,7 +21,8 @@ function buttonsJsx(props) {
   }
   if (props.self.party == props.gs.pov
       && activeProv.stage == 0
-      && props.gs.parties[props.gs.pov].candidates.includes(props.self)) {
+      && props.gs.parties[props.gs.pov].candidates.includes(props.self)
+      && !activeProv.candidates.includes(props.self)) {
     return (
       <div className={styles.btnRow}>
         <button className={general.actionBtn}
@@ -38,7 +39,7 @@ function buttonsJsx(props) {
       <div className={styles.btnRow}>
         <button className={general.actionBtn}
             onClick={() => props.callback('unrun', props.index)}>
-          Undo nomination
+          Undo
         </button>
       </div>
     );

@@ -22,7 +22,7 @@
   transition: all 0.3s ease-in-out;
 }
 
-.outer:hover {
+.cardOuter:hover {
   background-size: 100%;
   transition: all 0.3s ease-in-out;
 }
