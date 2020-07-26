@@ -126,8 +126,8 @@ class GameState {
       let sympOrder = this.activeProv.candidates.slice();
       this.generator.shuffle(sympOrder);
       for (let i = 0; i < this.parties.length; i++) {
+        let givenSymp = false;
         for (let j = 0; j < this.activeProv.candidates.length; j++) {
-          let givenSymp = false;
           if (this.activeProv.candidates[j].party != j
               && !givenSymp
               && this.parties[i].candidates.length > 0) {
