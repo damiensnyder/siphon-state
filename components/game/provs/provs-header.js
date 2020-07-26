@@ -16,7 +16,12 @@ function tabsToJsx(props) {
           tabCallback={props.tabCallback} />
     );
     if (i < 4) {
-      tabsJsx.push(<div className={styles.pointer}>➤</div>);
+      tabsJsx.push(
+        <div className={styles.pointer}
+            key={i + 5}>
+          ➤
+        </div>
+      );
     }
   }
   return tabsJsx;

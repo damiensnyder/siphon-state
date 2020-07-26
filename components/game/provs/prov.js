@@ -4,6 +4,13 @@ import PolCategory from './pol-category';
 import general from '../../general.module.css';
 import styles from './provs.module.css';
 
+const CANDIDATES_CATEGORY_NAMES = [
+  "Nominees",
+  "Candidates",
+  "Also-ran",
+  "Also-ran"
+];
+
 function polCategoriesToJsx(props) {
   const self = props.gs.provs[props.index];
 
@@ -22,7 +29,7 @@ function polCategoriesToJsx(props) {
 
   const candidates = (
     <PolCategory gs={props.gs}
-        name={self.stage == 0 ? "Nominees" : "Candidates"}
+        name={CANDIDATES_CATEGORY_NAMES[self.stage]}
         isTop={self.stage < 2}
         callback={props.callback}
         pols={self.candidates}

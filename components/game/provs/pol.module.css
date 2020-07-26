@@ -56,7 +56,6 @@
 
   z-index: 1;
   font-weight: 600;
-  color: #eeb;
   background-color: rgba(68, 68, 68, 0.9);
   border-radius: 4px;
 }
@@ -101,5 +100,7 @@
 .btnRow {
   margin-top: 8px;
   display: grid;
+  grid-auto-flow: row dense;
+  grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
   grid-gap: 8px;
 }

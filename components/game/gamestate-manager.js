@@ -122,8 +122,10 @@ class GamestateManager {
 
   }
 
-  handleVote() {
-
+  handleVote(targetIndex) {
+    this.gs.activeProv.officials[targetIndex].votes++;
+    this.gs.ownParty.votes--;
+    this.actionQueue.voteQueue.push(targetIndex);
   }
 
   handleUndoFlip() {
@@ -154,8 +156,11 @@ class GamestateManager {
 
   }
 
-  handleUndoVote() {
-
+  handleUndoVote(targetIndex) {
+    this.gs.activeProv.officials[targetIndex].votes--;
+    this.gs.ownParty.votes++;
+    this.actionQueue.voteQueue.splice(
+        this.actionQueue.voteQueue.indexOf(targetIndex), 1);
   }
 
   handleNewReplace(party) {
