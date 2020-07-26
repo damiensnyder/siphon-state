@@ -60,10 +60,6 @@
   border-radius: 4px;
 }
 
-.ownPol {
-  color: #aaf;
-}
-
 .bigNumber {
   position: absolute;
   top: -24px;
@@ -103,4 +99,16 @@
   grid-auto-flow: row dense;
   grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
   grid-gap: 8px;
+}
+
+.ownPol {
+  color: #aaf;
+}
+
+.bribed {
+  color: #7c7;
+}
+
+.symp {
+  color: #f77;
 }

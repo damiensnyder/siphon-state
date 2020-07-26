@@ -56,7 +56,7 @@ class PolGenerator {
 function toRomanNumerals(num) {
   var result ="";
   for (let i = 0; i < ARABIC.length; i++) {
-      if (Math.floor(num / arabic[i]) > 0){
+      if (Math.floor(num / ARABIC[i]) > 0){
           result += ROMAN[i];
           num -= ARABIC[i];
       }

@@ -128,7 +128,7 @@ class GameState {
       for (let i = 0; i < this.parties.length; i++) {
         let givenSymp = false;
         for (let j = 0; j < this.activeProv.candidates.length; j++) {
-          if (this.activeProv.candidates[j].party != j
+          if (this.activeProv.candidates[j].party != i
               && !givenSymp
               && this.parties[i].candidates.length > 0) {
             this.parties[i].symps.push(this.activeProv.candidates[j]);

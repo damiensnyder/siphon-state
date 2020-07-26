@@ -105,14 +105,31 @@ function buttonsJsx(props) {
 
 function Pol(props) {
   const imageUrl = "url('/politicians/" + props.self.url + ".png')";
+  var nameStyle = styles.name;
+  var isBribed = false;
+  if (props.self.party == props.gs.pov) {
+    nameStyle += " " + styles.ownPol;
+  } else if (props.gs.ownParty != undefined) {
+    for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
+      if (props.gs.ownParty.bribed[i].id == props.self.id) {
+        nameStyle += " " + styles.bribed;
+        isBribed = true;
+      }
+    }
+    if (!isBribed) {
+      if (props.gs.ownParty.symps[0].id == props.self.id) {
+        nameStyle += " " + styles.symp;
+      }
+    }
+  }
+
   return (
     <div className={styles.polWrapper}>
       <div className={styles.cardOuter}
           style={{backgroundImage: imageUrl}}>
         <div className={styles.darkenOnHover} />
         <div className={styles.spacer} />
-        <span className={styles.name + ' ' +
-            (props.self.party == props.gs.pov ? styles.ownPol : null)}>
+        <span className={nameStyle}>
           {props.self.name}
         </span>
         {bigNumberJsx(props)}
