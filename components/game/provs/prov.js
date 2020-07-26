@@ -27,6 +27,10 @@ function polCategoriesToJsx(props) {
     }
   }
 
+  self.candidates.sort((a, b) => {
+    return b.support - a.support;
+  });
+
   const candidates = (
     <PolCategory gs={props.gs}
         name={CANDIDATES_CATEGORY_NAMES[self.stage]}

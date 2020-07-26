@@ -167,8 +167,8 @@ class GameState {
 
   beginVoting() {
     // All remaining candidates become officials.
-    this.activeProv.candidates.sort((pol) => {
-      return -pol.support;
+    this.activeProv.candidates.candidates.sort((a, b) => {
+      return b.support - a.support;
     });
 
     this.activeProv.officials = this.activeProv.candidates.splice(0, 5);
