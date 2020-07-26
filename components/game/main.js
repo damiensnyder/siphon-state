@@ -86,7 +86,7 @@ class GameView extends React.Component {
     });
 
     this.socket.on('newready', (readyInfo) => {
-      this.gamestateManager.updateAfter('newready', party);
+      this.gamestateManager.updateAfter('newready', readyInfo);
       this.setState({gs: this.gamestateManager.gs});
     });
 

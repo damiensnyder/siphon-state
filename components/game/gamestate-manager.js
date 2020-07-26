@@ -168,7 +168,7 @@ class GamestateManager {
   }
 
   handleNewReady(readyInfo) {
-    this.gs.parties[readyInfo.party].connected = readyInfo.isReady;
+    this.gs.parties[readyInfo.party].ready = readyInfo.isReady;
   }
 
   handleNewDisconnect(party) {

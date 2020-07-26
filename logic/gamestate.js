@@ -103,7 +103,6 @@ class GameState {
         && polIndex < this.parties[party].candidates.length
         && polIndex >= 0) {
       this.activeProv.candidates.push(this.parties[party].candidates[polIndex]);
-      this.parties[party].candidates.splice(polIndex, 1);
     }
   }
 
@@ -216,10 +215,10 @@ class GameState {
     var maxVotes = -1;
     var maxPols = [];
     for (let i = 0; i < this.activeProv.officials.length; i++) {
-      if (this.votes[i] > maxVotes) {
+      if (this.activeProv.officials[i].votes > maxVotes) {
         maxPols = [this.activeProv.officials[i]];
-        maxVotes = this.votes[i];
-      } else if (this.votes[i] == maxVotes) {
+        maxVotes = this.activeProv.officials[i].votes;
+      } else if (this.activeProv.officials[i].votes == maxVotes) {
         maxPols.push(this.activeProv.officials[i]);
       }
     }
@@ -249,8 +248,6 @@ class GameState {
       }
     } else {
       this.activeProv.governor = maxPols[0];
-      this.activeProv.officials.splice(
-          this.activeProv.officials.indexOf(maxPols[0]), 1);
       this.beginDistribution();
     }
   }

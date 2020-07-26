@@ -67,7 +67,10 @@ function buttonsJsx(props) {
       </button>
     );
   }
-  if (props.self.votes > 0) {
+  if (props.self.party == props.gs.pov
+      && props.gs.activeProv.stage == 2
+      && props.gs.activeProv.officials.includes(props.self)
+      && props.self.votes > 0) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('unvote', props.index)}>
