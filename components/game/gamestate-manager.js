@@ -100,19 +100,18 @@ class GamestateManager {
     }
   }
 
-  handleFlip(targetIndex) {
-    const targetPol = this.gs.ownParty.bribed[targetIndex];
-    targetPol.oldParty = targetPol.party;
-    targetPol.party = this.gs.pov;
+  handleFlip(flipInfo) {
+    flipInfo.pol.oldParty = flipInfo.pol.party;
+    flipInfo.pol.party = this.gs.pov;
 
     // If the flipped politician was an active official, gain a vote.
-    if (this.activeProv.officials.includes(targetPol)
-        && this.activeProv.stage == 2) {
+    if (this.gs.activeProv.officials.includes(flipInfo.pol)
+        && this.gs.activeProv.stage == 2) {
       this.gs.ownParty.votes++;
       targetPol.oldParty.votes--;
     }
 
-    this.actionQueue.flipQueue.push(targetIndex);
+    this.actionQueue.flipQueue.push(flipInfo.index);
   }
 
   handlePay(paymentInfo) {
@@ -134,7 +133,8 @@ class GamestateManager {
       this.gs.activeProv.candidates[targetIndex].adsBought = 0;
     }
     this.gs.activeProv.candidates[targetIndex].adsBought++;
-    this.gs.actionQueue.smearQueue.push(targetIndex);
+    this.gs.activeProv.candidates[targetIndex].support++;
+    this.actionQueue.smearQueue.push(targetIndex);
   }
 
   handleSmear(targetIndex) {
@@ -143,12 +143,14 @@ class GamestateManager {
       this.gs.activeProv.candidates[targetIndex].adsBought = 0;
     }
     this.gs.activeProv.candidates[targetIndex].adsBought++;
-    this.gs.actionQueue.smearQueue.push(targetIndex);
+    this.gs.activeProv.candidates[targetIndex].support--;
+    this.actionQueue.smearQueue.push(targetIndex);
   }
 
   handleBribe() {
     this.gs.ownParty.funds -= 5 * (3 + this.gs.rounds);
     this.gs.ownParty.symps[0].flipped = true;
+    this.gs.ownParty.bribed.push(this.gs.ownParty.symps[0]);
     this.actionQueue.bribeQueue.push(true);
   }
 
@@ -158,24 +160,23 @@ class GamestateManager {
     this.actionQueue.voteQueue.push(targetIndex);
   }
 
-  handleUndoFlip(targetIndex) {
-    const targetPol = this.gs.ownParty.bribed[targetIndex];
-    targetPol.party = targetPol.oldParty;
+  handleUndoFlip(flipInfo) {
+    flipInfo.pol.party = flipInfo.pol.oldParty;
 
     // If they were an official, give a vote back to their old party, and if
     // the player's own party has voted with the unflipped politician, take
     // back the last vote.
-    if (this.activeProv.officials.includes(targetPol)
-        && this.activeProv.stage == 2) {
+    if (this.gs.activeProv.officials.includes(flipInfo.pol)
+        && this.gs.activeProv.stage == 2) {
       this.gs.ownParty.votes--;
-      targetPol.oldParty.votes++;
+      flipInfo.pol.oldParty.votes++;
       if (this.gs.voteQueue.length > this.gs.ownParty.votes) {
         this.gs.voteQueue.splice(this.gs.voteQueue.length - 1, 1);
       }
     }
 
-    this.gs.actionQueue.flipQueue.splice(
-        this.gs.actionQueue.flipQueue.indexOf[targetIndex], 1);
+    this.actionQueue.flipQueue.splice(
+        this.actionQueue.flipQueue.indexOf[flipInfo.index], 1);
   }
 
   handleUndoPay(targetIndex) {
@@ -201,22 +202,26 @@ class GamestateManager {
   }
 
   handleUndoAd(targetIndex) {
-    this.gs.ownParty.funds -= 3 + this.gs.rounds;
+    this.gs.ownParty.funds += 3 + this.gs.rounds;
     this.gs.activeProv.candidates[targetIndex].adsBought--;
-    this.gs.actionQueue.adQueue.splice(
-        this.gs.actionQueue.adQueue.indexOf(targetIndex), 1);
+    this.gs.activeProv.candidates[targetIndex].support--;
+    this.actionQueue.adQueue.splice(
+        this.actionQueue.adQueue.indexOf(targetIndex), 1);
   }
 
   handleUndoSmear(targetIndex) {
-    this.gs.ownParty.funds -= 2 + this.gs.rounds;
+    this.gs.ownParty.funds += 2 + this.gs.rounds;
     this.gs.activeProv.candidates[targetIndex].adsBought--;
-    this.gs.actionQueue.smearQueue.splice(
-        this.gs.actionQueue.smearQueue.indexOf(targetIndex), 1);
+    this.gs.activeProv.candidates[targetIndex].support++;
+    this.actionQueue.smearQueue.splice(
+        this.actionQueue.smearQueue.indexOf(targetIndex), 1);
   }
 
   handleUndoBribe() {
     this.gs.ownParty.funds += 5 * (3 + this.gs.rounds);
     this.gs.ownParty.symps[0].flipped = false;
+    this.gs.ownParty.bribed.splice(
+        this.gs.ownParty.bribed.indexOf(this.gs.ownParty.symps[0]));
     this.actionQueue.bribeQueue = [];
   }
 

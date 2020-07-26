@@ -12,11 +12,14 @@ function formatMoneyString(amount) {
 }
 
 function bigNumberJsx(props) {
+  const numberStyle = styles.bigNumber + " " +
+      (props.self.support <= -1 ? styles.negativeSupport : "");
+
   if (props.gs.activeProv.candidates.includes(props.self)
       && props.gs.activeProv.stage == 1) {
     // If candidate in race, return support (rounded to nearest integer)
     return (
-      <div className={styles.bigNumber}>
+      <div className={numberStyle}>
         {Math.round(props.self.support)}
       </div>
     );
@@ -25,14 +28,14 @@ function bigNumberJsx(props) {
   if (props.gs.activeProv.officials.includes(props.self)
       && props.gs.activeProv.stage == 2) {
     // If official in active province, return votes
-    return <div className={styles.bigNumber}>{props.self.votes}</div>;
+    return <div className={numberStyle}>{props.self.votes}</div>;
   }
 
   for (let i = 0; i < props.gs.provs.length; i++) {
     if (props.gs.provs[i].governor != undefined
         && props.gs.provs[i].governor.id == props.self.id) {
       // If governor, return a star
-      return <div className={styles.bigNumber}>★</div>;
+      return <div className={numberStyle}>★</div>;
     }
   }
 
@@ -99,22 +102,56 @@ function buttonsJsx(props) {
     );
   }
 
-  // If their ID matches a bribed politician's ID, add a flip button or an undo
-  // button depending on whether they have already been flipped.
-  for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
-    if (props.gs.ownParty.bribed[i].id == props.self.id) {
-      const targetIndex = i;
-      if (props.self.party != props.gs.pov) {
+  if (props.gs.activeProv.stage == 1
+      && props.gs.activeProv.candidates.includes(props.self)) {
+    if (props.self.party == props.gs.pov) {
+      if (props.gs.ownParty.funds > 3 + props.gs.rounds) {
+        if (props.self.hasOwnProperty('adsBought')) {
+          buttons.push(
+            <button className={general.actionBtn}
+                onClick={() => props.callback('ad', props.index)}>
+              Buy ad
+            </button>
+          );
+        } else {
+          buttons.push(
+            <button className={general.actionBtn}
+                onClick={() => props.callback('ad', props.index)}>
+              Buy ad: {formatMoneyString(3 + props.gs.rounds)}
+            </button>
+          );
+        }
+      }
+      if (props.self.adsBought > 0) {
         buttons.push(
           <button className={general.actionBtn}
-              onClick={() => props.callback('flip', targetIndex)}>
-            Flip
+              onClick={() => props.callback('unad', props.index)}>
+            Undo
           </button>
         );
-      } else {
+      }
+    } else {
+      if (props.gs.ownParty.funds > 2 + props.gs.rounds) {
+        if (props.self.hasOwnProperty('adsBought')) {
+          buttons.push(
+            <button className={general.actionBtn}
+                onClick={() => props.callback('smear', props.index)}>
+              Smear
+            </button>
+          );
+        } else {
+          buttons.push(
+            <button className={general.actionBtn}
+                onClick={() => props.callback('smear', props.index)}>
+              Smear: {formatMoneyString(2 + props.gs.rounds)}
+            </button>
+          );
+        }
+      }
+      if (props.self.adsBought > 0) {
         buttons.push(
           <button className={general.actionBtn}
-              onClick={() => props.callback('unflip', targetIndex)}>
+              onClick={() => props.callback('unsmear', props.index)}>
             Undo
           </button>
         );
@@ -122,8 +159,36 @@ function buttonsJsx(props) {
     }
   }
 
+  // If they have been bribed, add a "Flip" button or an "Undo" button depending
+  // on whether they have already been flipped.
+  for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
+    if (props.gs.ownParty.bribed[i].id == props.self.id) {
+      const targetIndex = i;
+      if (props.self.party != props.gs.pov) {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('flip',
+                  {index: targetIndex, pol: props.self})}>
+            Flip
+          </button>
+        );
+      } else {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('unflip',
+                  {index: targetIndex, pol: props.self})}>
+            Undo
+          </button>
+        );
+      }
+    }
+  }
+
+  // If they are sympathetic, add a "Bribe" or "Undo" button depending on
+  // whether they've been flipped.
   if (props.gs.ownParty.symps.length > 0
-      && props.gs.ownParty.symps[0].id == props.self.id) {
+      && props.gs.ownParty.symps[0].id == props.self.id
+      && props.self.party != props.gs.pov) {
     if (props.gs.ownParty.symps[0].flipped) {
       buttons.push(
         <button className={general.actionBtn}
@@ -132,12 +197,21 @@ function buttonsJsx(props) {
         </button>
       );
     } else {
-      buttons.push(
-        <button className={general.actionBtn}
-            onClick={() => props.callback('bribe')}>
-          Bribe: {formatMoneyString(5 * (3 + props.gs.rounds))}
-        </button>
-      );
+      if (props.gs.ownParty.symps[0].hasOwnProperty('flipped')) {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('bribe')}>
+            Bribe
+          </button>
+        );
+      } else {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('bribe')}>
+            Bribe: {formatMoneyString(5 * (3 + props.gs.rounds))}
+          </button>
+        );
+      }
     }
   }
 
