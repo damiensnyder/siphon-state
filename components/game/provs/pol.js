@@ -12,14 +12,22 @@ function bigNumberJsx(props) {
         {Math.round(props.self.support)}
       </div>
     );
-  } else if (props.gs.activeProv.officials.includes(props.self)
+  }
+
+  if (props.gs.activeProv.officials.includes(props.self)
       && props.gs.activeProv.stage == 2) {
     // If official in active province, return votes
     return <div className={styles.bigNumber}>{props.self.votes}</div>;
-  } else if (props.gs.activeProv.governor == props.self) {
-    // If governor, return a star
-    return <div className={styles.bigNumber}>★</div>;
   }
+
+  for (let i = 0; i < props.gs.provs.length; i++) {
+    if (props.gs.provs[i].governor != undefined
+        && props.gs.provs[i].governor.id == props.self.id) {
+      // If governor, return a star
+      return <div className={styles.bigNumber}>★</div>;
+    }
+  }
+
   return null;
 }
 

@@ -320,6 +320,8 @@ class GameState {
   setPov(pov) {
     this.pov = pov;
     delete this.activeProv;   // no need to send
+    const generator = this.generator;
+    delete this.generator;
 
     // Delete other players' symps
     const bribed = [];
@@ -339,7 +341,8 @@ class GameState {
     return {
       bribed: bribed,
       symps: symps,
-      funds: funds
+      funds: funds,
+      generator: generator
     }
   }
 
@@ -347,6 +350,7 @@ class GameState {
   unsetPov(hiddenInfo) {
     this.pov = -1;
     this.activeProv = this.provs[this.activeProvId];
+    this.generator = hiddenInfo.generator;
 
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].bribed = hiddenInfo.bribed[i];
