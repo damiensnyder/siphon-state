@@ -4,41 +4,47 @@ import general from '../../general.module.css';
 import styles from './pol.module.css';
 
 function bigNumberJsx(props) {
-  const activeProv = props.gs.provs[props.gs.activeProvId]
-  if (activeProv.candidates.includes(props.self) && activeProv.stage == 1) {
-    return <div className={styles.bigNumber}>{Math.round(self.support)}</div>;
-  } else if (activeProv.officials.includes(props.self)
-      && activeProv.stage == 2) {
-    return <div className={styles.bigNumber}>{self.votes}</div>;
+  if (props.gs.activeProv.candidates.includes(props.self)
+      && props.gs.activeProv.stage == 1) {
+    return (
+      <div className={styles.bigNumber}>
+        {Math.round(props.self.support)}
+      </div>
+    );
+  } else if (props.gs.activeProv.officials.includes(props.self)
+      && props.gs.activeProv.stage == 2) {
+    return <div className={styles.bigNumber}>{props.self.votes}</div>;
+  } else if (props.gs.activeProv.governor == props.self) {
+    return <div className={styles.bigNumber}>★</div>;
   }
   return null;
 }
 
 function buttonsJsx(props) {
-  const activeProv = props.gs.provs[props.gs.activeProvId];
   if (props.gs.pov < 0) {
     return null;
   }
   if (props.self.party == props.gs.pov
-      && activeProv.stage == 0
-      && props.gs.parties[props.gs.pov].candidates.includes(props.self)
-      && !activeProv.candidates.includes(props.self)) {
+      && props.gs.activeProv.stage == 0
+      && props.gs.ownParty.candidates.includes(props.self)
+      && !props.gs.activeProv.candidates.includes(props.self)
+      && props.gs.activeProv.candidates.length < 3) {
     return (
       <div className={styles.btnRow}>
         <button className={general.actionBtn}
-            onClick={() => props.callback('run', props.index)}>
+            onClick={() => props.callback('run', props.self)}>
           Nominate
         </button>
       </div>
     );
   }
   if (props.self.party == props.gs.pov
-      && activeProv.stage == 0
-      && activeProv.candidates.includes(props.self)) {
+      && props.gs.activeProv.stage == 0
+      && props.gs.activeProv.candidates.includes(props.self)) {
     return (
       <div className={styles.btnRow}>
         <button className={general.actionBtn}
-            onClick={() => props.callback('unrun', props.index)}>
+            onClick={() => props.callback('unrun', props.self)}>
           Undo
         </button>
       </div>

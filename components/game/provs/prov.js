@@ -11,6 +11,15 @@ function polCategoriesToJsx(props) {
     return null;
   }
 
+  const availablePols = [];
+  if (props.gs.ownParty != undefined) {
+    for (let i = 0; i < props.gs.ownParty.candidates.length; i++) {
+      if (!self.candidates.includes(props.gs.ownParty.candidates[i])) {
+        availablePols.push(props.gs.ownParty.candidates[i]);
+      }
+    }
+  }
+
   const candidates = (
     <PolCategory gs={props.gs}
         name={self.stage == 0 ? "Nominees" : "Candidates"}
@@ -19,16 +28,14 @@ function polCategoriesToJsx(props) {
         pols={self.candidates}
         key={0} />
   );
-  if (props.gs.pov >= 0) {
-    var available = (
-      <PolCategory gs={props.gs}
-          name={"Available"}
-          isTop={false}
-          callback={props.callback}
-          pols={props.gs.parties[props.gs.pov].candidates}
-          key={1} />
-    );
-  }
+  var available = (
+    <PolCategory gs={props.gs}
+        name={"Available"}
+        isTop={false}
+        callback={props.callback}
+        pols={availablePols}
+        key={1} />
+  );
   const officials = (
     <PolCategory gs={props.gs}
         name={"Officials"}

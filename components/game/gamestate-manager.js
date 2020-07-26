@@ -35,7 +35,17 @@ class GamestateManager {
   }
 
   setGs(gs) {
+    // Set the gamestate to the received gamestate, and add helper variables
+    // to keep track of the current province and the player's party.
+    if (gs.provs != undefined) {
+      gs.activeProv = gs.provs[gs.activeProvId];
+    }
+    if (gs.pov >= 0) {
+      gs.ownParty = gs.parties[gs.pov];
+    }
     this.gs = gs;
+
+    // Reset the action queue
     this.actionQueue = {
       flipQueue: [],
       payQueue: []
@@ -94,10 +104,10 @@ class GamestateManager {
 
   }
 
-  handleRun(targetIndex) {
-    const targetPol = this.gs.parties[this.gs.pov].candidates[targetIndex];
-    this.gs.provs[this.gs.activeProvId].candidates.push(targetPol);
-    this.actionQueue.runQueue.push(targetPol);
+  handleRun(targetPol) {
+    this.gs.activeProv.candidates.push(targetPol);
+    this.actionQueue.runQueue.push(
+        this.gs.ownParty.candidates.indexOf(targetPol));
   }
 
   handleAd() {
@@ -124,8 +134,12 @@ class GamestateManager {
 
   }
 
-  handleUndoRun() {
-
+  handleUndoRun(targetPol) {
+    const targetIndex = this.gs.ownParty.candidates.indexOf(targetPol);
+    this.gs.activeProv.candidates.splice(
+        this.gs.activeProv.candidates.indexOf(targetPol), 1);
+    this.actionQueue.runQueue.splice(
+        this.actionQueue.runQueue.indexOf(targetIndex), 1);
   }
 
   handleUndoAd() {
