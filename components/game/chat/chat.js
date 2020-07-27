@@ -74,7 +74,7 @@ class Chat extends React.Component {
 
   render() {
     return (
-      <div id={styles.chatLog}>
+      <div id={styles.chatContainer}>
         <div id={styles.messagesOuter}>
           <div id={styles.messagesInner}
                ref={this.messagesInner}>

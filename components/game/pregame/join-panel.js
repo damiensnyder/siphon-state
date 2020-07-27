@@ -3,7 +3,7 @@ import React from 'react';
 import TextInput from '../../text-input';
 import InviteLink from './invite-link';
 import general from '../../general.module.css';
-import styles from './join-panel.module.css';
+import styles from './pregame.module.css';
 
 class JoinPanel extends React.Component {
   constructor(props) {
@@ -47,7 +47,9 @@ class JoinPanel extends React.Component {
 
   render() {
     return (
-      <div className={general.outerWrapper + ' ' + general.horizWrapper}>
+      <div className={general.outerWrapper + ' ' +
+          general.horizWrapper + ' ' +
+          styles.panelContainer}>
         <div className={general.menu}>
           <TextInput label={"Party name:"}
                      maxLength={40}

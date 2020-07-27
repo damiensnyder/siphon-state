@@ -1,7 +1,7 @@
 import React from 'react';
 
 import general from '../../general.module.css';
-import styles from './join-panel.module.css';
+import styles from './pregame.module.css';
 
 class InviteLink extends React.Component {
   constructor(props) {

@@ -1,44 +1,38 @@
 #root {
-  top: 8px;
-  left: 8px;
-  bottom: 8px;
-  right: 8px;
   position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 
-  display: grid;
-  grid-auto-rows: 1fr;
-  grid-auto-columns: 1fr;
-  grid-gap: 8px;
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  align-items: stretch;
 
   background-color: #444;
+  cursor: default;
 }
 
-.containerLevel2 {
-  margin: 0;
+#sidebar {
+  flex-basis: 0;
+  flex-grow: 1;
+  margin: 16px;
+  margin-right: 0;
+
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: space-between;
 }
 
-#gameContainer {
-  grid-row: 1 / 5;
-  grid-column: 1 / 6;
+#gamePane {
+  flex-basis: 0;
+  flex-grow: 2;
+  margin: 16px;
 
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  grid-gap: 8px;
-}
-
-#playersSidebar {
-  grid-row: 1 / 7;
-  grid-column: 6 / 7;
-
-  display: grid;
-  grid-gap: 8px;
-}
-
-#controlPanel {
-  grid-row: 5 / 7;
-  grid-column: 3 / 6;
-
-  background-color: #555;
-  border-radius: 4px;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  justify-content: space-between;
 }

@@ -29,7 +29,7 @@ class GameRoom {
     this.actionQueue = [];
     this.handlingAction = false;
     this.enqueueAction = this.enqueueAction.bind(this);
-    this.teartownTimer = setTimeout(() => {this.gmCallback(this)}, 300000);
+    this.teardownTimer = setTimeout(() => {this.gmCallback(this)}, 900000);
   }
 
   // Sends actions to a queue that can be handled one at a time so they don't
@@ -53,8 +53,8 @@ class GameRoom {
     const action = this.actionQueue[0];
     this.handlers[action.type](action.viewer, action.data);
 
-    clearTimeout(this.teartownTimer);
-    this.teartownTimer = setTimeout(() => {this.gmCallback(this)}, 300000);
+    clearTimeout(this.teardownTimer);
+    this.teardownTimer = setTimeout(() => {this.gmCallback(this)}, 900000);
 
     this.actionQueue.splice(0, 1);
     if (this.actionQueue.length > 0) {
@@ -72,6 +72,9 @@ class GameRoom {
       isSelf: false,
       isSystem: true
     });
+    if (this.gs.started && !this.gs.ended) {
+      viewer.begin();
+    }
     viewer.emitGameState(this.gs);
   }
 
@@ -91,9 +94,9 @@ class GameRoom {
     this.io.emit('newreplace', target);
     if (this.gs.started && !this.gs.parties[target].connected) {
       viewer.join(target, this.gs.parties[target].name);
-      viewer.begin();
       this.players.splice(target, 0, viewer);
       this.gs.parties[target].connected = true;
+      viewer.emitGameState(this.gs);
 
       this.broadcastSystemMsg(
         viewer.socket,
@@ -112,12 +115,12 @@ class GameRoom {
       if (this.gs.ended) {
         this.rematch();
       } else if (!this.gs.started) {
-        for (let i = 0; i < this.players.length; i++) {
-          this.players[i].begin();
+        for (let i = 0; i < this.viewers.length; i++) {
+          this.viewers[i].begin();
         }
         this.gs.commitAll();
       } else {
-        this.enqueueAllActions();
+        this.executeAllActions();
         this.gs.commitAll();
       }
       this.emitGameStateToAll();
@@ -137,29 +140,42 @@ class GameRoom {
     }
   }
 
-  enqueueAllActions() {
+  executeAllActions() {
     for (let i = 0; i < this.players.length; i++) {
-      for (let j = 0; j < this.players[i].flipQueue.length; j++) {
-        this.gs.enqueueFlip(i, this.players[i].flipQueue[j]);
+      for (let j = 0; j < this.players[i].actionQueue.flipQueue.length; j++) {
+        this.gs.flip(i, this.players[i].actionQueue.flipQueue[j]);
       }
-      for (let j = 0; j < this.players[i].payQueue.length; j++) {
-        this.gs.enqueuePay(i, this.players[i].payQueue[j]);
+      for (let j = 0; j < this.players[i].actionQueue.payQueue.length; j++) {
+        this.gs.pay(i, this.players[i].actionQueue.payQueue[j]);
       }
-      for (let j = 0; j < this.players[i].buyCounter; j++) {
-        this.gs.enqueueBuy(i);
-      }
-      for (let j = 0; j < this.players[i].runQueue.length; j++) {
-        this.gs.enqueueRun(i, this.players[i].runQueue[j]);
-      }
-      for (let j = 0; j < this.players[i].fundQueue.length; j++) {
-        this.gs.enqueueFund(i, this.players[i].fundQueue[j]);
-      }
-      for (let j = 0; j < this.players[i].voteQueue.length; j++) {
-        this.gs.enqueueVote(i, this.players[i].voteQueue[j]);
-      }
+    }
 
-      this.players[i].createActionListeners();
-      this.players[i].resetActionQueues();
+    if (this.gs.activeProv.stage == 0) {
+      for (let i = 0; i < this.players.length; i++) {
+        for (let j = 0; j < this.players[i].actionQueue.runQueue.length; j++) {
+          this.gs.run(i, this.players[i].actionQueue.runQueue[j]);
+        }
+      }
+    } else if (this.gs.activeProv.stage == 1) {
+      for (let i = 0; i < this.players.length; i++) {
+        for (let j = 0; j < this.players[i].actionQueue.bribeQueue.length;
+            j++) {
+          this.gs.bribe(i, this.players[i].actionQueue.bribeQueue[j]);
+        }
+        for (let j = 0; j < this.players[i].actionQueue.adQueue.length; j++) {
+          this.gs.ad(i, this.players[i].actionQueue.adQueue[j]);
+        }
+        for (let j = 0; j < this.players[i].actionQueue.smearQueue.length;
+            j++) {
+          this.gs.smear(i, this.players[i].actionQueue.smearQueue[j]);
+        }
+      }
+    } else if (this.gs.activeProv.stage == 2) {
+      for (let i = 0; i < this.players.length; i++) {
+        for (let j = 0; j < this.players[i].actionQueue.voteQueue.length; j++) {
+          this.gs.vote(i, this.players[i].actionQueue.voteQueue[j]);
+        }
+      }
     }
   }
 
