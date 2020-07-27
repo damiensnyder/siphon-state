@@ -143,7 +143,7 @@ class GameState {
 
   ad(party, polIndex) {
     if (this.activeProv.candidates[polIndex].party == party
-        && this.parties[party].funds > (3 + this.rounds)) {
+        && this.parties[party].funds >= (3 + this.rounds)) {
       this.parties[party].funds -= (3 + this.rounds);
       this.activeProv.candidates[polIndex].support++;
     }
@@ -151,7 +151,7 @@ class GameState {
 
   smear(party, polIndex) {
     if (this.activeProv.candidates[polIndex].party != party
-        && this.parties[party].funds > (2 + this.rounds)
+        && this.parties[party].funds >= (2 + this.rounds)
         && this.activeProv.candidates[polIndex].support > 0) {
       this.parties[party].funds -= (2 + this.rounds);
       this.activeProv.candidates[polIndex].support--;
@@ -167,7 +167,7 @@ class GameState {
 
   beginVoting() {
     // All remaining candidates become officials.
-    this.activeProv.candidates.candidates.sort((a, b) => {
+    this.activeProv.candidates.sort((a, b) => {
       return b.support - a.support;
     });
 

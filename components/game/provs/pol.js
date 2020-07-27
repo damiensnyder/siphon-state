@@ -105,7 +105,7 @@ function buttonsJsx(props) {
   if (props.gs.activeProv.stage == 1
       && props.gs.activeProv.candidates.includes(props.self)) {
     if (props.self.party == props.gs.pov) {
-      if (props.gs.ownParty.funds > 3 + props.gs.rounds) {
+      if (props.gs.ownParty.funds >= 3 + props.gs.rounds) {
         if (props.self.hasOwnProperty('adsBought')) {
           buttons.push(
             <button className={general.actionBtn}
@@ -131,7 +131,7 @@ function buttonsJsx(props) {
         );
       }
     } else {
-      if (props.gs.ownParty.funds > 2 + props.gs.rounds) {
+      if (props.gs.ownParty.funds >= 2 + props.gs.rounds) {
         if (props.self.hasOwnProperty('adsBought')) {
           buttons.push(
             <button className={general.actionBtn}
@@ -196,7 +196,7 @@ function buttonsJsx(props) {
           Undo
         </button>
       );
-    } else {
+    } else if (props.gs.ownParty.funds >= 5 * (3 + props.gs.rounds)) {
       if (props.gs.ownParty.symps[0].hasOwnProperty('flipped')) {
         buttons.push(
           <button className={general.actionBtn}
