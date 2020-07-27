@@ -5,46 +5,28 @@ import general from '../../general.module.css';
 import styles from './parties.module.css';
 
 function ownFundsJsx(amount) {
-  return <span>{"$" + (amount * 100000).toLocaleString()}</span>;
+  return (
+    <span className={styles.info}>
+      Funds: {"$" + (amount * 100000).toLocaleString()}
+    </span>
+  );
 }
 
 function votesJsx(votes) {
-  return <span>Votes: {self.votes}</span>;
+  return (
+    <span className={styles.info}>
+      Votes: {votes}
+    </span>
+  );
 }
 
-function infoJsx(props) {
-  const self = props.gs.parties[props.index];
-
-  if (props.gs.pov < 0 && !self.connected) {
-    return (
-      <div className={styles.controlsAndInfo}>
-        <button className={general.actionBtn}
-            onClick={() => props.callback('replace', props.index)}>
-          Replace
-        </button>
-      </div>
-    );
-  }
-
-  const infoJsx = []
-
-  if (props.gs.started) {
-    if (props.gs.pov == props.index) {
-      infoJsx.push(ownFundsJsx(self.funds));
-    }
-    if (props.gs.activeProv != undefined
-        && props.gs.activeProv.stage == 2) {
-      infoJsx.push(votesJsx(self.votes));
-    }
-  }
-
-  if (infoJsx.length == 0) {
-    return null;
-  }
-  
+function infoJsx(index) {
   return (
-    <div className={styles.controlsAndInfo}>
-      {infoJsx}
+    <div className={styles.info}>
+      <button className={general.actionBtn}
+          onClick={() => props.callback('replace', props.index)}>
+        Replace
+      </button>
     </div>
   );
 }
@@ -68,6 +50,18 @@ function Party(props) {
   } else if (props.gs.priority == props.index) {
     nameStyle +=  " " + styles.priority
   }
+
+  const showReplace = props.gs.pov < 0 && !self.connected;
+  const showVotes = (props.gs.activeProv != undefined
+      && props.gs.activeProv.stage == 2);
+  const showPayment = (props.gs.started
+      && !props.gs.ended
+      && props.gs.ownParty != undefined
+      && !props.gs.ownParty.ready);
+  const showFunds = (props.gs.started
+      && !props.gs.ended
+      && props.gs.pov == props.index);
+
   return (
     <div className={styles.playerOuter + " " +
         (self.ready ? styles.ready : "")}>
@@ -79,10 +73,10 @@ function Party(props) {
           {self.abbr}
         </span>
       </div>
-      <div className={styles.paymentOuter}>
-        {paymentJsx(props)}
-      </div>
-      {infoJsx(props)}
+      {showReplace ? replaceBtnJsx(props.index) : null}
+      {showVotes ? votesJsx(self.votes) : null}
+      {showPayment ? paymentJsx(props) : null}
+      {showFunds ? ownFundsJsx(self.funds) : null}
     </div>
   );
 }

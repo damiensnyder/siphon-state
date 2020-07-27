@@ -75,6 +75,11 @@ class GameState {
     this.priority = (this.priority + 1) % this.parties.length;
     this.activeProv.stage = 0;
 
+    // Reset all parties' candidates.
+    for (let i = 0; i < this.parties.length; i++) {
+      this.parties[i].candidates = [];
+    }
+
     for (let i = 0; i < this.activeProv.candidates.length; i++) {
       let pol = this.activeProv.candidates[i];
       this.parties[pol.party].candidates.push(pol);

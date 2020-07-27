@@ -28,7 +28,7 @@
   align-items: flex-start;
 }
 
-.controlsAndInfo {
+.info {
   flex-grow: 0;
 
   display: flex;

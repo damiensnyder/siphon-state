@@ -75,15 +75,17 @@ class Payment extends React.Component {
     };
 
     if (this.state.paid) {
-      return [
-        <span className={styles.spaced}>
-          Paying: {formatMoneyString(this.state.amount)}
-        </span>,
-        <button className={general.actionBtn}
-            onClick={unpayAction}>
-          Undo
-        </button>
-      ];
+      return (
+        <div className={styles.paymentOuter}>
+          <span className={styles.spaced}>
+            Paying: {formatMoneyString(this.state.amount)}
+          </span>
+          <button className={general.actionBtn}
+              onClick={unpayAction}>
+            Undo
+          </button>
+        </div>
+      );
     }
 
     if (!this.props.gs.started
@@ -93,25 +95,23 @@ class Payment extends React.Component {
       return null;
     }
 
-    return [
-      this.payButtonJsx.bind(this)(),
-      <div className={styles.digitWrapper}>
-        {this.incrementButtonJsx.bind(this)(10)}
-        {Math.floor(this.state.amount / 10)}
-        {this.incrementButtonJsx.bind(this)(-10)}
-      </div>,
-      <div className={styles.digitWrapper}>
-        .
-      </div>,
-      <div className={styles.digitWrapper}>
-        {this.incrementButtonJsx.bind(this)(1)}
-        {this.state.amount % 10}
-        {this.incrementButtonJsx.bind(this)(-1)}
-      </div>,
-      <div className={styles.digitWrapper}>
-        M
+    return (
+      <div className={styles.paymentOuter}>
+        {this.payButtonJsx.bind(this)()}
+        <div className={styles.digitWrapper}>
+          {this.incrementButtonJsx.bind(this)(10)}
+          {Math.floor(this.state.amount / 10)}
+          {this.incrementButtonJsx.bind(this)(-10)}
+        </div>
+        <div className={styles.digitWrapper}>.</div>
+        <div className={styles.digitWrapper}>
+          {this.incrementButtonJsx.bind(this)(1)}
+          {this.state.amount % 10}
+          {this.incrementButtonJsx.bind(this)(-1)}
+        </div>
+        <div className={styles.digitWrapper}>M</div>
       </div>
-    ];
+    );
   }
 }
 
