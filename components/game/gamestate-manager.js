@@ -108,7 +108,7 @@ class GamestateManager {
     if (this.gs.activeProv.officials.includes(flipInfo.pol)
         && this.gs.activeProv.stage == 2) {
       this.gs.ownParty.votes++;
-      targetPol.oldParty.votes--;
+      this.gs.parties[flipInfo.pol.oldParty].votes--;
     }
 
     this.actionQueue.flipQueue.push(flipInfo.index);
@@ -134,7 +134,7 @@ class GamestateManager {
     }
     this.gs.activeProv.candidates[targetIndex].adsBought++;
     this.gs.activeProv.candidates[targetIndex].support++;
-    this.actionQueue.smearQueue.push(targetIndex);
+    this.actionQueue.adQueue.push(targetIndex);
   }
 
   handleSmear(targetIndex) {
@@ -169,7 +169,7 @@ class GamestateManager {
     if (this.gs.activeProv.officials.includes(flipInfo.pol)
         && this.gs.activeProv.stage == 2) {
       this.gs.ownParty.votes--;
-      flipInfo.pol.oldParty.votes++;
+      this.gs.parties[flipInfo.pol.oldParty].votes++;
       if (this.gs.voteQueue.length > this.gs.ownParty.votes) {
         this.gs.voteQueue.splice(this.gs.voteQueue.length - 1, 1);
       }

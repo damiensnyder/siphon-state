@@ -142,6 +142,10 @@ class GameState {
   }
 
   ad(party, polIndex) {
+    /*console.log("Party: " + party + "\n" +
+        "Pol index: " + polIndex + "\n" +
+        "Pol party: " + this.activeProv.candidates[polIndex].party + "\n" +
+        "Funds: " + this.parties[party].funds);*/
     if (this.activeProv.candidates[polIndex].party == party
         && this.parties[party].funds >= (3 + this.rounds)) {
       this.parties[party].funds -= (3 + this.rounds);
@@ -160,6 +164,9 @@ class GameState {
 
   advanceRaceStage() {
     this.rounds++;
+    this.activeProv.candidates.sort((a, b) => {
+      return b.support - a.support;
+    });
     if (this.rounds == 3) {
       this.beginVoting();
     }

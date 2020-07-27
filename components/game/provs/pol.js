@@ -77,8 +77,7 @@ function buttonsJsx(props) {
   }
 
   // If they are an active official, add "Vote" button
-  if (props.self.party == props.gs.pov
-      && props.gs.activeProv.stage == 2
+  if (props.gs.activeProv.stage == 2
       && props.gs.activeProv.officials.includes(props.self)
       && props.gs.ownParty.votes > 0) {
     buttons.push(
@@ -235,7 +234,8 @@ function nameStyle(props) {
         nameStyle += " " + styles.bribed;
       }
     }
-    if (props.gs.ownParty.symps[0].id == props.self.id
+    if (props.gs.ownParty.symps.length > 0
+        && props.gs.ownParty.symps[0].id == props.self.id
         && !props.gs.ownParty.symps[0].flipped) {
       nameStyle += " " + styles.symp;
     }
