@@ -187,7 +187,7 @@ class GameState {
     if (this.activeProv.officials.length == 0) {
       this.beginDistribution();
     } else if (this.activeProv.officials.length == 1) {
-      this.activeProv.governors.push(this.activeProv.officials[0]);
+      this.activeProv.governor = this.activeProv.officials[0];
       this.beginDistribution();
     }
   }

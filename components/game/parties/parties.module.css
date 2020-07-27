@@ -37,6 +37,54 @@
   align-items: center;
 }
 
+.paymentOuter {
+  flex-grow: 0;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.spaced {
+  margin-right: 4px;
+}
+
+.digitWrapper {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: 700;
+}
+
+.incrementBtn {
+  width: 16px;
+  height: 16px;
+  margin: -2px 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: default;
+}
+
+.inactiveBtn {
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.inactiveBtn:hover {
+  color: inherit;
+  background-color: inherit;
+}
+
+.inactiveBtn:active {
+  color: inherit;
+}
+
 .name {
   margin-bottom: 4px;
 

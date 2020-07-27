@@ -108,7 +108,7 @@ class GameView extends React.Component {
     if (type == 'msg') {
       this.addMsg({
         sender: 'You',
-        text: msg,
+        text: data,
         isSelf: true,
         isSystem: false
       });
