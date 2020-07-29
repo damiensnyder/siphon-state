@@ -148,7 +148,7 @@ class GamestateManager {
   }
 
   handleBribe() {
-    this.gs.ownParty.funds -= 5 * (3 + this.gs.rounds);
+    this.gs.ownParty.funds -= 10 * (2 + this.gs.rounds);
     this.gs.ownParty.symps[0].flipped = true;
     this.gs.ownParty.bribed.push(this.gs.ownParty.symps[0]);
     this.actionQueue.bribeQueue.push(true);
@@ -218,7 +218,7 @@ class GamestateManager {
   }
 
   handleUndoBribe() {
-    this.gs.ownParty.funds += 5 * (3 + this.gs.rounds);
+    this.gs.ownParty.funds += 10 * (2 + this.gs.rounds);
     this.gs.ownParty.symps[0].flipped = false;
     this.gs.ownParty.bribed.splice(
         this.gs.ownParty.bribed.indexOf(this.gs.ownParty.symps[0]));

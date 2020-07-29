@@ -30,7 +30,7 @@ class GameState {
       abbr: abbr,
       ready: false,
       connected: true,
-      funds: 25,
+      funds: 0,
       candidates: [],
       symps: [],
       bribed: []
@@ -89,9 +89,9 @@ class GameState {
       this.parties[pol.party].candidates.push(pol);
     }
 
-    // Give all parties $25 and enough candidates to make 5 total.
+    // Give all parties $5M and enough candidates to make 5 total.
     for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].funds += 25;
+      this.parties[i].funds += 50;
       for (let j = this.parties[i].candidates.length; j < 5; j++) {
         this.parties[i].candidates.push(this.generator.newPol(i));
       }
