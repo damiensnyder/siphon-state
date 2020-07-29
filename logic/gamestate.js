@@ -1,5 +1,5 @@
 const PolGenerator = require('./pol-generator');
-const PROVINCE_NAMES = ["Germany 5", "Arkanzas", "wilfreed", "NONONONO", "ian"];
+const PROVINCE_NAMES = ["Germany 6", "Ourkanzas", "free willy", "NAH", "ian"];
 
 class GameState {
   constructor(settings) {
