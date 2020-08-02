@@ -59,4 +59,4 @@ const startTime = new Date();
 twoPartiesStart();
 threePartiesStart();
 fourPartiesStart();
-console.log("Time to create test games: " + ((new Date() - startTime) / 1000));
+console.log(`Created test games in ${(new Date() - startTime) / 1000}s`);

@@ -55,13 +55,13 @@ class GameState {
     if (!this.started) {
       this.started = true;
       this.beginNomination();
-    } else if (this.activeProv.stage == 0) {
+    } else if (this.activeProv.stage === 0) {
       this.beginRace();
-    } else if (this.activeProv.stage == 1) {
+    } else if (this.activeProv.stage === 1) {
       this.advanceRaceStage();
-    } else if (this.activeProv.stage == 2) {
+    } else if (this.activeProv.stage === 2) {
       this.tallyVotes();
-    } else if (this.activeProv.stage == 3) {
+    } else if (this.activeProv.stage === 3) {
       this.checkIfGameWon();
     }
   }
