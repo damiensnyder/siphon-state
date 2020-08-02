@@ -221,16 +221,16 @@ class GameState {
     }
   }
 
-  // Coutn each official's votes. If there is a winner, elect them and begin
+  // Count each official's votes. If there is a winner, elect them and begin
   // distribution. Otherwise, start the voting again.
   tallyVotes() {
-    var maxVotes = -1;
-    var maxPols = [];
+    let maxVotes = -1;
+    let maxPols = [];
     for (let i = 0; i < this.activeProv.officials.length; i++) {
       if (this.activeProv.officials[i].votes > maxVotes) {
         maxPols = [this.activeProv.officials[i]];
         maxVotes = this.activeProv.officials[i].votes;
-      } else if (this.activeProv.officials[i].votes == maxVotes) {
+      } else if (this.activeProv.officials[i].votes === maxVotes) {
         maxPols.push(this.activeProv.officials[i]);
       }
     }
@@ -244,8 +244,8 @@ class GameState {
       if (this.rounds < 3) {
         this.resetVotes();
       } else {
-        var maxPol = maxPols[0];
-        var maxPriority = (maxPol.party - this.priority) % this.parties.length;
+        let maxPol = maxPols[0];
+        let maxPriority = (maxPol.party - this.priority) % this.parties.length;
         for (let i = 1; i < maxPols.length; i++) {
           let priority = (maxPols[i].party - this.priority) % this.parties.length;
           if (priority < maxPriority) {

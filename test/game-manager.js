@@ -1,4 +1,4 @@
-const Game = require('./game-room.js');
+const Game = require('../logic/game-room.js');
 
 class GameManager {
   constructor(io) {

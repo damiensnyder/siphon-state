@@ -10,27 +10,27 @@ const nextJs = require('next');
 const nextApp = nextJs({dev: process.env.NODE_ENV != 'production'});
 const nextHandler = nextApp.getRequestHandler();
 
-const GameManager = require('./logic/game-manager');
+const GameManager = require('./game-manager.js');
 const gm = new GameManager(io);
 
 nextApp.prepare().then(() => {
   expressApp.post('/create', (req, res) => {
     gm.createGame(req, res);
   });
-
+  
   expressApp.get('/api/activeGames', (req, res) => {
     gm.getActiveGames(req, res);
   });
-
+  
   // Send people who join the game to the game room
   expressApp.get('/game/:gameCode', (req, res) => {
     gm.sendToGame(req, res, nextHandler);
   });
-
+  
   expressApp.get('*', (req, res) => {
     return nextHandler(req, res);
   });
-
+  
   // Start the server for socket.io
   const envPort = parseInt(process.env.PORT);
   const port = envPort >= 0 ? envPort : 3000;
@@ -39,3 +39,5 @@ nextApp.prepare().then(() => {
     console.log("Listening on port " + port);
   })
 });
+
+module.exports = gm;
