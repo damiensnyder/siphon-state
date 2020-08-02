@@ -3,6 +3,7 @@ const PROVINCE_NAMES = ["Germany 6", "Ourkanzas", "free willy", "NAH", "ian"];
 
 class GameState {
   constructor(settings) {
+    this.settings = settings;
     this.started = false;
     this.ended = false;
     this.activeProvId = 4;
@@ -133,7 +134,7 @@ class GameState {
       for (let i = 0; i < this.parties.length; i++) {
         let givenSymp = false;
         for (let j = 0; j < sympOrder.length; j++) {
-          if (sympOrder.party != i
+          if (sympOrder.party !== i
               && !givenSymp
               && this.parties[i].candidates.length > 0) {
             this.parties[i].symps.push(sympOrder[j]);
@@ -151,7 +152,7 @@ class GameState {
         "Pol index: " + polIndex + "\n" +
         "Pol party: " + this.activeProv.candidates[polIndex].party + "\n" +
         "Funds: " + this.parties[party].funds);*/
-    if (this.activeProv.candidates[polIndex].party == party
+    if (this.activeProv.candidates[polIndex].party === party
         && this.parties[party].funds >= (3 + this.rounds)) {
       this.parties[party].funds -= (3 + this.rounds);
       this.activeProv.candidates[polIndex].support++;
@@ -159,7 +160,7 @@ class GameState {
   }
 
   smear(party, polIndex) {
-    if (this.activeProv.candidates[polIndex].party != party
+    if (this.activeProv.candidates[polIndex].party !== party
         && this.parties[party].funds >= (2 + this.rounds)
         && this.activeProv.candidates[polIndex].support > 0) {
       this.parties[party].funds -= (2 + this.rounds);
@@ -172,7 +173,7 @@ class GameState {
     this.activeProv.candidates.sort((a, b) => {
       return b.support - a.support;
     });
-    if (this.rounds == 3) {
+    if (this.rounds === 3) {
       this.beginVoting();
     }
   }
@@ -189,9 +190,9 @@ class GameState {
     this.resetVotes();
 
     // If there are no officials, skip to the next stage.
-    if (this.activeProv.officials.length == 0) {
+    if (this.activeProv.officials.length === 0) {
       this.beginDistribution();
-    } else if (this.activeProv.officials.length == 1) {
+    } else if (this.activeProv.officials.length === 1) {
       this.activeProv.governor = this.activeProv.officials[0];
       this.beginDistribution();
     }
@@ -270,7 +271,7 @@ class GameState {
 
   checkIfGameWon() {
     // If any player has more than half the governors, they win the game.
-    var governorCounts = Array(this.parties.length).fill(0);
+    let governorCounts = Array(this.parties.length).fill(0);
     for (let i = 0; i < this.provs.length; i++) {
       let governor = this.provs[i].governor;
       if (governor !== null) {
@@ -318,7 +319,7 @@ class GameState {
     if (sympIndex < party.bribed.length && sympIndex >= 0) {
       const pol = party.bribed[sympIndex];
       if (this.activeProv.officials.includes(pol)
-          && this.activeProv.stage == 2) {
+          && this.activeProv.stage === 2) {
         this.parties[pol.party].votes--;
         party.votes++;
       }
