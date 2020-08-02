@@ -20,7 +20,7 @@ function votesJsx(votes) {
   );
 }
 
-function infoJsx(index) {
+function replaceBtnJsx(props) {
   return (
     <div className={styles.info}>
       <button className={general.actionBtn}
@@ -73,7 +73,7 @@ function Party(props) {
           {self.abbr}
         </span>
       </div>
-      {showReplace ? replaceBtnJsx(props.index) : null}
+      {showReplace ? replaceBtnJsx(props) : null}
       {showVotes ? votesJsx(self.votes) : null}
       {showPayment ? paymentJsx(props) : null}
       {showFunds ? ownFundsJsx(self.funds) : null}

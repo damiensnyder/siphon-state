@@ -1,6 +1,8 @@
 const GameState = require('./gamestate.js');
 const Viewer = require('./viewer.js');
 
+const TEARDOWN_TIME = 3600000;
+
 class GameRoom {
   constructor(io, settings, callback) {
     this.io = io.of('/game/' + settings.gameCode);
@@ -29,7 +31,8 @@ class GameRoom {
     this.actionQueue = [];
     this.handlingAction = false;
     this.enqueueAction = this.enqueueAction.bind(this);
-    this.teardownTimer = setTimeout(() => {this.gmCallback(this)}, 900000);
+    this.teardownTimer = setTimeout(() => {this.gmCallback(this)},
+        TEARDOWN_TIME);
   }
 
   // Sends actions to a queue that can be handled one at a time so they don't
@@ -54,7 +57,8 @@ class GameRoom {
     this.handlers[action.type](action.viewer, action.data);
 
     clearTimeout(this.teardownTimer);
-    this.teardownTimer = setTimeout(() => {this.gmCallback(this)}, 900000);
+    this.teardownTimer = setTimeout(() => {this.gmCallback(this)},
+        TEARDOWN_TIME);
 
     this.actionQueue.splice(0, 1);
     if (this.actionQueue.length > 0) {
@@ -208,7 +212,7 @@ class GameRoom {
   // game.
   removePlayer(pov) {
     const name = this.gs.parties[pov].name;
-    const [removedPlayer] = this.players.splice(pov, 1);
+    this.players.splice(pov, 1);
     if (!this.gs.started) {
       this.gs.parties.splice(pov, 1);
       for (let i = pov; i < this.players.length; i++) {

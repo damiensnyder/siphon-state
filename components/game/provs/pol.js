@@ -262,7 +262,7 @@ function Pol(props) {
         </span>
         {bigNumberJsx(props)}
       </div>
-      {buttonsJsx(props)}
+      {props.gs.ownParty.ready ? null : buttonsJsx(props)}
     </div>
   );
 }
