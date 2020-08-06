@@ -1,7 +1,33 @@
-const PolGenerator = require('./pol-generator');
-const PROVINCE_NAMES = ["Germany 6", "Ourkanzas", "free willy", "NAH", "ian"];
+import {Pol, Prov, NameGenerator} from "./generator";
+
+interface Party {
+  name: string,
+  abbr: string,
+  ready: boolean,
+  connected: boolean,
+  funds: number,
+  pols: number[],
+  bribable: number[],
+  bribed: number[]
+}
 
 class GameState {
+  started: boolean;
+  ended: boolean;
+  activeProvId: number;
+  priority: number;
+  pov: number;
+  turn: number;
+  rounds: number;
+  stage: number;
+  decline: number;
+  
+  pols: Pol[];
+  parties: Party[];
+  provs: Prov[];
+  officials: number[];
+  primeMinister: number | void;
+  
   constructor(settings) {
     this.settings = settings;
     this.started = false;
@@ -11,21 +37,19 @@ class GameState {
     this.pov = -1;
     this.turn = -1;
     this.rounds = 0;
-
+    this.stage = 0;
+    this.decline = -1;
+    
+    this.generator = new NameGenerator(settings.nation);
+  
+    this.pols = [];
     this.parties = [];
-    this.provs = PROVINCE_NAMES.map((name) => { return {
-      name: name,
-      stage: 3,
-      governor: null,
-      officials: [],
-      candidates: []
-    }});
-    this.generator = new PolGenerator();
-    this.generator.shuffle(this.provs);
-    this.activeProv = this.provs[4];
+    this.provs = this.generator.provs;
+    this.officials = [];
+    this.primeMinister = null;
   }
 
-  addParty(name, abbr) {
+  addParty(name: string, abbr: string): void {
     this.parties.push({
       name: name,
       abbr: abbr,
@@ -33,13 +57,13 @@ class GameState {
       connected: true,
       funds: 0,
       candidates: [],
-      symps: [],
+      bribable: [],
       bribed: []
     });
   }
 
   // Returns true if all parties are ready, false otherwise.
-  allReady() {
+  allReady(): boolean {
     for (let i = 0; i < this.parties.length; i++) {
       if (!this.parties[i].ready) {
         return false;
@@ -48,114 +72,99 @@ class GameState {
     return true;
   }
 
-  commitAll() {
-    for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].ready = false;
-    }
+  commitAll(): void {
+    this.parties.forEach((party) => {
+      party.ready = false;
+    });
 
     if (!this.started) {
       this.started = true;
       this.beginNomination();
-    } else if (this.activeProv.stage === 0) {
+    } else if (this.stage === 0) {
       this.beginRace();
-    } else if (this.activeProv.stage === 1) {
+    } else if (this.stage === 1) {
       this.advanceRaceStage();
-    } else if (this.activeProv.stage === 2) {
+    } else if (this.stage === 2) {
       this.tallyVotes();
-    } else if (this.activeProv.stage === 3) {
+    } else if (this.stage === 3) {
       this.checkIfGameWon();
     }
   }
 
   // Advance to the next province and begin the nomination stage in the new
   // province.
-  beginNomination() {
+  beginNomination(): void {
     // Advance to the next province.
-    this.activeProvId = (this.activeProvId + 1) % this.provs.length;
-    this.activeProv = this.provs[this.activeProvId];
+    if (this.primeMinister !== null) {
+      this.priority = this.pols[this.primeMinister].party;
+    }
     this.priority = (this.priority + 1) % this.parties.length;
-    this.activeProv.stage = 0;
+    this.stage = 0;
+    this.decline += 1;
 
     // Reset all parties' candidates.
-    for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].candidates = [];
-    }
+    this.parties.forEach((party) => {
+      party.pols = [];
+    });
+    
+    this.provs.forEach((prov) => {
+      prov.candidates.forEach((pol) => {
+        this.parties[this.pols[pol].party].push(this.pols[pol].id);
+      });
+      prov.officials.forEach((pol) => {
+        this.parties[this.pols[pol].party].push(this.pols[pol].id);
+      });
+    });
 
-    for (let i = 0; i < this.activeProv.candidates.length; i++) {
-      let pol = this.activeProv.candidates[i];
-      this.parties[pol.party].candidates.push(pol);
-    }
-    for (let i = 0; i < this.activeProv.officials.length; i++) {
-      let pol = this.activeProv.officials[i];
-      this.parties[pol.party].candidates.push(pol);
-    }
-
-    // Give all parties $5M and enough candidates to make 5 total.
-    for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].funds += 50;
-      for (let j = this.parties[i].candidates.length; j < 5; j++) {
-        this.parties[i].candidates.push(this.generator.newPol(i));
+    // Give all parties $10M and enough candidates to make 5 total.
+    this.parties.forEach((party, partyIndex) => {
+      party.funds += 100;
+      while (party.pols.length < 5) {
+        this.pols.push(this.generator.newPol(partyIndex));
+        party.pols.push(this.pols.length - 1);
       }
-    }
+    });
 
-    this.activeProv.candidates = [];
-    this.activeProv.officials = [];
-    this.activeProv.governor = null;
+    this.candidates = [];
+    this.officials = [];
+    this.primeMinister = null;
   }
 
   // The given politician becomes a candidate in the active province.
-  run(party, polIndex) {
-    if (this.parties[party].candidates.length > 2
-        && polIndex < this.parties[party].candidates.length
+  run(partyIndex: number, polIndex: number, provIndex: number): void {
+    let party: Party = this.parties[partyIndex];
+    if (party.pols.length > 0
+        && party.funds >= 5
+        && polIndex < this.parties[partyIndex].pols.length
         && polIndex >= 0) {
-      this.activeProv.candidates.push(this.parties[party].candidates[polIndex]);
+      this.provs[provIndex].candidates.push(party.pols[polIndex]);
     }
   }
 
-  beginRace() {
-    this.activeProv.stage = 1;
+  beginRace(): void {
+    this.stage = 1;
     this.rounds = 0;
 
-    // If there are 5 or fewer candidates, begin voting immediately.
-    if (this.activeProv.candidates.length <= 5) {
-      this.beginVoting();
-    } else {
-      const countSoFar = Array(this.parties.length).fill(0);
-      for (let i = 0; i < this.activeProv.candidates.length; i++) {
-        let party = this.activeProv.candidates[i].party;
-        countSoFar[party]++;
-        this.activeProv.candidates[i].support = -0.001 *
-            (this.parties.length * countSoFar[party] + party);
-      }
-
-      // Give a symp to each party with at least one candidate in the race.
-      let sympOrder = this.activeProv.candidates.slice();
-      this.generator.shuffle(sympOrder);
-      for (let i = 0; i < this.parties.length; i++) {
-        let givenSymp = false;
-        for (let j = 0; j < sympOrder.length; j++) {
-          if (sympOrder.party !== i
-              && !givenSymp
-              && this.parties[i].candidates.length > 0) {
-            this.parties[i].symps.push(sympOrder[j]);
-            sympOrder.splice(j, 1);
-            givenSymp = true;
-          }
-        }
-        this.parties[i].candidates = [];
-      }
-    }
+    // Assign each candidate a priority value
+    const countSoFar: number[] = Array(this.parties.length).fill(0);
+    this.provs.forEach((prov, provIndex) => {
+      prov.candidates.forEach((polIndex) => {
+        const partyIndex = this.pols[polIndex].party;
+        const priority = (partyIndex + this.priority) % this.parties.length;
+        const supportBonus = (countSoFar * this.parties.length + priority) /
+            (5 * this.parties.length + 1);
+        this.pols[polIndex].support = this.pols[polIndex].baseSupport +
+            supportBonus;
+      });
+    });
   }
 
-  ad(party, polIndex) {
-    /*console.log("Party: " + party + "\n" +
-        "Pol index: " + polIndex + "\n" +
-        "Pol party: " + this.activeProv.candidates[polIndex].party + "\n" +
-        "Funds: " + this.parties[party].funds);*/
-    if (this.activeProv.candidates[polIndex].party === party
-        && this.parties[party].funds >= (3 + this.rounds)) {
-      this.parties[party].funds -= (3 + this.rounds);
-      this.activeProv.candidates[polIndex].support++;
+  ad(partyIndex: number, polIndex: number, provIndex: number): void {
+    if (this.pols[polIndex].party === partyIndex
+        && this.provs[provIndex].candidates.includes(polIndex)
+        && this.parties[partyIndex].funds >= (3 + this.rounds)) {
+      this.parties[partyIndex].funds -= (3 + this.rounds);
+      this.pols[polIndex].support++;
     }
   }
 
@@ -214,7 +223,7 @@ class GameState {
   resetVotes() {
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].votes = 0;
-      this.parties[i].symps = [];
+      this.parties[i].bribable = [];
     }
     for (let i = 0; i < this.activeProv.officials.length; i++) {
       this.activeProv.officials[i].votes = 0;
@@ -306,9 +315,9 @@ class GameState {
 
   bribe(partyIndex) {
     const party = this.parties[partyIndex];
-    if (party.symps.length > 0 && party.funds >= (2 + this.rounds) * 10) {
-      party.bribed.push(party.symps[0]);
-      party.symps = [];
+    if (party.bribable.length > 0 && party.funds >= (2 + this.rounds) * 10) {
+      party.bribed.push(party.bribable[0]);
+      party.bribable = [];
       party.funds -= (2 + this.rounds) * 10;
     }
   }
@@ -342,11 +351,11 @@ class GameState {
     const funds = []
     for (let i = 0; i < this.parties.length; i++) {
       bribed.push(this.parties[i].bribed);
-      symps.push(this.parties[i].symps);
+      symps.push(this.parties[i].bribable);
       funds.push(this.parties[i].funds);
       if (i !== pov) {
         delete this.parties[i].bribed;
-        delete this.parties[i].symps;
+        delete this.parties[i].bribable;
         delete this.parties[i].funds;
       }
     }
@@ -367,7 +376,7 @@ class GameState {
 
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].bribed = hiddenInfo.bribed[i];
-      this.parties[i].symps = hiddenInfo.symps[i];
+      this.parties[i].bribable = hiddenInfo.symps[i];
       this.parties[i].funds = hiddenInfo.funds[i];
     }
   }

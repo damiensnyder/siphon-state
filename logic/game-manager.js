@@ -1,5 +1,12 @@
 const Game = require('./game-room.js');
 
+interface Settings {
+  name: string,
+  gameCode: string,
+  private: boolean,
+  nation: string
+}
+
 class GameManager {
   constructor(io) {
     this.io = io;
@@ -14,11 +21,12 @@ class GameManager {
 
   createGame(req, res) {
     const userSettings = req.body.settings;
-    const gameCode = this.generateGameCode()
-    const settings = {
+    const gameCode: number = this.generateGameCode()
+    const settings: Settings = {
       name: userSettings.name,
       gameCode: gameCode,
-      private: userSettings.private
+      private: userSettings.private,
+      nation: userSettings.nation
     };
 
     // Send error code 400 if the game code is already in use or is invalid.
