@@ -6,6 +6,7 @@ interface Party {
   ready: boolean,
   connected: boolean,
   funds: number,
+  votes: number,
   pols: number[],
   bribable: number[],
   bribed: number[]
@@ -27,6 +28,7 @@ class GameState {
   provs: Prov[];
   officials: number[];
   primeMinister: number | void;
+  suspender: number | void;
   
   constructor(settings) {
     this.settings = settings;
@@ -47,6 +49,7 @@ class GameState {
     this.provs = this.generator.provs;
     this.officials = [];
     this.primeMinister = null;
+    this.suspender = null;
   }
 
   addParty(name: string, abbr: string): void {
@@ -56,6 +59,7 @@ class GameState {
       ready: false,
       connected: true,
       funds: 0,
+      votes: 0,
       candidates: [],
       bribable: [],
       bribed: []
@@ -116,10 +120,10 @@ class GameState {
       });
     });
 
-    // Give all parties $10M and enough candidates to make 5 total.
+    // Give all parties $10M and enough candidates to make one per province.
     this.parties.forEach((party, partyIndex) => {
       party.funds += 100;
-      while (party.pols.length < 5) {
+      while (party.pols.length < this.provs.length) {
         this.pols.push(this.generator.newPol(partyIndex));
         party.pols.push(this.pols.length - 1);
       }
@@ -150,9 +154,9 @@ class GameState {
     this.provs.forEach((prov, provIndex) => {
       prov.candidates.forEach((polIndex) => {
         const partyIndex = this.pols[polIndex].party;
-        const priority = (partyIndex + this.priority) % this.parties.length;
+        const priority = (partyIndex - this.priority) % this.parties.length;
         const supportBonus = (countSoFar * this.parties.length + priority) /
-            (5 * this.parties.length + 1);
+            (this.provs.length * this.parties.length + 1);
         this.pols[polIndex].support = this.pols[polIndex].baseSupport +
             supportBonus;
       });
@@ -162,158 +166,161 @@ class GameState {
   ad(partyIndex: number, polIndex: number, provIndex: number): void {
     if (this.pols[polIndex].party === partyIndex
         && this.provs[provIndex].candidates.includes(polIndex)
-        && this.parties[partyIndex].funds >= (3 + this.rounds)) {
+        && this.parties[partyIndex].funds >= (3 + this.rounds)
+        && this.stage === 1) {
       this.parties[partyIndex].funds -= (3 + this.rounds);
       this.pols[polIndex].support++;
     }
   }
 
-  smear(party, polIndex) {
-    if (this.activeProv.candidates[polIndex].party !== party
-        && this.parties[party].funds >= (2 + this.rounds)
-        && this.activeProv.candidates[polIndex].support > 0) {
-      this.parties[party].funds -= (2 + this.rounds);
-      this.activeProv.candidates[polIndex].support--;
+  smear(partyIndex: number, polIndex: number, provIndex: number): void {
+    if (this.pols[polIndex].party !== partyIndex
+        && this.provs[provIndex].candidates.includes(polIndex)
+        && this.parties[partyIndex].funds >= (2 + this.rounds)
+        && this.pols[polIndex].support >= 1
+        && this.stage === 1) {
+      this.parties[partyIndex].funds -= (2 + this.rounds);
+      this.pols[polIndex].support--;
     }
   }
 
-  advanceRaceStage() {
+  advanceRaceStage(): void {
     this.rounds++;
-    this.activeProv.candidates.sort((a, b) => {
-      return b.support - a.support;
-    });
     if (this.rounds === 3) {
       this.beginVoting();
     }
   }
 
-  beginVoting() {
+  beginVoting(): void {
+    this.officials = [];
+    
     // All remaining candidates become officials.
-    this.activeProv.candidates.sort((a, b) => {
-      return b.support - a.support;
+    this.provs.forEach((prov: Prov) => {
+      prov.candidates.sort((a: number, b: number) => {
+        return this.pols[b].support - this.pols[a].support;
+      });
+      for (let i = 0; i < prov.seats; i++) {
+        this.officials.push(prov.candidates[i]);
+      }
     });
-
-    this.activeProv.officials = this.activeProv.candidates.splice(0, 5);
-    this.activeProv.stage = 2;
+    
+    this.stage = 2;
     this.rounds = 0;
     this.resetVotes();
 
     // If there are no officials, skip to the next stage.
-    if (this.activeProv.officials.length === 0) {
+    if (this.officials.length === 0) {
       this.beginDistribution();
-    } else if (this.activeProv.officials.length === 1) {
-      this.activeProv.governor = this.activeProv.officials[0];
+    } else if (this.officials.length === 1) {
+      this.primeMinister = this.officials[0];
       this.beginDistribution();
     }
   }
 
   // Assign one vote from the given party to the given politician.
-  vote(party, polIndex) {
-    if (this.parties[party].votes > 0
-        && polIndex < this.activeProv.officials.length
-        && polIndex >= 0) {
+  vote(partyIndex: number, polIndex: number): void {
+    if (this.parties[partyIndex].votes > 0
+        && polIndex < this.officials.length
+        && polIndex >= 0
+        && this.stage === 2) {
       this.activeProv.officials[polIndex].votes++;
-      this.parties[party].votes--;
+      this.parties[partyIndex].votes--;
     }
   }
 
   // Reset all officials' vote totals and parties' usable votes to 0, then give
   // all parties votes equal to the number of officials they have in the
   // prov.
-  resetVotes() {
-    for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].votes = 0;
-      this.parties[i].bribable = [];
-    }
-    for (let i = 0; i < this.activeProv.officials.length; i++) {
-      this.activeProv.officials[i].votes = 0;
-      this.parties[this.activeProv.officials[i].party].votes++;
-    }
+  resetVotes(): void {
+    this.parties.forEach((party)=> {
+      party.votes = 0;
+      party.bribable = [];
+    });
+    this.officials.forEach((polIndex) => {
+      this.pols[polIndex].support = 0;
+      this.parties[this.pols[polIndex].party].votes++;
+    });
   }
 
   // Count each official's votes. If there is a winner, elect them and begin
   // distribution. Otherwise, start the voting again.
-  tallyVotes() {
-    let maxVotes = -1;
-    let maxPols = [];
-    for (let i = 0; i < this.activeProv.officials.length; i++) {
-      if (this.activeProv.officials[i].votes > maxVotes) {
-        maxPols = [this.activeProv.officials[i]];
-        maxVotes = this.activeProv.officials[i].votes;
-      } else if (this.activeProv.officials[i].votes === maxVotes) {
-        maxPols.push(this.activeProv.officials[i]);
+  tallyVotes(): void {
+    let maxVotes: number = -1;
+    let maxPolIndices: number[] = [];
+    this.officials.forEach((polIndex) => {
+      if (this.pols[polIndex].support > maxVotes) {
+        maxPolIndices = [polIndex];
+        maxVotes = this.pols[polIndex].support;
+      } else if (this.pols[polIndex].support === maxVotes) {
+        maxPolIndices.push(polIndex);
       }
-    }
+    });
 
     // If the election was not disputed, elect the winner. If it was disputed
     // and this was the third voting round, elect the official belonging to the
     // highest-priority party. Otherwise, reset every politician's votes and
     // start again.
-    if (maxPols.length > 1) {
+    if (maxPolIndices.length > 1) {
       this.rounds++;
       if (this.rounds < 3) {
         this.resetVotes();
       } else {
-        let maxPol = maxPols[0];
-        let maxPriority = (maxPol.party - this.priority) % this.parties.length;
-        for (let i = 1; i < maxPols.length; i++) {
-          let priority = (maxPols[i].party - this.priority) % this.parties.length;
+        let maxPol: number = maxPolIndices[0];
+        let maxPriority: number = (this.pols[maxPol].party - this.priority) %
+            this.parties.length;
+        for (let i = 1; i < maxPolIndices.length; i++) {
+          let priority = (this.pols[maxPolIndices[i]].party - this.priority) %
+              this.parties.length;
           if (priority < maxPriority) {
-            maxPol = maxPols[i];
+            maxPol = maxPolIndices[i];
             maxPriority = priority;
           }
         }
-        this.activeProv.governor = maxPol;
-        this.activeProv.officials.splice(
-            this.activeProv.officials.indexOf(maxPol), 1);
+        this.primeMinister = maxPol;
         this.beginDistribution();
       }
     } else {
-      this.activeProv.governor = maxPols[0];
+      this.primeMinister = maxPolIndices[0];
       this.beginDistribution();
     }
   }
 
-  beginDistribution() {
+  beginDistribution(): void {
     this.activeProv.stage = 3;
   }
 
-  checkIfGameWon() {
-    // If any player has more than half the governors, they win the game.
-    let governorCounts = Array(this.parties.length).fill(0);
+  checkIfGameWon(): void {
     for (let i = 0; i < this.provs.length; i++) {
-      let governor = this.provs[i].governor;
-      if (governor !== null) {
-        governorCounts[governor.party]++;
-        if (governorCounts[governor.party] > this.provs.length / 2) {
-          this.winner = governor.party;
+      if (this.primeMinister !== null) {
+        let primeMinisterParty: number = this.pols[this.primeMinister].party;
+        this.parties[primeMinisterParty].funds += 10 * this.parties.length;
+  
+        if (this.suspender === primeMinisterParty) {
           this.ended = true;
+        } else if (this.suspender !== null) {
+          // Remove that player
         }
       }
     }
+    // also check if there was a suspender out here
 
-    // If there was no winner, give the new governor's party $10 per player in
-    // the game, advance to the next prov, and begin nomination.
+    // If there was no winner, advance to the next prov and begin nomination.
     if (!this.ended) {
-      const governor = this.activeProv.governor;
-      if (this.activeProv.governor != null) {
-        this.parties[governor.party].funds += 10 * this.parties.length;
-      }
       this.beginNomination();
     }
   }
 
   // Pay the given amount of funds from party 1 to party 2.
-  pay(party, paymentInfo) {
-    if (this.parties[party].funds > paymentInfo.amount
+  pay(partyIndex: number, paymentInfo): void {
+    if (this.parties[partyIndex].funds > paymentInfo.amount
         && paymentInfo.target < this.parties.length
         && paymentInfo.target >= 0) {
-      this.parties[party].funds -= paymentInfo.amount;
+      this.parties[partyIndex].funds -= paymentInfo.amount;
       this.parties[paymentInfo.target].funds += paymentInfo.amount;
     }
   }
 
-  bribe(partyIndex) {
+  bribe(partyIndex: number): void {
     const party = this.parties[partyIndex];
     if (party.bribable.length > 0 && party.funds >= (2 + this.rounds) * 10) {
       party.bribed.push(party.bribable[0]);
@@ -323,23 +330,23 @@ class GameState {
   }
 
   // Transfer the symp from their old party to their new party.
-  flip(partyIndex, sympIndex) {
+  flip(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
-    if (sympIndex < party.bribed.length && sympIndex >= 0) {
-      const pol = party.bribed[sympIndex];
+    if (polIndex < party.bribed.length && polIndex >= 0) {
+      const pol = party.bribed[polIndex];
       if (this.activeProv.officials.includes(pol)
           && this.activeProv.stage === 2) {
         this.parties[pol.party].votes--;
         party.votes++;
       }
-      pol.party = partyIndex;
-      party.bribed.splice(sympIndex, 1);
+      this.pols[pol].party = partyIndex;
+      party.bribed.splice(polIndex, 1);
     }
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return
   // it so it can be retrieved later.
-  setPov(pov) {
+  setPov(pov: number): void {
     this.pov = pov;
     delete this.activeProv;   // no need to send
     const generator = this.generator;
@@ -369,7 +376,7 @@ class GameState {
   }
 
   // Uncensor stored secret info.
-  unsetPov(hiddenInfo) {
+  unsetPov(hiddenInfo): void {
     this.pov = -1;
     this.activeProv = this.provs[this.activeProvId];
     this.generator = hiddenInfo.generator;

@@ -23,21 +23,19 @@ export interface Pol {
 export interface Prov {
   name: string;
   seats: number;
-  officials: number[];
   candidates: number[];
 }
 
 export class NameGenerator {
-  made: number;
-  resets: number;
+  #made: number;
+  #resets: number;
   provs: Prov[];
   
   constructor(nation: string) {
-    this.made = 0;
-    this.resets = 0;
+    this.#made = 0;
+    this.#resets = 0;
     this.provs = this.shuffle(provs[nation]);
     this.provs.forEach((prov) => {
-      prov.officials = [];
       prov.candidates = [];
     });
     this.deal();
@@ -48,13 +46,13 @@ export class NameGenerator {
       this.deal();
     }
     const newPol = this.unused.pop();
-    newPol.id = this.made;
-    this.made++;
+    newPol.id = this.#made;
+    this.#made++;
     newPol.party = party;
     newPol.url = newPol.name.replace(' ', '-').toLowerCase();
     newPol.url = newPol.url.replace(/[,\.]/, '');
-    if (this.resets > 1) {
-      newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
+    if (this.#resets > 1) {
+      newPol.name = newPol.name + " " + toRomanNumerals(this.#resets);
     }
     newPol.baseSupport = 5;
     newPol.support = newPol.baseSupport;
@@ -63,7 +61,7 @@ export class NameGenerator {
 
   deal(): void {
     this.unused = this.shuffle(pols.slice());
-    this.resets++;
+    this.#resets++;
 
     // Clone each pol so object comparisons don't match them
     for (let i = 0; i < this.unused.length; i++) {
