@@ -4,11 +4,12 @@ interface Party {
   name: string,
   abbr: string,
   ready: boolean,
+  eliminated: boolean,
   connected: boolean,
   funds: number,
   votes: number,
   pols: number[],
-  bribable: number[],
+  sympathetic: number[],
   bribed: number[]
 }
 
@@ -57,11 +58,12 @@ class GameState {
       name: name,
       abbr: abbr,
       ready: false,
+      eliminated: false,
       connected: true,
       funds: 0,
       votes: 0,
       candidates: [],
-      bribable: [],
+      sympathetic: [],
       bribed: []
     });
   }
@@ -69,7 +71,7 @@ class GameState {
   // Returns true if all parties are ready, false otherwise.
   allReady(): boolean {
     for (let i = 0; i < this.parties.length; i++) {
-      if (!this.parties[i].ready) {
+      if (!this.parties[i].ready && !this.parties[i].eliminated) {
         return false;
       }
     }
@@ -110,19 +112,18 @@ class GameState {
     this.parties.forEach((party) => {
       party.pols = [];
     });
-    
     this.provs.forEach((prov) => {
       prov.candidates.forEach((pol) => {
         this.parties[this.pols[pol].party].push(this.pols[pol].id);
       });
-      prov.officials.forEach((pol) => {
-        this.parties[this.pols[pol].party].push(this.pols[pol].id);
-      });
     });
+    this.officials.forEach((pol) => {
+      this.parties[this.pols[pol].party].push(this.pols[pol].id);
+    })
 
-    // Give all parties $10M and enough candidates to make one per province.
+    // Give all parties $7.5M and enough candidates to make one per province.
     this.parties.forEach((party, partyIndex) => {
-      party.funds += 100;
+      party.funds += 75;
       while (party.pols.length < this.provs.length) {
         this.pols.push(this.generator.newPol(partyIndex));
         party.pols.push(this.pols.length - 1);
@@ -234,7 +235,7 @@ class GameState {
   resetVotes(): void {
     this.parties.forEach((party)=> {
       party.votes = 0;
-      party.bribable = [];
+      party.sympathetic = [];
     });
     this.officials.forEach((polIndex) => {
       this.pols[polIndex].support = 0;
@@ -297,12 +298,29 @@ class GameState {
   
         if (this.suspender === primeMinisterParty) {
           this.ended = true;
-        } else if (this.suspender !== null) {
-          // Remove that player
         }
       }
     }
-    // also check if there was a suspender out here
+    
+    // If someone suspended the constitution and failed, they lose the game.
+    if (!this.ended && this.suspender !== null) {
+      this.parties[this.suspender].eliminated = true;
+      let numRemaining: number = 0;
+      let remainingParty: number = 0;
+      
+      // If only one party remains, they win the game.
+      this.parties.forEach((party, partyIndex) => {
+        if (!party.eliminated) {
+          numRemaining++;
+          remainingParty = partyIndex;
+        }
+      });
+      if (numRemaining === 1) {
+        this.ended = true;
+      }
+    }
+    
+    // TODO: add bonuses and decline
 
     // If there was no winner, advance to the next prov and begin nomination.
     if (!this.ended) {
@@ -314,17 +332,20 @@ class GameState {
   pay(partyIndex: number, paymentInfo): void {
     if (this.parties[partyIndex].funds > paymentInfo.amount
         && paymentInfo.target < this.parties.length
-        && paymentInfo.target >= 0) {
+        && paymentInfo.target >= 0
+        && !this.parties[paymentInfo.target].eliminated) {
       this.parties[partyIndex].funds -= paymentInfo.amount;
       this.parties[paymentInfo.target].funds += paymentInfo.amount;
     }
   }
 
-  bribe(partyIndex: number): void {
+  bribe(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
-    if (party.bribable.length > 0 && party.funds >= (2 + this.rounds) * 10) {
-      party.bribed.push(party.bribable[0]);
-      party.bribable = [];
+    if (party.sympathetic.length > 0
+        && party.funds >= (2 + this.rounds) * 10
+        && party.sympathetic.includes(polIndex)) {
+      party.bribed.push(polIndex);
+      party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
       party.funds -= (2 + this.rounds) * 10;
     }
   }
@@ -332,15 +353,21 @@ class GameState {
   // Transfer the symp from their old party to their new party.
   flip(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
-    if (polIndex < party.bribed.length && polIndex >= 0) {
-      const pol = party.bribed[polIndex];
-      if (this.activeProv.officials.includes(pol)
-          && this.activeProv.stage === 2) {
-        this.parties[pol.party].votes--;
+    if (polIndex < this.pols.length && polIndex >= 0) {
+      // Remove from their old party
+      const oldParty = this.parties[this.pols[polIndex].party];
+      oldParty.pols.splice(oldParty.pols.indexOf(polIndex), 1);
+      
+      // If they were an official, transfer their vote from their old party to
+      // their new party
+      if (this.officials.includes(polIndex) && this.stage === 2) {
+        this.parties[this.pols[polIndex].party].votes--;
         party.votes++;
       }
-      this.pols[pol].party = partyIndex;
-      party.bribed.splice(polIndex, 1);
+      
+      this.pols[polIndex].party = partyIndex;
+      party.pols.push(polIndex);
+      party.bribed.splice(party.bribed.indexOf(polIndex), 1);
     }
   }
 
@@ -352,24 +379,24 @@ class GameState {
     const generator = this.generator;
     delete this.generator;
 
-    // Delete other players' symps
+    // Delete the hidden information of other players
     const bribed = [];
-    const symps = [];
-    const funds = []
+    const sympathetic = [];
+    const funds = [];
     for (let i = 0; i < this.parties.length; i++) {
       bribed.push(this.parties[i].bribed);
-      symps.push(this.parties[i].bribable);
+      sympathetic.push(this.parties[i].sympathetic);
       funds.push(this.parties[i].funds);
       if (i !== pov) {
         delete this.parties[i].bribed;
-        delete this.parties[i].bribable;
+        delete this.parties[i].sympathetic;
         delete this.parties[i].funds;
       }
     }
 
     return {
       bribed: bribed,
-      symps: symps,
+      symps: sympathetic,
       funds: funds,
       generator: generator
     }
@@ -383,7 +410,7 @@ class GameState {
 
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].bribed = hiddenInfo.bribed[i];
-      this.parties[i].bribable = hiddenInfo.symps[i];
+      this.parties[i].sympathetic = hiddenInfo.symps[i];
       this.parties[i].funds = hiddenInfo.funds[i];
     }
   }
