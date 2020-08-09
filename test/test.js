@@ -1,4 +1,4 @@
-const gm = require('./app.js');
+const gm = require('../app.js');
 const Game = require('../logic/game-room.js');
 
 function setAllPartiesToDisconnected(gs) {
