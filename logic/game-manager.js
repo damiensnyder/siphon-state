@@ -45,7 +45,7 @@ class GameManager {
     }
   }
   
-  createTestGame(gameCode, gameRoom) {
+  addTestGame(gameCode, gameRoom) {
     this.activeGames[gameCode] = gameRoom;
   }
 

@@ -10,7 +10,7 @@ const nextJs = require('next');
 const nextApp = nextJs({dev: process.env.NODE_ENV != 'production'});
 const nextHandler = nextApp.getRequestHandler();
 
-const GameManager = require('./game-manager.js');
+const GameManager = require('../logic/game-manager.js');
 const gm = new GameManager(io);
 
 nextApp.prepare().then(() => {
