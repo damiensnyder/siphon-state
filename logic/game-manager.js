@@ -1,6 +1,6 @@
 const Game = require('./game-room.js');
 
-interface Settings {
+export interface Settings {
   name: string,
   gameCode: string,
   private: boolean,

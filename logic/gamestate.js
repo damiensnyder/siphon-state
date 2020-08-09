@@ -13,7 +13,7 @@ interface Party {
   bribed: number[]
 }
 
-class GameState {
+export class GameState {
   started: boolean;
   ended: boolean;
   activeProvId: number;
@@ -278,12 +278,11 @@ class GameState {
           }
         }
         this.primeMinister = maxPol;
-        this.beginDistribution();
       }
     } else {
       this.primeMinister = maxPolIndices[0];
-      this.beginDistribution();
     }
+    this.beginDistribution();
   }
 
   beginDistribution(): void {

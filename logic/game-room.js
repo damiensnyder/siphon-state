@@ -1,9 +1,16 @@
 const GameState = require('./gamestate.js');
 const Viewer = require('./viewer.js');
+import {Settings} from "./game-manager";
 
-const TEARDOWN_TIME = 3600000;
+const TEARDOWN_TIME: number = 3600000;
 
 class GameRoom {
+  settings: Settings;
+  viewers: Viewer[];
+  players: Viewer[];
+  gs: GameState;
+  #handlingAction: boolean;
+  
   constructor(io, settings, callback) {
     this.io = io.of('/game/' + settings.gameCode);
     this.settings = settings;
@@ -29,7 +36,7 @@ class GameRoom {
       'disconnect': this.handleDisconnect.bind(this)
     }
     this.actionQueue = [];
-    this.handlingAction = false;
+    this.#handlingAction = false;
     this.enqueueAction = this.enqueueAction.bind(this);
     this.teardownTimer = setTimeout(() => {this.gmCallback(this)},
         TEARDOWN_TIME);
@@ -37,22 +44,22 @@ class GameRoom {
 
   // Sends actions to a queue that can be handled one at a time so they don't
   // interfere with each other.
-  enqueueAction(viewer, type, data) {
+  enqueueAction(viewer: Viewer, type: string, data: any): void {
     this.actionQueue.push({
       viewer: viewer,
       type: type,
       data: data
     });
 
-    if (!this.handlingAction) {
-      this.handlingAction = true;
+    if (!this.#handlingAction) {
+      this.#handlingAction = true;
       this.handleAction();
     }
   }
 
   // Handle the first action in the queue. If there are no more actions in the
   // queue, show that it is done. Otherwise, handle the next action.
-  handleAction() {
+  handleAction(): void {
     const action = this.actionQueue[0];
     this.handlers[action.type](action.viewer, action.data);
 
@@ -64,11 +71,11 @@ class GameRoom {
     if (this.actionQueue.length > 0) {
       this.handleAction();
     } else {
-      this.handlingAction = false;
+      this.#handlingAction = false;
     }
   }
 
-  handleConnect(viewer, data) {
+  handleConnect(viewer: Viewer): void {
     this.viewers.push(viewer);
     viewer.socket.emit('msg', {
       sender: 'Game',
@@ -82,7 +89,7 @@ class GameRoom {
     viewer.emitGameState(this.gs);
   }
 
-  handleJoin(viewer, partyInfo) {
+  handleJoin(viewer: Viewer, partyInfo): void {
     viewer.join(this.players.length, partyInfo.name);
     this.players.push(viewer);
     this.gs.addParty(partyInfo.name, partyInfo.abbr);
@@ -94,7 +101,7 @@ class GameRoom {
     this.emitGameStateToAll();
   }
 
-  handleReplace(viewer, target) {
+  handleReplace(viewer: Viewer, target: number): void {
     this.io.emit('newreplace', target);
     if (this.gs.started && !this.gs.parties[target].connected) {
       viewer.join(target, this.gs.parties[target].name);
@@ -109,7 +116,7 @@ class GameRoom {
     }
   }
 
-  handleReady(viewer, isReady) {
+  handleReady(viewer: Viewer, isReady: boolean): void {
     this.gs.parties[viewer.pov].ready = isReady;
     viewer.socket.broadcast.emit('newready', {
       party: viewer.pov,
@@ -131,7 +138,7 @@ class GameRoom {
     }
   }
 
-  handleMsg(viewer, msg) {
+  handleMsg(viewer: Viewer, msg: string): void {
     if (typeof(msg) == 'string' &&
         msg.trim().length > 0 &&
         viewer.pov >= 0) {
@@ -144,49 +151,45 @@ class GameRoom {
     }
   }
 
-  executeAllActions() {
-    for (let i = 0; i < this.players.length; i++) {
-      for (let j = 0; j < this.players[i].actionQueue.flipQueue.length; j++) {
-        this.gs.flip(i, this.players[i].actionQueue.flipQueue[j]);
-      }
-      for (let j = 0; j < this.players[i].actionQueue.payQueue.length; j++) {
-        this.gs.pay(i, this.players[i].actionQueue.payQueue[j]);
-      }
-    }
+  executeAllActions(): void {
+    this.players.forEach((player, playerIndex) => {
+      player.actionQueue.flipQueue.forEach((action) => {
+        this.gs.flip(playerIndex, action);
+      });
+      player.actionQueue.payQueue.forEach((action) => {
+        this.gs.pay(playerIndex, action);
+      });
+    });
 
-    if (this.gs.activeProv.stage == 0) {
-      for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < this.players[i].actionQueue.runQueue.length; j++) {
-          this.gs.run(i, this.players[i].actionQueue.runQueue[j]);
-        }
-      }
-    } else if (this.gs.activeProv.stage == 1) {
-      for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < this.players[i].actionQueue.bribeQueue.length;
-            j++) {
-          this.gs.bribe(i, this.players[i].actionQueue.bribeQueue[j]);
-        }
-        for (let j = 0; j < this.players[i].actionQueue.adQueue.length; j++) {
-          this.gs.ad(i, this.players[i].actionQueue.adQueue[j]);
-        }
-        for (let j = 0; j < this.players[i].actionQueue.smearQueue.length;
-            j++) {
-          this.gs.smear(i, this.players[i].actionQueue.smearQueue[j]);
-        }
-      }
-    } else if (this.gs.activeProv.stage == 2) {
-      for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < this.players[i].actionQueue.voteQueue.length; j++) {
-          this.gs.vote(i, this.players[i].actionQueue.voteQueue[j]);
-        }
-      }
+    if (this.gs.stage === 0) {
+      this.players.forEach((player, playerIndex) => {
+        player.actionQueue.runQueue.forEach((action) => {
+          this.gs.run(playerIndex, action);
+        });
+      });
+    } else if (this.gs.stage === 1) {
+      this.players.forEach((player, playerIndex) => {
+        player.actionQueue.bribeQueue.forEach((action) => {
+          this.gs.bribe(playerIndex, action);
+        });
+        player.actionQueue.adQueue.forEach((action) => {
+          this.gs.ad(playerIndex, action);
+        });
+        player.actionQueue.smearQueue.forEach((action) => {
+          this.gs.smear(playerIndex, action);
+        });
+      });
+    } else if (this.gs.stage === 2) {
+      this.players.forEach((player, playerIndex) => {
+        player.actionQueue.voteQueue.forEach((action) => {
+          this.gs.vote(playerIndex, action);
+        });
+      });
     }
   }
 
-  rematch() {
-    for (let i = 0; i < this.players.length; i++) {
-      this.players[i].reset();
-    }
+  rematch(): void {
+    this.players.forEach((player) => {player.reset()});
     this.gs = new GameState();
     this.players = [];
     this.actionQueue = [];
@@ -195,12 +198,12 @@ class GameRoom {
 
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
-  handleDisconnect(viewer) {
+  handleDisconnect(viewer: Viewer): void {
     let index = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
-    for (let i = index; i < this.viewers.length; i++) {
-      this.viewers[index].viewerIndex = index;
-    }
+    this.viewers.forEach((viewer, viewerIndex) => {
+      viewer.viewerIndex = viewerIndex;
+    });
 
     if (viewer.pov >= 0) {
       this.gs.parties[viewer.pov].ready = false;
@@ -210,8 +213,8 @@ class GameRoom {
 
   // If the game hasn't started, remove the player with the given POV from the
   // game.
-  removePlayer(pov) {
-    const name = this.gs.parties[pov].name;
+  removePlayer(pov: number): void {
+    const name: string = this.gs.parties[pov].name;
     this.players.splice(pov, 1);
     if (!this.gs.started) {
       this.gs.parties.splice(pov, 1);
@@ -228,7 +231,7 @@ class GameRoom {
   }
 
   // Broadcast a system message to all sockets except the one passed in.
-  broadcastSystemMsg(socket, msg) {
+  broadcastSystemMsg(socket, msg: string): void {
     socket.broadcast.emit('msg', {
       sender: 'Game',
       text: msg,
@@ -238,7 +241,7 @@ class GameRoom {
   }
 
   // Send a system message to all sockets.
-  emitSystemMsg(msg) {
+  emitSystemMsg(msg: string): void {
     this.io.emit('msg', {
       sender: 'Game',
       text: msg,
@@ -248,10 +251,8 @@ class GameRoom {
   }
 
   // Emit the current game state to all viewers.
-  emitGameStateToAll() {
-    for (let i = 0; i < this.viewers.length; i++) {
-      this.viewers[i].emitGameState(this.gs);
-    }
+  emitGameStateToAll(): void {
+    this.viewers.forEach((viewer) => {viewer.emitGameState(this.gs)});
   }
 
   joinInfo() {

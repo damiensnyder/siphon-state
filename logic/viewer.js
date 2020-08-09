@@ -1,16 +1,20 @@
-class Viewer {
-  constructor(socket, viewerIndex, callback) {
+export class Viewer {
+  viewerIndex: number;
+  pov: number | void;
+  name: string | void;
+  
+  constructor(socket, viewerIndex: number, callback) {
     this.socket = socket;
     this.callback = callback;
     this.viewerIndex = viewerIndex;
-    this.pov = -1;  // point of view: -1 for spectator, player index for player
+    this.pov = -1;  // point of view: -1 for spectator, party index for player
 
     this.socket.on('join',
         (partyInfo) => this.callback(this, 'join', partyInfo));
     this.socket.on('disconnect', () => this.callback(this, 'disconnect'));
   }
 
-  join(pov, name) {
+  join(pov: number, name: string): void {
     this.pov = pov;
     this.name = name;
     this.socket.on('ready', (readyInfo) => this.ready.bind(this)(readyInfo));
@@ -20,19 +24,19 @@ class Viewer {
     this.socket.removeAllListeners('replace');
   }
 
-  begin() {
+  begin(): void {
     if (this.pov < 0) {
       this.socket.on('replace',
           (target) => this.callback(this, 'replace', target));
     }
   }
 
-  end() {
+  end(): void {
     this.socket.removeAllListeners('msg');
     this.socket.removeAllListeners('replace');
   }
 
-  ready(readyInfo) {
+  ready(readyInfo): void {
     if (readyInfo === false || readyInfo === true) {
       this.callback(this, 'ready', readyInfo);
     } else {
@@ -41,7 +45,7 @@ class Viewer {
     }
   }
 
-  reset() {
+  reset(): void {
     delete this.name;
     this.pov = -1;
 
@@ -54,7 +58,7 @@ class Viewer {
         (partyInfo) => this.callback(this, 'join', partyInfo));
   }
 
-  emitGameState(gs) {
+  emitGameState(gs): void {
     const hiddenInfo = gs.setPov(this.pov);
     this.socket.emit('update', gs);
     gs.unsetPov(hiddenInfo);
