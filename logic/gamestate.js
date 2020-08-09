@@ -1,4 +1,4 @@
-import {Pol, Prov, NameGenerator} from "./generator";
+import {Pol, Prov, Generator} from "./generator";
 
 interface Party {
   name: string,
@@ -10,7 +10,15 @@ interface Party {
   votes: number,
   pols: number[],
   sympathetic: number[],
-  bribed: number[]
+  bribed: number[],
+  usedHit: boolean
+}
+
+export interface HiddenInfo {
+  bribed: number[][],
+  sympathetic: number[][],
+  funds: number,
+  generator: Generator
 }
 
 export class GameState {
@@ -28,8 +36,8 @@ export class GameState {
   parties: Party[];
   provs: Prov[];
   officials: number[];
-  primeMinister: number | void;
-  suspender: number | void;
+  primeMinister: ?number;
+  suspender: ?number;
   
   constructor(settings) {
     this.settings = settings;
@@ -43,7 +51,7 @@ export class GameState {
     this.stage = 0;
     this.decline = -1;
     
-    this.generator = new NameGenerator(settings.nation);
+    this.generator = new Generator(settings.nation);
   
     this.pols = [];
     this.parties = [];
@@ -64,7 +72,8 @@ export class GameState {
       votes: 0,
       candidates: [],
       sympathetic: [],
-      bribed: []
+      bribed: [],
+      usedHit: false
     });
   }
 
@@ -339,20 +348,34 @@ export class GameState {
   }
 
   bribe(partyIndex: number, polIndex: number): void {
-    const party = this.parties[partyIndex];
+    const party: Party = this.parties[partyIndex];
     if (party.sympathetic.length > 0
-        && party.funds >= (2 + this.rounds) * 10
+        && party.funds >= 25 + 10 * this.rounds
         && party.sympathetic.includes(polIndex)) {
       party.bribed.push(polIndex);
       party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
-      party.funds -= (2 + this.rounds) * 10;
+      party.funds -= 25 + 10 * this.rounds;
+    }
+  }
+  
+  hit(partyIndex: number, polIndex: number): void {
+    const party: Party = this.parties[partyIndex];
+    if (!party.usedHit
+        && party.funds >= 25
+        && this.stage === 2
+        && this.officials.includes(polIndex)
+        && !this.pols[polIndex].party === this.suspender) {
+      party.funds -= 25;
+      party.usedHit = true;
+      this.officials.splice(this.officials.indexOf(polIndex), 1);
     }
   }
 
   // Transfer the symp from their old party to their new party.
   flip(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
-    if (polIndex < this.pols.length && polIndex >= 0) {
+    if (polIndex < this.pols.length && polIndex >= 0
+        && this.stage >= 2) {
       // Remove from their old party
       const oldParty = this.parties[this.pols[polIndex].party];
       oldParty.pols.splice(oldParty.pols.indexOf(polIndex), 1);
@@ -372,7 +395,7 @@ export class GameState {
 
   // Censor secret info so the gamestate can be sent to the client, and return
   // it so it can be retrieved later.
-  setPov(pov: number): void {
+  setPov(pov: number): HiddenInfo {
     this.pov = pov;
     delete this.activeProv;   // no need to send
     const generator = this.generator;
@@ -395,21 +418,21 @@ export class GameState {
 
     return {
       bribed: bribed,
-      symps: sympathetic,
+      sympathetic: sympathetic,
       funds: funds,
       generator: generator
     }
   }
 
   // Uncensor stored secret info.
-  unsetPov(hiddenInfo): void {
+  unsetPov(hiddenInfo: HiddenInfo): void {
     this.pov = -1;
     this.activeProv = this.provs[this.activeProvId];
     this.generator = hiddenInfo.generator;
 
     for (let i = 0; i < this.parties.length; i++) {
       this.parties[i].bribed = hiddenInfo.bribed[i];
-      this.parties[i].sympathetic = hiddenInfo.symps[i];
+      this.parties[i].sympathetic = hiddenInfo.sympathetic[i];
       this.parties[i].funds = hiddenInfo.funds[i];
     }
   }

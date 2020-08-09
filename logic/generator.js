@@ -26,7 +26,7 @@ export interface Prov {
   candidates: number[];
 }
 
-export class NameGenerator {
+export class Generator {
   #made: number;
   #resets: number;
   provs: Prov[];

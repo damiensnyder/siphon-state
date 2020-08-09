@@ -1,6 +1,6 @@
 {
-  "name": "filter-state",
-  "version": "0.0.0",
+  "name": "siphon-state",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "next-dev": "next dev",

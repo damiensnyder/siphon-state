@@ -1,8 +1,13 @@
 const GameState = require('./gamestate.js');
-const Viewer = require('./viewer.js');
 import {Settings} from "./game-manager";
+import {Viewer, ActionQueue} from "./viewer";
 
 const TEARDOWN_TIME: number = 3600000;
+
+interface PartyInfo {
+  name: string,
+  abbr: string
+}
 
 class GameRoom {
   settings: Settings;
@@ -89,7 +94,7 @@ class GameRoom {
     viewer.emitGameState(this.gs);
   }
 
-  handleJoin(viewer: Viewer, partyInfo): void {
+  handleJoin(viewer: Viewer, partyInfo: PartyInfo): void {
     viewer.join(this.players.length, partyInfo.name);
     this.players.push(viewer);
     this.gs.addParty(partyInfo.name, partyInfo.abbr);
@@ -141,7 +146,7 @@ class GameRoom {
   handleMsg(viewer: Viewer, msg: string): void {
     if (typeof(msg) == 'string' &&
         msg.trim().length > 0 &&
-        viewer.pov >= 0) {
+        viewer.pov !== undefined) {
       viewer.socket.broadcast.emit('msg', {
         sender: viewer.name,
         text: msg.trim(),
@@ -153,13 +158,18 @@ class GameRoom {
 
   executeAllActions(): void {
     this.players.forEach((player, playerIndex) => {
-      player.actionQueue.flipQueue.forEach((action) => {
-        this.gs.flip(playerIndex, action);
-      });
       player.actionQueue.payQueue.forEach((action) => {
         this.gs.pay(playerIndex, action);
       });
     });
+  
+    if (this.gs.stage >= 2) {
+      this.players.forEach((player, playerIndex) => {
+        player.actionQueue.flipQueue.forEach((action) => {
+          this.gs.flip(playerIndex, action);
+        });
+      });
+    }
 
     if (this.gs.stage === 0) {
       this.players.forEach((player, playerIndex) => {
@@ -184,6 +194,9 @@ class GameRoom {
         player.actionQueue.voteQueue.forEach((action) => {
           this.gs.vote(playerIndex, action);
         });
+        player.actionQueue.hitQueue.forEach((action) => {
+          this.gs.hit(playerIndex, action);
+        });
       });
     }
   }
@@ -201,11 +214,8 @@ class GameRoom {
   handleDisconnect(viewer: Viewer): void {
     let index = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
-    this.viewers.forEach((viewer, viewerIndex) => {
-      viewer.viewerIndex = viewerIndex;
-    });
 
-    if (viewer.pov >= 0) {
+    if (viewer.pov !== undefined) {
       this.gs.parties[viewer.pov].ready = false;
       this.removePlayer(viewer.pov);
     }
