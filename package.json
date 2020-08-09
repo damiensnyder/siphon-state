@@ -6,7 +6,7 @@
   "scripts": {
     "next-dev": "next dev",
     "build": "next build",
-    "test": "node test/test.js -p $PORT",
+    "test": "node test.js -p $PORT",
     "next-start": "next start",
     "start": "node app.js -p $PORT",
     "build-ts": "tsc",
