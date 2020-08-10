@@ -5,24 +5,23 @@ import styles from "./provs-header.module.css";
 
 function tabsToJsx(props) {
   const tabsJsx = [];
-  for (let i = 0; i < 5; i++) {
+  props.gs.provs.forEach((prov, provIndex) => {
     tabsJsx.push(
-      <ProvTab name={props.gs.provs[i].name}
-          index={i}
-          key={i}
-          open={props.activeTab == i}
-          active={props.gs.activeProvId == i}
+      <ProvTab name={props.gs.provs[provIndex].name}
+          index={provIndex}
+          key={provIndex}
+          open={props.activeTab == provIndex}
           tabCallback={props.tabCallback} />
     );
-    if (i < 4) {
+    if (provIndex < 4) {
       tabsJsx.push(
         <div className={styles.pointer}
-            key={i + 5}>
+            key={provIndex + 5}>
           ➤
         </div>
       );
     }
-  }
+  });
   return tabsJsx;
 }
 
