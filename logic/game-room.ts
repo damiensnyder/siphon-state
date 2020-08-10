@@ -35,7 +35,6 @@ class GameRoom {
 
     this.io.on('connection', (socket) => {
       const viewer = new Viewer(socket,
-                                this.viewers.length,
                                 this.enqueueAction);
       this.enqueueAction(viewer, 'connect', null);
     });

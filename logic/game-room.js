@@ -1,7 +1,10 @@
 var Settings = require('./game-manager').Settings;
+// @ts-ignore
 var GameState = require('./gamestate').GameState;
+// @ts-ignore
 var Viewer = require('./viewer').Viewer;
 var TEARDOWN_TIME = 3600000;
+// @ts-ignore
 var GameRoom = /** @class */ (function () {
     function GameRoom(io, settings, callback) {
         var _this = this;
@@ -12,7 +15,7 @@ var GameRoom = /** @class */ (function () {
         this.viewers = [];
         this.players = [];
         this.io.on('connection', function (socket) {
-            var viewer = new Viewer(socket, _this.viewers.length, _this.enqueueAction);
+            var viewer = new Viewer(socket, _this.enqueueAction);
             _this.enqueueAction(viewer, 'connect', null);
         });
         this.handlers = {

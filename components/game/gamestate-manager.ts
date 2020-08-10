@@ -59,27 +59,24 @@ class GamestateManager {
   setGs(gs): void {
     // Set the gamestate to the received gamestate, and add helper variables
     // to keep track of the current province and the player's party.
-    if (gs.provs !== undefined) {
-      gs.activeProv = gs.provs[gs.activeProvId];
-    }
-    if (gs.pov >= 0) {
-      gs.ownParty = gs.parties[gs.pov];
-    }
     this.gs = gs;
 
     // Reset the action queue
     this.actionQueue = {
-      flipQueue: [],
       payQueue: []
     }
-    if (gs.provs[this.gs.activeProvId].stage === 0) {
+    if (gs.stage === 0) {
       this.actionQueue.runQueue = [];
-    } else if (gs.provs[this.gs.activeProvId].stage === 1) {
+    } else if (gs.stage === 1) {
       this.actionQueue.adQueue = [];
       this.actionQueue.smearQueue = [];
       this.actionQueue.bribeQueue = [];
-    } else if (gs.provs[this.gs.activeProvId].stage === 2) {
+    } else if (gs.stage === 2) {
       this.actionQueue.voteQueue = [];
+      this.actionQueue.hitQueue = [];
+    }
+    if (gs.stage >= 2) {
+      this.actionQueue.flipQueue = [];
     }
   }
 
