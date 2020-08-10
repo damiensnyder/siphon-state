@@ -36,6 +36,8 @@ class GameView extends React.Component {
     this.callback = this.callback.bind(this);
   }
 
+  // The game code mysteriously does not load immediately, so this waits for
+  // another function that checks until it gets it.
   async componentDidMount() {
     await this.retryUntilGameCode();
   }

@@ -1,10 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import Payment from './payment';
-import general from '../../general.module.css';
-import styles from './parties.module.css';
+import Payment from "./payment";
+import general from "../../general.module.css";
+import styles from "./parties.module.css";
 
-function ownFundsJsx(amount) {
+interface PartyProps {
+  gs: any,
+  index: number,
+  callback: any
+}
+
+function ownFundsJsx(amount: number) {
   return (
     <span className={styles.info}>
       Funds: {"$" + (amount * 100000).toLocaleString()}
@@ -12,7 +18,7 @@ function ownFundsJsx(amount) {
   );
 }
 
-function votesJsx(votes) {
+function votesJsx(votes: number) {
   return (
     <span className={styles.info}>
       Votes: {votes}
@@ -20,7 +26,7 @@ function votesJsx(votes) {
   );
 }
 
-function replaceBtnJsx(props) {
+function replaceBtnJsx(props: PartyProps) {
   return (
     <div className={styles.info}>
       <button className={general.actionBtn}
@@ -31,7 +37,7 @@ function replaceBtnJsx(props) {
   );
 }
 
-function paymentJsx(props) {
+function paymentJsx(props: PartyProps) {
   if (props.gs.pov != props.index && props.gs.pov >= 0) {
     return (
       <Payment index={props.index}
@@ -42,23 +48,23 @@ function paymentJsx(props) {
   return null;
 }
 
-function Party(props) {
+function Party(props: PartyProps) {
   const self = props.gs.parties[props.index];
-  var nameStyle = styles.nameAndAbbr;
+  let nameStyle: string = styles.nameAndAbbr;
   if (props.gs.pov == props.index) {
-    nameStyle +=  " " + styles.ownParty;
+    nameStyle += " " + styles.ownParty;
   } else if (props.gs.priority == props.index) {
-    nameStyle +=  " " + styles.priority
+    nameStyle += " " + styles.priority;
   }
 
-  const showReplace = props.gs.pov < 0 && !self.connected;
-  const showVotes = (props.gs.activeProv != undefined
+  const showReplace: boolean = props.gs.pov < 0 && !self.connected;
+  const showVotes: boolean = (props.gs.activeProv != undefined
       && props.gs.activeProv.stage == 2);
-  const showPayment = (props.gs.started
+  const showPayment: boolean = (props.gs.started
       && !props.gs.ended
       && props.gs.ownParty != undefined
       && !props.gs.ownParty.ready);
-  const showFunds = (props.gs.started
+  const showFunds: boolean = (props.gs.started
       && !props.gs.ended
       && props.gs.pov == props.index);
 

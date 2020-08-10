@@ -1,10 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import general from '../../general.module.css';
-import styles from './pregame.module.css';
+import general from "../../general.module.css";
+import styles from "./pregame.module.css";
 
 class InviteLink extends React.Component {
-  constructor(props) {
+  props: {gameCode: string};
+  state: {copied: boolean};
+  linkArea: any;
+
+  constructor(props: {gameCode: string}) {
     super(props);
 
     this.state = {
@@ -12,7 +16,6 @@ class InviteLink extends React.Component {
     }
 
     this.linkArea = React.createRef();
-    this.copyInviteLink = this.copyInviteLink.bind(this);
   }
 
   // Selects the textarea with the invite link and copies it to clipboard.
@@ -22,7 +25,9 @@ class InviteLink extends React.Component {
 
     if (window.getSelection !== undefined) {        // All browsers except IE <9
       window.getSelection().removeAllRanges();
+      // @ts-ignore
     } else if (document.selection !== undefined) {  // IE <9
+      // @ts-ignore
       document.selection.empty();
     }
 
@@ -52,7 +57,7 @@ class InviteLink extends React.Component {
             </textarea>
             <button className={general.actionBtn + ' ' + general.priorityBtn}
                     id={styles.copyBtn}
-                    onClick={this.copyInviteLink}>
+                    onClick={this.copyInviteLink.bind(this)}>
               {this.state.copied ? 'Copied!' : 'Copy'}
             </button>
           </div>

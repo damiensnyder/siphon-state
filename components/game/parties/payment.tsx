@@ -1,10 +1,22 @@
-import React from 'react';
+import React from "react";
 
-import general from '../../general.module.css';
-import styles from './parties.module.css';
+import general from "../../general.module.css";
+import styles from "./parties.module.css";
+
+interface PaymentProps {
+  gs: any,
+  callback: any,
+  index: number
+}
 
 class Payment extends React.Component {
-  constructor(props) {
+  props: PaymentProps;
+  state: {
+    amount: number,
+    paid: boolean
+  };
+
+  constructor(props: PaymentProps) {
     super(props);
 
     this.state = {
@@ -115,7 +127,7 @@ class Payment extends React.Component {
   }
 }
 
-function formatMoneyString(amount) {
+function formatMoneyString(amount: number): string {
   if (amount >= 10) {
     return "$" + (amount / 10) + "M";
   } else {

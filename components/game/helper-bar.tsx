@@ -1,9 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import general from '../general.module.css';
-import styles from './helper-bar.module.css';
+import general from "../general.module.css";
+import styles from "./helper-bar.module.css";
 
-function startMsg(props) {
+interface HelperBarProps {
+  gs: any,
+  callback: any
+}
+
+function startMsg(props: HelperBarProps) {
   if (!props.gs.started) {
     return "Click ready when you're ready for the game to start.";
   }
@@ -17,7 +22,7 @@ function startMsg(props) {
   }
 }
 
-function buttonMsg(props) {
+function buttonMsg(props: HelperBarProps) {
   if (props.gs.parties[props.gs.pov].ready) {
     return "Cancel";
   }
@@ -30,7 +35,7 @@ function buttonMsg(props) {
   return "Done";
 }
 
-function HelperBar(props) {
+function HelperBar(props: HelperBarProps) {
   return (
     <div className={styles.barWrapper}>
       <span>

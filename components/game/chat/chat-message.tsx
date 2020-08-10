@@ -7,7 +7,7 @@ function senderStyle(isSelf: boolean) {
 }
 
 function ChatMessage(props) {
-  if (this.props.msg.isSystem) {
+  if (props.msg.isSystem) {
     return (
       <div>
         <span className={styles.systemMsg}>{props.msg.text}</span>
