@@ -9,6 +9,13 @@ import Chat from "./chat/chat";
 import styles from "./main.module.css";
 import GamestateManager from "./gamestate-manager";
 
+interface Message {
+  sender: string,
+  text: string,
+  isSelf: boolean,
+  isSystem: boolean
+}
+
 class GameView extends React.Component {
   socket?: any;
   gameCode: string;
@@ -18,13 +25,12 @@ class GameView extends React.Component {
   };
   state: {
     gs: any,
-    messages: any[],
+    messages: Message[],
     connected: boolean
   };
 
   constructor(props: {gameCode: string}) {
     super(props);
-
     this.gamestateManager = new GamestateManager();
 
     this.state = {
@@ -43,7 +49,7 @@ class GameView extends React.Component {
   }
 
   // Checks every 20 ms until the game code is set by the router.
-  retryUntilGameCode() {
+  retryUntilGameCode(): Promise<void> {
     return new Promise((resolve) => {
       let timesChecked = 0;
       let checkForRouter = setInterval(() => {
@@ -63,7 +69,7 @@ class GameView extends React.Component {
 
   // Creates the socket connection to the server and handlers for when messages
   // are received from the server.
-  initializeSocket() {
+  initializeSocket(): void {
     this.socket = io.connect('/game/' + this.props.gameCode);
 
     this.socket.on('connection', () => {
@@ -75,8 +81,8 @@ class GameView extends React.Component {
       this.gamestateManager.updateAfter('disconnect');
       this.setState({gs: this.gamestateManager.gs});
       this.addMsg({
-        sender: 'Client',
-        msg: 'You have been disconnected.',
+        sender: "Client",
+        text: "You have been disconnected.",
         isSelf: false,
         isSystem: true
       });
@@ -111,9 +117,9 @@ class GameView extends React.Component {
   // function and passes the data along. Sends the type and data via the socket
   // to the server.
   callback(type, data) {
-    if (type == 'msg') {
+    if (type == "msg") {
       this.addMsg({
-        sender: 'You',
+        sender: "You",
         text: data,
         isSelf: true,
         isSystem: false
@@ -125,7 +131,7 @@ class GameView extends React.Component {
       });
     }
 
-    if (type == 'join' || type == 'replace' || type == 'msg') {
+    if (type == "join" || type == "replace" || type == "msg") {
       this.socket.emit(type, data);
     } else if (type == 'ready') {
       this.socket.emit('ready', this.gamestateManager.currentReady());
@@ -133,15 +139,15 @@ class GameView extends React.Component {
   }
 
   // Adds a message to the Chat component.
-  addMsg(msg) {
-    const messages = this.state.messages;
+  addMsg(msg: Message): void {
+    const messages: Message[] = this.state.messages;
     messages.push(msg);
     this.setState({
       messages: messages
     });
   }
 
-  rightPanelJsx() {
+  rightPanelJsx(): React.ReactNode | void {
     if (this.state.gs.started && !this.state.gs.ended) {
       return (
         <ProvsView gs={this.state.gs}
@@ -157,7 +163,7 @@ class GameView extends React.Component {
     return null;
   }
 
-  helperBarJsx() {
+  helperBarJsx(): React.ReactNode | void {
     if (this.state.gs.pov >= 0) {
       return (
         <HelperBar gs={this.state.gs}
@@ -167,7 +173,7 @@ class GameView extends React.Component {
     return null;
   }
 
-  render() {
+  render(): React.ReactNode {
     return (
       <div id={styles.root}>
         <div id={styles.sidebar}>

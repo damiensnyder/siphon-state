@@ -1,8 +1,13 @@
-import React from 'react';
-import Link from 'next/link';
-import Router from 'next/router'
+import React from "react";
+import Link from "next/link";
+import Router from "next/router";
 
 class Error404 extends React.Component {
+  state: {
+    secondsUntilRedirect: number
+  };
+  redirectTimer: NodeJS.Timeout;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -10,18 +15,18 @@ class Error404 extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.redirectTimer = setInterval(
       () => this.tickRedirect(),
       1000
     );
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     clearInterval(this.redirectTimer);
   }
 
-  tickRedirect() {
+  tickRedirect(): void {
     this.setState({
       secondsUntilRedirect: this.state.secondsUntilRedirect - 1
     });
