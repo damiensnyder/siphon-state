@@ -1,4 +1,6 @@
-const app = require('./app');
+// @ts-ignore
+const App = require('./app');
+// @ts-ignore
 const GameRoom = require('./logic/game-room');
 
 function setAllPartiesToDisconnected(gs) {
@@ -8,7 +10,7 @@ function setAllPartiesToDisconnected(gs) {
 }
 
 function twoPartiesStart(): void {
-  const game = new GameRoom(app.gameManager.io, {
+  const game = new GameRoom(App.gameManager.io, {
     name: "two parties start",
     gameCode: "2ps",
     nation: "Kallavur",
@@ -20,11 +22,11 @@ function twoPartiesStart(): void {
   game.gs.commitAll();
   setAllPartiesToDisconnected(game.gs);
 
-  app.gameManager.addTestGame('2ps', game);
+  App.gameManager.addTestGame('2ps', game);
 }
 
 function threePartiesStart(): void {
-  const game = new GameRoom(app.gameManager.io, {
+  const game = new GameRoom(App.gameManager.io, {
     name: "three parties start",
     gameCode: "3ps",
     nation: "Kallavur",
@@ -37,11 +39,11 @@ function threePartiesStart(): void {
   game.gs.commitAll();
   setAllPartiesToDisconnected(game.gs);
 
-  app.gameManager.addTestGame('3ps', game);
+  App.gameManager.addTestGame('3ps', game);
 }
 
 function fourPartiesStart(): void {
-  const game = new GameRoom(app.gameManager.io, {
+  const game = new GameRoom(App.gameManager.io, {
     name: "four parties start",
     gameCode: "4ps",
     nation: "Kallavur",
@@ -55,7 +57,7 @@ function fourPartiesStart(): void {
   game.gs.commitAll();
   setAllPartiesToDisconnected(game.gs);
 
-  app.gameManager.addTestGame('4ps', game);
+  App.gameManager.addTestGame('4ps', game);
 }
 
 const startTime = (new Date()).getUTCSeconds();

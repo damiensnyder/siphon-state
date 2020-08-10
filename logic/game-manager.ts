@@ -1,3 +1,4 @@
+// @ts-ignore
 const GameRoom = require('./game-room');
 
 interface Settings {
@@ -7,6 +8,7 @@ interface Settings {
   nation: string
 }
 
+// @ts-ignore
 class GameManager {
   activeGames: any;
   io: any;
@@ -94,6 +96,6 @@ class GameManager {
 }
 
 module.exports = {
-  Settings: this.Settings,
+  Settings: Settings,
   GameManager: GameManager
 }

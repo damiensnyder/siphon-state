@@ -1,5 +1,5 @@
 // @ts-ignore
-const generator = require('./content-generator');
+const Generator = require('./content-generator');
 
 interface Party {
   name: string,
@@ -19,9 +19,10 @@ interface HiddenInfo {
   bribed: number[][],
   sympathetic: number[][],
   funds: number[],
-  contentGenerator: typeof generator
+  contentGenerator: typeof Generator
 }
 
+// @ts-ignore
 class GameState {
   started: boolean;
   ended: boolean;
@@ -32,14 +33,14 @@ class GameState {
   stage: number;
   decline: number;
   
-  pols: typeof generator.Pol[];
+  pols: typeof Generator.Pol[];
   parties: Party[];
-  provs: typeof generator.Prov[];
+  provs: typeof Generator.Prov[];
   officials: number[];
   primeMinister: number;
   suspender: number;
   settings: any;
-  contentGenerator: typeof generator;
+  contentGenerator: typeof Generator;
 
   constructor(settings) {
     this.settings = settings;
@@ -52,7 +53,7 @@ class GameState {
     this.stage = 0;
     this.decline = -1;
     
-    this.contentGenerator = new generator.ContentGenerator(settings.nation);
+    this.contentGenerator = new Generator.ContentGenerator(settings.nation);
   
     this.pols = [];
     this.parties = [];
@@ -398,7 +399,7 @@ class GameState {
   // it so it can be retrieved later.
   setPov(pov: number): HiddenInfo {
     this.pov = pov;
-    const contentGenerator: typeof generator = this.contentGenerator;
+    const contentGenerator: typeof Generator = this.contentGenerator;
     delete this.contentGenerator;
 
     // Delete the hidden information of other players

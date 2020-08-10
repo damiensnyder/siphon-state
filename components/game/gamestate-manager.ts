@@ -1,4 +1,25 @@
+interface ActionQueue {
+  payQueue: {
+    partyIndex: number,
+    amount: number
+  }[];
+  runQueue?: {
+    polIndex: number,
+    provIndex: number
+  }[];
+  adQueue?: number[];
+  smearQueue?: number[];
+  bribeQueue?: number[];
+  hitQueue?: number[];
+  voteQueue?: number[];
+  flipQueue?: number[];
+}
+
 class GamestateManager {
+  handlers: any;
+  gs: any;
+  actionQueue?: ActionQueue;
+
   constructor() {
     this.gs = {
       parties: [],
@@ -78,7 +99,7 @@ class GamestateManager {
 
   handleConnect(): void {
     if (this.ownParty() !== undefined) {
-      props.gs.ownParty.connected = true;
+      this.ownParty().connected = true;
     }
   }
 
@@ -188,7 +209,7 @@ class GamestateManager {
     // Remove from pay queue
     let paymentIndex: number = 0;
     this.actionQueue.payQueue.forEach((payment, i) => {
-      if (payment.target === partyIndex) {
+      if (payment.partyIndex === partyIndex) {
         paymentIndex = i;
       }
     });

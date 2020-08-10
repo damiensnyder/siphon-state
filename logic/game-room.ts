@@ -1,5 +1,7 @@
 const Settings = require('./game-manager').Settings;
+// @ts-ignore
 const GameState = require('./gamestate').GameState;
+// @ts-ignore
 const Viewer = require('./viewer').Viewer;
 
 const TEARDOWN_TIME: number = 3600000;
@@ -9,6 +11,7 @@ interface PartyInfo {
   abbr: string
 }
 
+// @ts-ignore
 class GameRoom {
   settings: typeof Settings;
   viewers: typeof Viewer[];
