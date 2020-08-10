@@ -1,13 +1,13 @@
 {
   "name": "siphon-state",
   "version": "0.2.0",
-  "type": "module",
+  "description": "A multi-player game of politics and corruption. Make and break alliances with other parties as you try to seize control of an eroding state. Implemented with NextJS and TypeScript.",
+  "homepage": "https://www.siphonstate.com/",
   "private": true,
+  "author": "Damien Snyder <damiensnyder@damiensnyder.com>",
   "scripts": {
-    "next-dev": "next dev",
     "build": "next build",
     "test": "node test.js -p $PORT",
-    "next-start": "next start",
     "start": "node app.js -p $PORT",
     "build-ts": "tsc",
     "watch-ts": "tsc -w"
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.0.27",
-    "@types/react": "^16.9.44",
+    "@types/react": "^16.9.45",
     "typescript": "^3.9.7"
   }
 }

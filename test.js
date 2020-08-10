@@ -1,62 +1,56 @@
-const gm = require('./app.js');
-const Game = require('./logic/game-room.js');
-
+var app = require('./app');
+var GameRoom = require('./logic/game-room');
 function setAllPartiesToDisconnected(gs) {
-  for (let i = 0; i < gs.parties.length; i++) {
-    gs.parties[i].connected = false;
-  }
+    gs.parties.forEach(function (party) {
+        party.connected = false;
+    });
 }
-
 function twoPartiesStart() {
-  const game = new Game(gm.io, {
-    name: "two parties start",
-    gameCode: "2ps",
-    private: false
-  }, () => {});
-  
-  game.gs.addParty("party 1", "P1");
-  game.gs.addParty("party 2", "P2");
-  game.gs.commitAll();
-  setAllPartiesToDisconnected(game.gs);
-  
-  gm.addTestGame('2ps', game);
+    var game = new GameRoom(app.gameManager.io, {
+        name: "two parties start",
+        gameCode: "2ps",
+        nation: "Kallavur",
+        private: false
+    }, function () { });
+    game.gs.addParty("party 1", "P1");
+    game.gs.addParty("party 2", "P2");
+    game.gs.commitAll();
+    setAllPartiesToDisconnected(game.gs);
+    app.gameManager.addTestGame('2ps', game);
 }
-
 function threePartiesStart() {
-  const game = new Game(gm.io, {
-    name: "three parties start",
-    gameCode: "3ps",
-    private: false
-  }, () => {});
-  
-  game.gs.addParty("party 1", "P1");
-  game.gs.addParty("party 2", "P2");
-  game.gs.addParty("party 3", "P3");
-  game.gs.commitAll();
-  setAllPartiesToDisconnected(game.gs);
-  
-  gm.addTestGame('3ps', game);
+    var game = new GameRoom(app.gameManager.io, {
+        name: "three parties start",
+        gameCode: "3ps",
+        nation: "Kallavur",
+        private: false
+    }, function () { });
+    game.gs.addParty("party 1", "P1");
+    game.gs.addParty("party 2", "P2");
+    game.gs.addParty("party 3", "P3");
+    game.gs.commitAll();
+    setAllPartiesToDisconnected(game.gs);
+    app.gameManager.addTestGame('3ps', game);
 }
-
 function fourPartiesStart() {
-  const game = new Game(gm.io, {
-    name: "four parties start",
-    gameCode: "4ps",
-    private: false
-  }, () => {});
-  
-  game.gs.addParty("party 1", "P1");
-  game.gs.addParty("party 2", "P2");
-  game.gs.addParty("party 3", "P3");
-  game.gs.addParty("party 4", "P4");
-  game.gs.commitAll();
-  setAllPartiesToDisconnected(game.gs);
-  
-  gm.addTestGame('4ps', game);
+    var game = new GameRoom(app.gameManager.io, {
+        name: "four parties start",
+        gameCode: "4ps",
+        nation: "Kallavur",
+        private: false
+    }, function () { });
+    game.gs.addParty("party 1", "P1");
+    game.gs.addParty("party 2", "P2");
+    game.gs.addParty("party 3", "P3");
+    game.gs.addParty("party 4", "P4");
+    game.gs.commitAll();
+    setAllPartiesToDisconnected(game.gs);
+    app.gameManager.addTestGame('4ps', game);
 }
-
-const startTime = new Date();
+var startTime = (new Date()).getUTCSeconds();
+(new Date()).getUTCSeconds();
 twoPartiesStart();
 threePartiesStart();
 fourPartiesStart();
-console.log(`Created test games in ${(new Date() - startTime) / 1000}s`);
+var endTime = (new Date()).getUTCSeconds();
+console.log("Created test games in " + (endTime - startTime) / 1000 + "s");
