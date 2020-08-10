@@ -1,8 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import ProvTab from './prov-tab';
-import general from '../../general.module.css';
-import styles from './provs-header.module.css';
+import ProvTab from "./prov-tab";
+import styles from "./provs-header.module.css";
 
 function tabsToJsx(props) {
   const tabsJsx = [];

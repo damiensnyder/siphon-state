@@ -1,7 +1,7 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React from "react";
 
-import Pol from './pol';
-import styles from './pol-category.module.css';
+import Pol from "./pol";
+import styles from "./pol-category.module.css";
 
 function polsToJsx(props) {
   if (props.pols.length == 0) {

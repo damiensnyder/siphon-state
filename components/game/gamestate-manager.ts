@@ -80,7 +80,7 @@ class GamestateManager {
     }
   }
 
-  updateAfter(type: string, actionInfo: any): void {
+  updateAfter(type: string, actionInfo?: any): void {
     this.handlers[type].bind(this)(actionInfo);
   }
 

@@ -1,10 +1,17 @@
-import React from 'react';
+import React from "react";
 
-import ChatMessage from './chat-message';
-import general from '../../general.module.css';
-import styles from './chat.module.css';
+import ChatMessage from "./chat-message";
+import general from "../../general.module.css";
+import styles from "./chat.module.css";
 
 class Chat extends React.Component {
+  props: any;
+  state: {currentMsg: string};
+  textInput: any;
+  messagesInner: any;
+  bottomMessage: any;
+  messageJustSent: any;
+
   constructor(props) {
     super(props);
 
@@ -22,34 +29,34 @@ class Chat extends React.Component {
     this.sendMsg = this.sendMsg.bind(this);
   }
 
-  msgsToJsx() {
-    var msgsJsx = [];
-    for (var i = 0; i < this.props.messages.length; i++) {
+  msgsToJsx(): any {
+    let msgsJsx: any[] = [];
+    this.props.messages.forEach((msg, msgIndex) => {
       msgsJsx.push(
-        <ChatMessage msg={this.props.messages[i]} key={i} />
+          <ChatMessage msg={msg} key={msgIndex} />
       );
-    }
+    });
     return msgsJsx;
   }
 
-  handleTyping(event) {
+  handleTyping(event): void {
     this.setState({currentMsg: event.target.value});
   }
 
-  checkIfEnterPressed(key) {
+  checkIfEnterPressed(key): void {
     if (key.keyCode == 13) {
       this.sendMsg();
       this.textInput.current.focus();
     }
   }
 
-  sendMsg() {
-    const newMsg = this.state.currentMsg.trim();
+  sendMsg(): void {
+    const newMsg: string = this.state.currentMsg.trim();
     if (newMsg.length > 0) {
       this.props.callback('msg', newMsg);
 
       // Update the message box and scroll to the bottom of the chat log
-      this.setState(state => ({
+      this.setState(() => ({
         currentMsg: ""
       }));
       this.messageJustSent = true;
@@ -60,7 +67,7 @@ class Chat extends React.Component {
   // themselves or they are already scrolled to within 50 pixels of the bottom
   // of the chat log.
   scrollToBottom() {
-    var p = this.messagesInner.current;
+    let p = this.messagesInner.current;
     if (this.messageJustSent ||
         p.scrollHeight - p.scrollTop < p.clientHeight + 50) {
       this.bottomMessage.current.scrollIntoView(false);
@@ -78,7 +85,7 @@ class Chat extends React.Component {
         <div id={styles.messagesOuter}>
           <div id={styles.messagesInner}
                ref={this.messagesInner}>
-            {this.msgsToJsx(this.props.messages)}
+            {this.msgsToJsx()}
             <div id={styles.bottomMessage}
                  ref={this.bottomMessage} />
           </div>

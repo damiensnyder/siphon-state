@@ -1,7 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import general from '../../general.module.css';
-import styles from './provs-header.module.css';
+import styles from "./provs-header.module.css";
 
 function ProvTab(props) {
   return (

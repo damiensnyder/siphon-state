@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import general from '../../general.module.css';
-import styles from './pol.module.css';
+import general from "../../general.module.css";
+import styles from "./pol.module.css";
 
 function formatMoneyString(amount) {
   if (amount >= 10) {

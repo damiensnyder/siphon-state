@@ -1,8 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import PolCategory from './pol-category';
-import general from '../../general.module.css';
-import styles from './provs.module.css';
+import PolCategory from "./pol-category";
+import styles from "./provs.module.css";
 
 const CANDIDATES_CATEGORY_NAMES = [
   "Nominees",
@@ -35,7 +34,7 @@ function polCategoriesToJsx(props) {
         pols={self.candidates}
         key={0} />
   );
-  var available = (
+  let available = (
     <PolCategory gs={props.gs}
         name={"Available"}
         isTop={false}

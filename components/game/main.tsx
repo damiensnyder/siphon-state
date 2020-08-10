@@ -1,20 +1,30 @@
-import React from 'react';
-import io from 'socket.io-client';
+import React from "react";
+import io from "socket.io-client";
 
-import PartiesView from './parties/parties-view';
-import ProvsView from './provs/provs-view';
-import PregameView from './pregame/pregame-view';
-import HelperBar from './helper-bar';
-import Chat from './chat/chat';
-import styles from './main.module.css';
-import GamestateManager from './gamestate-manager';
+import PartiesView from "./parties/parties-view";
+import ProvsView from "./provs/provs-view";
+import PregameView from "./pregame/pregame-view";
+import HelperBar from "./helper-bar";
+import Chat from "./chat/chat";
+import styles from "./main.module.css";
+import GamestateManager from "./gamestate-manager";
 
 class GameView extends React.Component {
-  constructor(props) {
+  socket?: any;
+  gameCode: string;
+  gamestateManager: GamestateManager;
+  props: {
+    gameCode: string
+  };
+  state: {
+    gs: any,
+    messages: any[],
+    connected: boolean
+  };
+
+  constructor(props: {gameCode: string}) {
     super(props);
 
-    this.socket = undefined;
-    this.gameCode = '';
     this.gamestateManager = new GamestateManager();
 
     this.state = {
@@ -26,21 +36,15 @@ class GameView extends React.Component {
     this.callback = this.callback.bind(this);
   }
 
-  componentDidMount() {
-    this.waitForGameCode();
-  }
-
-  // The game code mysteriously does not load immediately, so this waits for
-  // another function that checks until it gets it.
-  async waitForGameCode() {
+  async componentDidMount() {
     await this.retryUntilGameCode();
   }
 
   // Checks every 20 ms until the game code is set by the router.
   retryUntilGameCode() {
     return new Promise((resolve) => {
-      var timesChecked = 0;
-      var checkForRouter = setInterval(() => {
+      let timesChecked = 0;
+      let checkForRouter = setInterval(() => {
         if (this.props.gameCode !== undefined) {
           clearInterval(checkForRouter);
           this.gameCode = this.props.gameCode;
