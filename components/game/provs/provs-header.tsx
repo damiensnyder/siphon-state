@@ -26,9 +26,14 @@ function tabsToJsx(props) {
 }
 
 function ProvsHeader(props) {
+  if (!props.gs.started ||
+      props.gs.stage >= 2) {
+    return <div className={styles.outerHeader} />;
+  }
+
   return (
     <div className={styles.outerHeader}>
-      {props.gs.started ? tabsToJsx(props) : null}
+      {tabsToJsx(props)}
     </div>
   );
 }

@@ -8,14 +8,12 @@ function polsToJsx(props) {
     return <div className={styles.emptyMsg}>{props.emptyMsg}</div>;
   }
 
-  // note--polIndex is useful as a reference to which pol in the props array
-  // the pol is. props.pols[polIndex] is the polIndex in gs.pols. capisce?
   return props.pols.map((pol, polIndex) => {
     return (
       <Pol gs={props.gs}
           callback={props.callback}
-          self={props.pols[polIndex]}
-          index={polIndex}
+          pol={props.gs.pols[props.pols[polIndex]]}
+          polIndex={props.pols[polIndex]}
           key={polIndex} />
     );
   });

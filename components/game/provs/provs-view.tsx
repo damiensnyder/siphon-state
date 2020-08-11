@@ -6,7 +6,7 @@ import general from "../../general.module.css";
 
 interface ProvsViewProps {
   gs: any,
-  callback: any
+  callback: (string, any?) => void
 }
 
 interface ProvsViewState {
