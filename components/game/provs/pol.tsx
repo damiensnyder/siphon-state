@@ -39,9 +39,9 @@ function buttonsJsx(props) {
   const buttons = [];
 
   // If they can be nominated, add "Nominate" button
-  if (props.pol.party === props.gs.pov
-      && props.gs.stage === 0
-      && props.gs.parties[props.gs.pov].pols.includes(props.pol)) {
+  if (props.pol.party === props.gs.pov && 
+      props.gs.stage === 0 &&
+      props.gs.parties[props.gs.pov].pols.includes(props.pol)) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('run', props.polIndex)}>
@@ -51,9 +51,9 @@ function buttonsJsx(props) {
   }
 
   // If they are currently nominated, add "Undo" button
-  if (props.pol.party === props.gs.pov
-      && props.gs.stage === 0
-      && isCandidate) {
+  if (props.pol.party === props.gs.pov && 
+      props.gs.stage === 0 &&
+      isCandidate) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('unrun', props.pol)}>
@@ -63,9 +63,9 @@ function buttonsJsx(props) {
   }
 
   // If they are an active official, add "Vote" button
-  if (props.gs.stage === 2
-      && props.gs.officials.includes(props.polIndex)
-      && props.gs.parties[props.gs.pov].votes > 0) {
+  if (props.gs.stage === 2 && 
+      props.gs.officials.includes(props.polIndex) &&
+      props.gs.parties[props.gs.pov].votes > 0) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('vote', props.index)}>
@@ -75,10 +75,10 @@ function buttonsJsx(props) {
   }
 
   // If they have votes, add "Undo" button
-  if (props.pol.party === props.gs.pov
-      && props.gs.stage === 2
-      && props.gs.officials.includes(props.polIndex)
-      && props.pol.support >= 1) {
+  if (props.pol.party === props.gs.pov && 
+      props.gs.stage === 2 &&
+      props.gs.officials.includes(props.polIndex) &&
+      props.pol.support >= 1) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('unvote', props.index)}>
@@ -167,8 +167,8 @@ function buttonsJsx(props) {
 
   // If they are sympathetic, add a "Bribe" or "Undo" button depending on
   // whether they've been flipped.
-  if (ownParty.sympathetic.includes(props.polIndex)
-      && props.pol.party !== props.gs.pov) {
+  if (ownParty.sympathetic.includes(props.polIndex) && 
+      props.pol.party !== props.gs.pov) {
     if (props.pol.flipped) {
       buttons.push(
         <button className={general.actionBtn}
@@ -215,9 +215,9 @@ function nameStyle(props) {
         nameStyle += " " + styles.bribed;
       }
     }
-    if (props.gs.ownParty.symps.length > 0
-        && props.gs.ownParty.symps[0].id == props.pol.id
-        && !props.gs.ownParty.symps[0].flipped) {
+    if (props.gs.ownParty.symps.length > 0 && 
+        props.gs.ownParty.symps[0].id == props.pol.id && 
+        !props.gs.ownParty.symps[0].flipped) {
       nameStyle += " " + styles.symp;
     }
   }

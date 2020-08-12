@@ -150,10 +150,10 @@ class GameState {
   run(partyIndex: number,
       runInfo: {polIndex: number, provIndex: number}): void {
     let party: Party = this.parties[partyIndex];
-    if (party.pols.length > 0
-        && party.funds >= 5
-        && runInfo.polIndex < this.parties[partyIndex].pols.length
-        && runInfo.polIndex >= 0) {
+    if (party.pols.length > 0 && 
+        party.funds >= 5 && 
+        runInfo.polIndex < this.parties[partyIndex].pols.length && 
+        runInfo.polIndex >= 0) {
       this.provs[runInfo.provIndex].candidates.push(
           party.pols[runInfo.polIndex]);
     }
@@ -178,19 +178,19 @@ class GameState {
   }
 
   ad(partyIndex: number, polIndex: number): void {
-    if (this.pols[polIndex].party === partyIndex
-        && this.parties[partyIndex].funds >= (3 + this.rounds)
-        && this.stage === 1) {
+    if (this.pols[polIndex].party === partyIndex && 
+        this.parties[partyIndex].funds >= (3 + this.rounds) && 
+        this.stage === 1) {
       this.parties[partyIndex].funds -= (3 + this.rounds);
       this.pols[polIndex].support++;
     }
   }
 
   smear(partyIndex: number, polIndex: number): void {
-    if (this.pols[polIndex].party !== partyIndex
-        && this.parties[partyIndex].funds >= (2 + this.rounds)
-        && this.pols[polIndex].support >= 1
-        && this.stage === 1) {
+    if (this.pols[polIndex].party !== partyIndex && 
+        this.parties[partyIndex].funds >= (2 + this.rounds) && 
+        this.pols[polIndex].support >= 1 && 
+        this.stage === 1) {
       this.parties[partyIndex].funds -= (2 + this.rounds);
       this.pols[polIndex].support--;
     }
@@ -231,10 +231,10 @@ class GameState {
 
   // Assign one vote from the given party to the given politician.
   vote(partyIndex: number, polIndex: number): void {
-    if (this.parties[partyIndex].votes > 0
-        && polIndex < this.officials.length
-        && polIndex >= 0
-        && this.stage === 2) {
+    if (this.parties[partyIndex].votes > 0 && 
+        polIndex < this.officials.length && 
+        polIndex >= 0 && 
+        this.stage === 2) {
       this.pols[polIndex].support++;
       this.parties[partyIndex].votes--;
     }
@@ -329,8 +329,6 @@ class GameState {
         this.ended = true;
       }
     }
-    
-    // TODO: add bonuses and decline
 
     // If there was no winner, advance to the next prov and begin nomination.
     if (!this.ended) {
@@ -340,10 +338,10 @@ class GameState {
 
   // Pay the given amount of funds from party 1 to party 2.
   pay(partyIndex: number, paymentInfo): void {
-    if (this.parties[partyIndex].funds > paymentInfo.amount
-        && paymentInfo.target < this.parties.length
-        && paymentInfo.target >= 0
-        && !this.parties[paymentInfo.target].eliminated) {
+    if (this.parties[partyIndex].funds > paymentInfo.amount && 
+        paymentInfo.target < this.parties.length && 
+        paymentInfo.target >= 0 && 
+        !this.parties[paymentInfo.target].eliminated) {
       this.parties[partyIndex].funds -= paymentInfo.amount;
       this.parties[paymentInfo.target].funds += paymentInfo.amount;
     }
@@ -351,9 +349,9 @@ class GameState {
 
   bribe(partyIndex: number, polIndex: number): void {
     const party: Party = this.parties[partyIndex];
-    if (party.sympathetic.length > 0
-        && party.funds >= 25 + 10 * this.rounds
-        && party.sympathetic.includes(polIndex)) {
+    if (party.sympathetic.length > 0 && 
+        party.funds >= 25 + 10 * this.rounds && 
+        party.sympathetic.includes(polIndex)) {
       party.bribed.push(polIndex);
       party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
       party.funds -= 25 + 10 * this.rounds;
@@ -362,11 +360,11 @@ class GameState {
   
   hit(partyIndex: number, polIndex: number): void {
     const party: Party = this.parties[partyIndex];
-    if (!party.usedHit
-        && party.funds >= 25
-        && this.stage === 2
-        && this.officials.includes(polIndex)
-        && this.pols[polIndex].party !== this.suspender) {
+    if (!party.usedHit && 
+        party.funds >= 25 && 
+        this.stage === 2 && 
+        this.officials.includes(polIndex) && 
+        this.pols[polIndex].party !== this.suspender) {
       party.funds -= 25;
       party.usedHit = true;
       this.officials.splice(this.officials.indexOf(polIndex), 1);
@@ -376,8 +374,9 @@ class GameState {
   // Transfer the symp from their old party to their new party.
   flip(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
-    if (polIndex < this.pols.length && polIndex >= 0
-        && this.stage >= 2) {
+    if (polIndex < this.pols.length &&
+        polIndex >= 0 &&
+        this.stage >= 2) {
       // Remove from their old party
       const oldParty = this.parties[this.pols[polIndex].party];
       oldParty.pols.splice(oldParty.pols.indexOf(polIndex), 1);

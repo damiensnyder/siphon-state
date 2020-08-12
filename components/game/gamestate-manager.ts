@@ -125,8 +125,8 @@ class GamestateManager {
     this.gs.pols[flipInfo.polIndex].party = this.gs.pov;
 
     // If the flipped politician was an active official, gain a vote.
-    if (this.gs.officials.includes(flipInfo.polIndex)
-        && this.gs.stage === 2) {
+    if (this.gs.officials.includes(flipInfo.polIndex) && 
+        this.gs.stage === 2) {
       this.ownParty().votes++;
       this.gs.parties[flipInfo.pol.oldParty].votes--;
     }
@@ -189,8 +189,8 @@ class GamestateManager {
     // If they were an official, give a vote back to their old party, and if
     // the player's own party has voted with the unflipped politician, take
     // back the last vote.
-    if (this.gs.officials.includes(flipInfo.polIndex)
-        && this.gs.stage === 2) {
+    if (this.gs.officials.includes(flipInfo.polIndex) && 
+        this.gs.stage === 2) {
       this.ownParty().votes--;
       this.gs.parties[this.gs.pols[flipInfo.polIndex].oldParty].votes++;
       if (this.gs.voteQueue.length > this.ownParty().votes) {
