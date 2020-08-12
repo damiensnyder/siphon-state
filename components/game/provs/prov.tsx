@@ -18,18 +18,17 @@ function Prov(props) {
     );
   }
 
-  if (props.gs.stage == 0 && props.gs.pov !== undefined) {
+  if (props.gs.stage === 0 && props.gs.pov !== undefined) {
     return (
       <div className={styles.provOuter}>
         <div className={styles.provInner}>
           <PolCategory gs={props.gs.provs[props.index].candidates}
               name={"Candidates"}
-              isTop={true}
               callback={props.callback}
+              provIndex={props.index}
               pols={props.gs.officials} />
           <PolCategory gs={props.gs.provs[props.index].candidates}
               name={"Available"}
-              isTop={false}
               callback={props.callback}
               pols={props.gs.parties[props.gs.pov].candidates} />
         </div>
@@ -42,8 +41,8 @@ function Prov(props) {
       <div className={styles.provInner}>
         <PolCategory gs={props.gs.provs[props.index].candidates}
             name={"Candidates"}
-            isTop={true}
             callback={props.callback}
+            provIndex={props.index}
             pols={props.gs.officials} />
       </div>
     </div>

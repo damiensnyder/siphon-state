@@ -11,20 +11,20 @@ function formatMoneyString(amount) {
   }
 }
 
-function bigNumberJsx(props) {
-  const numberStyle = styles.bigNumber + " " +
+function bubbleJsx(props) {
+  const bubbleStyle = styles.bubble + " " +
       (props.pol.support <= -1 ? styles.negativeSupport : "");
   
-  let number: string | number;
+  let bubbleInfo: string | number;
   if (props.gs.primeMinister === props.polIndex) {
-    number = "★";
+    bubbleInfo = "★";
   } else if (props.gs.stage === 0) {
-    number = props.pol.baseSupport;
+    bubbleInfo = props.pol.baseSupport;
   } else {
-    number = Math.round(props.pol.support);
+    bubbleInfo = Math.round(props.pol.support);
   }
 
-  return <div className={numberStyle}>{number}</div>;
+  return <div className={bubbleStyle}>{bubbleInfo}</div>;
 }
 
 function buttonsJsx(props) {
@@ -33,26 +33,27 @@ function buttonsJsx(props) {
     return null;
   }
 
+  const isCandidate: boolean = props.gs.provs[props.provIndex]
+      .candidates.includes(props.polIndex);
+  const ownParty = props.gs.parties[props.gs.pov];
   const buttons = [];
 
   // If they can be nominated, add "Nominate" button
-  if (props.pol.party == props.gs.pov
-      && props.gs.activeProv.stage == 0
-      && props.gs.ownParty.candidates.includes(props.pol)
-      && !props.gs.activeProv.candidates.includes(props.pol)
-      && props.gs.activeProv.candidates.length < 3) {
+  if (props.pol.party === props.gs.pov
+      && props.gs.stage === 0
+      && props.gs.parties[props.gs.pov].pols.includes(props.pol)) {
     buttons.push(
       <button className={general.actionBtn}
-          onClick={() => props.callback('run', props.pol)}>
+          onClick={() => props.callback('run', props.polIndex)}>
         Nominate
       </button>
     );
   }
 
   // If they are currently nominated, add "Undo" button
-  if (props.pol.party == props.gs.pov
-      && props.gs.activeProv.stage == 0
-      && props.gs.activeProv.candidates.includes(props.pol)) {
+  if (props.pol.party === props.gs.pov
+      && props.gs.stage === 0
+      && isCandidate) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('unrun', props.pol)}>
@@ -62,9 +63,9 @@ function buttonsJsx(props) {
   }
 
   // If they are an active official, add "Vote" button
-  if (props.gs.activeProv.stage == 2
-      && props.gs.activeProv.officials.includes(props.pol)
-      && props.gs.ownParty.votes > 0) {
+  if (props.gs.stage === 2
+      && props.gs.officials.includes(props.polIndex)
+      && props.gs.parties[props.gs.pov].votes > 0) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('vote', props.index)}>
@@ -74,10 +75,10 @@ function buttonsJsx(props) {
   }
 
   // If they have votes, add "Undo" button
-  if (props.pol.party == props.gs.pov
-      && props.gs.activeProv.stage == 2
-      && props.gs.activeProv.officials.includes(props.pol)
-      && props.pol.votes > 0) {
+  if (props.pol.party === props.gs.pov
+      && props.gs.stage === 2
+      && props.gs.officials.includes(props.polIndex)
+      && props.pol.support >= 1) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('unvote', props.index)}>
@@ -86,10 +87,9 @@ function buttonsJsx(props) {
     );
   }
 
-  if (props.gs.activeProv.stage == 1
-      && props.gs.activeProv.candidates.includes(props.pol)) {
-    if (props.pol.party == props.gs.pov) {
-      if (props.gs.ownParty.funds >= 3 + props.gs.rounds) {
+  if (props.gs.stage === 1 && isCandidate) {
+    if (props.pol.party === props.gs.pov) {
+      if (ownParty.funds >= 3 + props.gs.rounds) {
         if (props.pol.hasOwnProperty('adsBought')) {
           buttons.push(
             <button className={general.actionBtn}
@@ -115,18 +115,18 @@ function buttonsJsx(props) {
         );
       }
     } else {
-      if (props.gs.ownParty.funds >= 2 + props.gs.rounds) {
+      if (ownParty.funds >= 2 + props.gs.rounds) {
         if (props.pol.hasOwnProperty('adsBought')) {
           buttons.push(
             <button className={general.actionBtn}
-                onClick={() => props.callback('smear', props.index)}>
+                onClick={() => props.callback('smear', props.polIndex)}>
               Smear
             </button>
           );
         } else {
           buttons.push(
             <button className={general.actionBtn}
-                onClick={() => props.callback('smear', props.index)}>
+                onClick={() => props.callback('smear', props.polIndex)}>
               Smear: {formatMoneyString(2 + props.gs.rounds)}
             </button>
           );
@@ -135,7 +135,7 @@ function buttonsJsx(props) {
       if (props.pol.adsBought > 0) {
         buttons.push(
           <button className={general.actionBtn}
-              onClick={() => props.callback('unsmear', props.index)}>
+              onClick={() => props.callback('unsmear', props.polIndex)}>
             Undo
           </button>
         );
@@ -145,43 +145,39 @@ function buttonsJsx(props) {
 
   // If they have been bribed, add a "Flip" button or an "Undo" button depending
   // on whether they have already been flipped.
-  for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
-    if (props.gs.ownParty.bribed[i].id == props.pol.id) {
-      const targetIndex = i;
-      if (props.pol.party != props.gs.pov) {
-        buttons.push(
-          <button className={general.actionBtn}
-              onClick={() => props.callback('flip',
-                  {index: targetIndex, pol: props.pol})}>
-            Flip
-          </button>
-        );
-      } else {
-        buttons.push(
-          <button className={general.actionBtn}
-              onClick={() => props.callback('unflip',
-                  {index: targetIndex, pol: props.pol})}>
-            Undo
-          </button>
-        );
-      }
+  if (ownParty.bribed.includes(props.polIndex)) {
+    if (props.pol.party !== props.gs.pov) {
+      buttons.push(
+        <button className={general.actionBtn}
+            onClick={() => props.callback('flip',
+                {polIndex: props.polIndex})}>
+          Flip
+        </button>
+      );
+    } else {
+      buttons.push(
+        <button className={general.actionBtn}
+            onClick={() => props.callback('unflip',
+                {polIndex: props.polIndex})}>
+          Undo
+        </button>
+      );
     }
   }
 
   // If they are sympathetic, add a "Bribe" or "Undo" button depending on
   // whether they've been flipped.
-  if (props.gs.ownParty.symps.length > 0
-      && props.gs.ownParty.symps[0].id == props.pol.id
-      && props.pol.party != props.gs.pov) {
-    if (props.gs.ownParty.symps[0].flipped) {
+  if (ownParty.sympathetic.includes(props.polIndex)
+      && props.pol.party !== props.gs.pov) {
+    if (props.pol.flipped) {
       buttons.push(
         <button className={general.actionBtn}
             onClick={() => props.callback('unbribe')}>
           Undo
         </button>
       );
-    } else if (props.gs.ownParty.funds >= 10 * (2 + props.gs.rounds)) {
-      if (props.gs.ownParty.symps[0].hasOwnProperty('flipped')) {
+    } else if (ownParty.funds >= 10 * (2 + props.gs.rounds)) {
+      if (props.pol.hasOwnProperty('flipped')) {
         buttons.push(
           <button className={general.actionBtn}
               onClick={() => props.callback('bribe')}>
@@ -210,10 +206,10 @@ function buttonsJsx(props) {
 }
 
 function nameStyle(props) {
-  var nameStyle = styles.name;
+  let nameStyle = styles.name;
   if (props.pol.party == props.gs.pov) {
     nameStyle += " " + styles.ownPol;
-  } else if (props.gs.ownParty != undefined) {
+  } else if (props.gs.pov !== undefined) {
     for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
       if (props.gs.ownParty.bribed[i].id == props.pol.id) {
         nameStyle += " " + styles.bribed;
@@ -245,9 +241,9 @@ function Pol(props) {
         <span className={nameStyle(props)}>
           {props.pol.name}
         </span>
-        {bigNumberJsx(props)}
+        {bubbleJsx(props)}
       </div>
-      {props.gs.ownParty.ready ? null : buttonsJsx(props)}
+      {props.gs.parties[props.gs.pov].ready ? null : buttonsJsx(props)}
     </div>
   );
 }
