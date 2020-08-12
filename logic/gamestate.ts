@@ -141,10 +141,16 @@ class GameState {
 
     // Give all parties $7.5M and enough candidates to make one per province.
     this.parties.forEach((party, partyIndex) => {
-      party.funds += 75;
-      while (party.pols.length < this.provs.length) {
-        this.pols.push(this.contentGenerator.newPol(partyIndex));
-        party.pols.push(this.pols.length - 1);
+      if (!party.eliminated) {
+        party.funds += 75;
+        // Give the party with the prime minister an extra bonus.
+        if (partyIndex === this.pols[this.primeMinister].party) {
+          party.funds += 10 * this.decline;
+        }
+        while (party.pols.length < this.provs.length) {
+          this.pols.push(this.contentGenerator.newPol(partyIndex));
+          party.pols.push(this.pols.length - 1);
+        }
       }
     });
 
@@ -166,12 +172,19 @@ class GameState {
     const countSoFar: number[] = Array(this.parties.length).fill(0);
     this.provs.forEach((prov) => {
       prov.candidates.forEach((polIndex) => {
-        const partyIndex: number = this.pols[polIndex].party;
+        const pol = this.pols[polIndex];
+        const partyIndex: number = pol.party;
         const priority = (partyIndex - this.priority) % this.parties.length;
-        const supportBonus = (countSoFar[partyIndex] * this.parties.length +
+        let supportBonus = (countSoFar[partyIndex] * this.parties.length +
             priority) / (this.provs.length * this.parties.length + 1);
-        this.pols[polIndex].support = this.pols[polIndex].baseSupport +
-            supportBonus;
+
+        // Give a bonus to all pols from the party who suspended the
+        // constitution.
+        if (partyIndex === this.suspender) {
+          supportBonus += this.decline;
+        }
+
+        pol.support = pol.baseSupport + supportBonus;
       });
     });
 
@@ -339,6 +352,10 @@ class GameState {
       }
     }
 
+    if (this.decline >= 3) {
+      this.suspender = this.pols[this.primeMinister].party;
+    }
+
     // If there was no winner, advance to the next prov and begin nomination.
     if (!this.ended) {
       this.beginNomination();
@@ -375,6 +392,7 @@ class GameState {
     }
   }
 
+  // Buy an ad for the given politician, increasing their support.
   ad(partyIndex: number, polIndex: number): void {
     if (this.pols[polIndex].party === partyIndex &&
         this.parties[partyIndex].funds >= (3 + this.rounds) &&
@@ -384,6 +402,7 @@ class GameState {
     }
   }
 
+  // Smear the given politician, decreasing their support.
   smear(partyIndex: number, polIndex: number): void {
     if (this.pols[polIndex].party !== partyIndex &&
         this.parties[partyIndex].funds >= 2 + this.rounds &&
@@ -394,6 +413,7 @@ class GameState {
     }
   }
 
+  // Bribe the given politician, making them a member of your party.
   bribe(partyIndex: number, polIndex: number): void {
     const party: Party = this.parties[partyIndex];
     if (party.sympathetic.length > 0 && 
@@ -428,6 +448,7 @@ class GameState {
     }
   }
 
+  // Call a hit the given politician, removing them from the game.
   hit(partyIndex: number, polIndex: number) {
     const cost = this.stage >= 2 ? 50 : 25;
     const party = this.parties[partyIndex]
@@ -491,7 +512,7 @@ class GameState {
 
   // Uncensor stored secret info.
   unsetPov(hiddenInfo: HiddenInfo): void {
-    this.pov = -1;
+    this.pov = undefined;
     this.contentGenerator = hiddenInfo.contentGenerator;
 
     for (let i = 0; i < this.parties.length; i++) {
