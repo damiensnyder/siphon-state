@@ -169,6 +169,14 @@ class GameRoom {
         this.gs.pay(playerIndex, action);
       });
     });
+
+    if (this.gs.stage === 1 || this.gs.stage === 2) {
+      this.players.forEach((player, playerIndex) => {
+        player.actionQueue.hitQueue.forEach((action) => {
+          this.gs.hit(playerIndex, action);
+        });
+      });
+    }
   
     if (this.gs.stage >= 2) {
       this.players.forEach((player, playerIndex) => {
@@ -200,9 +208,6 @@ class GameRoom {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.voteQueue.forEach((action) => {
           this.gs.vote(playerIndex, action);
-        });
-        player.actionQueue.hitQueue.forEach((action) => {
-          this.gs.hit(playerIndex, action);
         });
       });
     }

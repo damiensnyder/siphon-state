@@ -108,6 +108,12 @@ class GameState {
     }
   }
 
+  /*
+  ==========
+  NOMINATION
+  ==========
+  */
+
   // Advance to the next province and begin the nomination stage in the new
   // province.
   beginNomination(): void {
@@ -146,18 +152,11 @@ class GameState {
     this.primeMinister = null;
   }
 
-  // The given politician becomes a candidate in the chosen province.
-  run(partyIndex: number,
-      runInfo: {polIndex: number, provIndex: number}): void {
-    let party: Party = this.parties[partyIndex];
-    if (party.pols.length > 0 && 
-        party.funds >= 5 && 
-        runInfo.polIndex < this.parties[partyIndex].pols.length && 
-        runInfo.polIndex >= 0) {
-      this.provs[runInfo.provIndex].candidates.push(
-          party.pols[runInfo.polIndex]);
-    }
-  }
+  /*
+  ====
+  RACE
+  ====
+  */
 
   beginRace(): void {
     this.stage = 1;
@@ -175,25 +174,34 @@ class GameState {
             supportBonus;
       });
     });
-  }
 
-  ad(partyIndex: number, polIndex: number): void {
-    if (this.pols[polIndex].party === partyIndex && 
-        this.parties[partyIndex].funds >= (3 + this.rounds) && 
-        this.stage === 1) {
-      this.parties[partyIndex].funds -= (3 + this.rounds);
-      this.pols[polIndex].support++;
+    if (this.decline == 1) {
+      this.giveSympathizers(1);
+    } else if (this.decline > 1) {
+      this.giveSympathizers(2);
     }
   }
 
-  smear(partyIndex: number, polIndex: number): void {
-    if (this.pols[polIndex].party !== partyIndex && 
-        this.parties[partyIndex].funds >= (2 + this.rounds) && 
-        this.pols[polIndex].support >= 1 && 
-        this.stage === 1) {
-      this.parties[partyIndex].funds -= (2 + this.rounds);
-      this.pols[polIndex].support--;
-    }
+  giveSympathizers(amountPerPlayer: number) {
+    const runningPols = [];
+    this.provs.forEach((prov) => {
+      prov.candidates.forEach((polIndex) => {
+        runningPols.push(polIndex);
+      });
+    });
+
+    this.parties.forEach((party, partyIndex) => {
+      party.sympathetic = [];
+      for (let i = 0; i < runningPols.length; i++) {
+        if (party.sympathetic.length < amountPerPlayer &&
+            this.pols[runningPols[i]].party !== partyIndex &&
+            !party.eliminated) {
+          party.sympathetic.push(runningPols[i]);
+          runningPols.splice(i, 1);
+          i--;
+        }
+      }
+    });
   }
 
   advanceRaceStage(): void {
@@ -202,6 +210,12 @@ class GameState {
       this.beginVoting();
     }
   }
+
+  /*
+  ======
+  VOTING
+  ======
+  */
 
   beginVoting(): void {
     this.officials = [];
@@ -226,17 +240,6 @@ class GameState {
     } else if (this.officials.length === 1) {
       this.primeMinister = this.officials[0];
       this.beginDistribution();
-    }
-  }
-
-  // Assign one vote from the given party to the given politician.
-  vote(partyIndex: number, polIndex: number): void {
-    if (this.parties[partyIndex].votes > 0 && 
-        polIndex < this.officials.length && 
-        polIndex >= 0 && 
-        this.stage === 2) {
-      this.pols[polIndex].support++;
-      this.parties[partyIndex].votes--;
     }
   }
 
@@ -296,6 +299,12 @@ class GameState {
     this.beginDistribution();
   }
 
+  /*
+  ============
+  DISTRIBUTION
+  ============
+  */
+
   beginDistribution(): void {
     this.stage = 3;
   }
@@ -336,6 +345,12 @@ class GameState {
     }
   }
 
+  /*
+  ========================
+  ACTIONS PLAYERS CAN TAKE
+  ========================
+  */
+
   // Pay the given amount of funds from party 1 to party 2.
   pay(partyIndex: number, paymentInfo): void {
     if (this.parties[partyIndex].funds > paymentInfo.amount && 
@@ -347,6 +362,38 @@ class GameState {
     }
   }
 
+  // The given politician becomes a candidate in the chosen province.
+  run(partyIndex: number,
+      runInfo: {polIndex: number, provIndex: number}): void {
+    let party: Party = this.parties[partyIndex];
+    if (party.pols.length > 0 &&
+        party.funds >= 5 &&
+        runInfo.polIndex < this.parties[partyIndex].pols.length &&
+        runInfo.polIndex >= 0) {
+      this.provs[runInfo.provIndex].candidates.push(
+          party.pols[runInfo.polIndex]);
+    }
+  }
+
+  ad(partyIndex: number, polIndex: number): void {
+    if (this.pols[polIndex].party === partyIndex &&
+        this.parties[partyIndex].funds >= (3 + this.rounds) &&
+        this.stage === 1) {
+      this.parties[partyIndex].funds -= (3 + this.rounds);
+      this.pols[polIndex].support += 1;
+    }
+  }
+
+  smear(partyIndex: number, polIndex: number): void {
+    if (this.pols[polIndex].party !== partyIndex &&
+        this.parties[partyIndex].funds >= 2 + this.rounds &&
+        this.pols[polIndex].support >= 1 &&
+        this.stage === 1) {
+      this.parties[partyIndex].funds -= 2 + this.rounds;
+      this.pols[polIndex].support -= 1;
+    }
+  }
+
   bribe(partyIndex: number, polIndex: number): void {
     const party: Party = this.parties[partyIndex];
     if (party.sympathetic.length > 0 && 
@@ -355,19 +402,6 @@ class GameState {
       party.bribed.push(polIndex);
       party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
       party.funds -= 25 + 10 * this.rounds;
-    }
-  }
-  
-  hit(partyIndex: number, polIndex: number): void {
-    const party: Party = this.parties[partyIndex];
-    if (!party.usedHit && 
-        party.funds >= 25 && 
-        this.stage === 2 && 
-        this.officials.includes(polIndex) && 
-        this.pols[polIndex].party !== this.suspender) {
-      party.funds -= 25;
-      party.usedHit = true;
-      this.officials.splice(this.officials.indexOf(polIndex), 1);
     }
   }
 
@@ -391,6 +425,37 @@ class GameState {
       this.pols[polIndex].party = partyIndex;
       party.pols.push(polIndex);
       party.bribed.splice(party.bribed.indexOf(polIndex), 1);
+    }
+  }
+
+  hit(partyIndex: number, polIndex: number) {
+    const cost = this.stage >= 2 ? 50 : 25;
+    const party = this.parties[partyIndex]
+    if (party.funds >= cost &&
+        this.decline >= 3 &&
+        !party.usedHit &&
+        this.pols[polIndex].party !== this.suspender) {
+      if (this.officials.includes(polIndex)) {
+        this.officials.splice(this.officials.indexOf(polIndex), 1);
+      }
+      this.provs.forEach((prov) => {
+        if (prov.candidates.includes(polIndex)) {
+          prov.candidates.splice(prov.candidates.indexOf(polIndex), 1);
+          party.funds -= cost;
+          party.usedHit = true;
+        }
+      })
+    }
+  }
+
+  // Assign one vote from the given party to the given politician.
+  vote(partyIndex: number, polIndex: number): void {
+    if (this.parties[partyIndex].votes > 0 &&
+        polIndex < this.officials.length &&
+        polIndex >= 0 &&
+        this.stage === 2) {
+      this.pols[polIndex].support += 1;
+      this.parties[partyIndex].votes--;
     }
   }
 
