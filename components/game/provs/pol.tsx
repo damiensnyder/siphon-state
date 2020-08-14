@@ -41,7 +41,8 @@ function buttonsJsx(props) {
   // If they can be nominated, add "Nominate" button
   if (props.pol.party === props.gs.pov && 
       props.gs.stage === 0 &&
-      props.gs.parties[props.gs.pov].pols.includes(props.pol)) {
+      ownParty.funds >= 10 &&
+      props.gs.parties[props.gs.pov].pols.includes(props.polIndex)) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('run', props.polIndex)}>
@@ -145,7 +146,8 @@ function buttonsJsx(props) {
 
   // If they have been bribed, add a "Flip" button or an "Undo" button depending
   // on whether they have already been flipped.
-  if (ownParty.bribed.includes(props.polIndex)) {
+  if (ownParty.bribed != undefined &&
+      ownParty.bribed.includes(props.polIndex)) {
     if (props.pol.party !== props.gs.pov) {
       buttons.push(
         <button className={general.actionBtn}
@@ -167,7 +169,8 @@ function buttonsJsx(props) {
 
   // If they are sympathetic, add a "Bribe" or "Undo" button depending on
   // whether they've been flipped.
-  if (ownParty.sympathetic.includes(props.polIndex) && 
+  if (ownParty.sympathetic != undefined &&
+      ownParty.sympathetic.includes(props.polIndex) &&
       props.pol.party !== props.gs.pov) {
     if (props.pol.flipped) {
       buttons.push(

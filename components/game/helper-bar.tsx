@@ -13,8 +13,7 @@ function startMsg(props: HelperBarProps) {
     return "Click ready when you're ready for the game to start.";
   }
   if (props.gs.stage == 0) {
-    return "Choose 3 candidates to nominate. (" +
-        (props.gs.candidates.length) + "/3)";
+    return "Choose candidates to nominate.";
   }
   if (props.gs.stage == 1) {
     return "Buy ads for your own candidates and smear other candidates to " +

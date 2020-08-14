@@ -12,7 +12,6 @@ const ARABIC: number[] = [3000, 2000, 1000, 900, 800, 700, 600, 500, 400, 300,
 
 interface Pol {
   name: string,
-  id: number,
   url: string,
   party: number,
   baseSupport: number,
@@ -46,7 +45,6 @@ class ContentGenerator {
       this.deal();
     }
     const newPol = this.unused.pop();
-    newPol.id = this.made;
     this.made++;
     newPol.party = party;
     newPol.url = newPol.name.replace(' ', '-').toLowerCase();

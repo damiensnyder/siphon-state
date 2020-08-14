@@ -23,7 +23,6 @@ var ContentGenerator = /** @class */ (function () {
             this.deal();
         }
         var newPol = this.unused.pop();
-        newPol.id = this.made;
         this.made++;
         newPol.party = party;
         newPol.url = newPol.name.replace(' ', '-').toLowerCase();
