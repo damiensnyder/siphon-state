@@ -139,12 +139,13 @@ class GameState {
       this.parties[this.pols[polIndex].party].pols.push(polIndex);
     });
 
-    // Give all parties $7.5M and enough candidates to make one per province.
+    // Give all parties $7.5M and enough candidates to equal one per province.
     this.parties.forEach((party, partyIndex) => {
       if (!party.eliminated) {
         party.funds += 75;
         // Give the party with the prime minister an extra bonus.
-        if (partyIndex === this.pols[this.primeMinister].party) {
+        if (this.primeMinister != null &&
+            partyIndex === this.pols[this.primeMinister].party) {
           party.funds += 10 * this.decline;
         }
         while (party.pols.length < this.provs.length) {

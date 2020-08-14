@@ -34,3 +34,6 @@ yarn-error.log*
 
 # planning
 /design/
+
+# typescript output
+/logic/*.js

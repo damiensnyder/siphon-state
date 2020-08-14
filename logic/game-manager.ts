@@ -96,6 +96,5 @@ class GameManager {
 }
 
 module.exports = {
-  Settings: Settings,
   GameManager: GameManager
 }
