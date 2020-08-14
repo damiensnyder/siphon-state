@@ -141,13 +141,12 @@ class GamestateManager {
     this.actionQueue.payQueue.push(paymentInfo);
   }
 
-  handleRun(polIndex: number, provIndex: number): void {
-    this.gs.provs.push(polIndex);
-    this.ownParty().pols.splice(this.ownParty().pols.indexOf(polIndex), 1);
-    this.actionQueue.runQueue.push({
-      polIndex: polIndex,
-      provIndex: provIndex
-    });
+  handleRun(runInfo: {polIndex: number, provIndex: number}): void {
+    this.gs.provs[runInfo.provIndex].candidates.push(runInfo.polIndex);
+    this.ownParty().pols.splice(
+        this.ownParty().pols.indexOf(runInfo.polIndex), 1);
+    this.ownParty().funds -= 5;
+    this.actionQueue.runQueue.push(runInfo);
   }
 
   handleAd(polIndex: number): void {
@@ -218,18 +217,14 @@ class GamestateManager {
     this.gs.parties[partyIndex].paid = false;
   }
 
-  handleUndoRun(polIndex: number, provIndex: number): void {
-    this.gs.provs[provIndex].candidates.splice(
-        this.gs.provs[provIndex].candidates.indexOf(polIndex), 1);
-    
-    // Remove from run queue
-    let runIndex: number = 0;
-    this.actionQueue.runQueue.forEach((run, i) => {
-      if (run.polIndex === polIndex) {
-        runIndex = i;
-      }
-    });
-    this.actionQueue.runQueue.splice(runIndex, 1);
+  handleUndoRun(runInfo: {polIndex: number, provIndex: number}): void {
+    const candidates = this.gs.provs[runInfo.provIndex].candidates;
+    candidates.splice(candidates.indexOf(runInfo.polIndex), 1);
+    this.ownParty().pols.push(runInfo.polIndex);
+    this.ownParty().funds += 5;
+
+    this.actionQueue.runQueue.splice(
+        this.actionQueue.runQueue.indexOf(runInfo, 1));
   }
 
   handleUndoAd(polIndex: number): void {

@@ -37,16 +37,20 @@ function buttonsJsx(props) {
       .candidates.includes(props.polIndex);
   const ownParty = props.gs.parties[props.gs.pov];
   const buttons = [];
+  const runInfo = {
+    polIndex: props.polIndex,
+    provIndex: props.provIndex
+  }
 
-  // If they can be nominated, add "Nominate" button
+  // If they can be nominated, add "Run" button
   if (props.pol.party === props.gs.pov && 
       props.gs.stage === 0 &&
-      ownParty.funds >= 10 &&
+      ownParty.funds >= 5 &&
       props.gs.parties[props.gs.pov].pols.includes(props.polIndex)) {
     buttons.push(
       <button className={general.actionBtn}
-          onClick={() => props.callback('run', props.polIndex)}>
-        Nominate
+          onClick={() => props.callback('run', runInfo)}>
+        Run: $500k
       </button>
     );
   }
@@ -57,7 +61,7 @@ function buttonsJsx(props) {
       isCandidate) {
     buttons.push(
       <button className={general.actionBtn}
-          onClick={() => props.callback('unrun', props.pol)}>
+          onClick={() => props.callback('unrun', runInfo)}>
         Undo
       </button>
     );

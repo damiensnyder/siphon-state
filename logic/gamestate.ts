@@ -390,6 +390,7 @@ class GameState {
         runInfo.polIndex >= 0) {
       this.provs[runInfo.provIndex].candidates.push(
           party.pols[runInfo.polIndex]);
+      party.funds -= 5;
     }
   }
 
