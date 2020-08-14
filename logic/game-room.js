@@ -87,7 +87,7 @@ var GameRoom = /** @class */ (function () {
             this.players.splice(target, 0, viewer);
             this.gs.parties[target].connected = true;
             viewer.emitGameState(this.gs);
-            this.broadcastSystemMsg(viewer.socket, "Player '" + viewer.name + "' has been replaced.");
+            this.broadcastSystemMsg(viewer.socket, "Player '" + this.gs.parties[target].name + "' has been replaced.");
         }
     };
     GameRoom.prototype.handleReady = function (viewer, isReady) {
@@ -132,6 +132,13 @@ var GameRoom = /** @class */ (function () {
                 _this.gs.pay(playerIndex, action);
             });
         });
+        if (this.gs.stage === 1 || this.gs.stage === 2) {
+            this.players.forEach(function (player, playerIndex) {
+                player.actionQueue.hitQueue.forEach(function (action) {
+                    _this.gs.hit(playerIndex, action);
+                });
+            });
+        }
         if (this.gs.stage >= 2) {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.flipQueue.forEach(function (action) {
@@ -163,9 +170,6 @@ var GameRoom = /** @class */ (function () {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.voteQueue.forEach(function (action) {
                     _this.gs.vote(playerIndex, action);
-                });
-                player.actionQueue.hitQueue.forEach(function (action) {
-                    _this.gs.hit(playerIndex, action);
                 });
             });
         }

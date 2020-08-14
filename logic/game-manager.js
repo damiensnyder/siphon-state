@@ -1,4 +1,6 @@
+// @ts-ignore
 var GameRoom = require('./game-room');
+// @ts-ignore
 var GameManager = /** @class */ (function () {
     function GameManager(io) {
         this.io = io;
@@ -73,6 +75,5 @@ var GameManager = /** @class */ (function () {
     return GameManager;
 }());
 module.exports = {
-    Settings: this.Settings,
     GameManager: GameManager
 };

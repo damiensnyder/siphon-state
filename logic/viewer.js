@@ -1,3 +1,4 @@
+// @ts-ignore
 var Viewer = /** @class */ (function () {
     function Viewer(socket, callback) {
         var _this = this;
@@ -6,10 +7,9 @@ var Viewer = /** @class */ (function () {
         this.socket.on('join', function (partyInfo) { return _this.callback(_this, 'join', partyInfo); });
         this.socket.on('disconnect', function () { return _this.callback(_this, 'disconnect'); });
     }
-    Viewer.prototype.join = function (pov, name) {
+    Viewer.prototype.join = function (pov) {
         var _this = this;
         this.pov = pov;
-        this.name = name;
         this.socket.on('ready', function (readyInfo) { return _this.ready.bind(_this)(readyInfo); });
         this.socket.on('msg', function (msg) { return _this.callback(_this, 'msg', msg); });
         this.socket.removeAllListeners('join');
@@ -36,7 +36,6 @@ var Viewer = /** @class */ (function () {
     };
     Viewer.prototype.reset = function () {
         var _this = this;
-        delete this.name;
         delete this.pov;
         this.socket.removeAllListeners('join');
         this.socket.removeAllListeners('replace');
