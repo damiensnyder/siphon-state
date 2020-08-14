@@ -18,7 +18,6 @@ interface ActionQueue {
 // @ts-ignore
 class Viewer {
   pov: number;
-  name: string;
   callback: any;
   socket: any;
   actionQueue: ActionQueue;
@@ -32,9 +31,8 @@ class Viewer {
     this.socket.on('disconnect', () => this.callback(this, 'disconnect'));
   }
 
-  join(pov: number, name: string): void {
+  join(pov: number): void {
     this.pov = pov;
-    this.name = name;
     this.socket.on('ready', (readyInfo) => this.ready.bind(this)(readyInfo));
     this.socket.on('msg', (msg) => this.callback(this, 'msg', msg));
 
@@ -64,7 +62,6 @@ class Viewer {
   }
 
   reset(): void {
-    delete this.name;
     delete this.pov;
 
     this.socket.removeAllListeners('join');

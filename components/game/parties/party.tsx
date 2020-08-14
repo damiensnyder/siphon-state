@@ -57,16 +57,15 @@ function Party(props: PartyProps) {
     nameStyle += " " + styles.priority;
   }
 
-  const showReplace: boolean = props.gs.pov < 0 && !self.connected;
-  const showVotes: boolean = (props.gs.activeProv != undefined
-      && props.gs.activeProv.stage == 2);
+  const showReplace: boolean = props.gs.pov === undefined && !self.connected;
+  const showVotes: boolean = props.gs.stage == 2;
   const showPayment: boolean = (props.gs.started
       && !props.gs.ended
-      && props.gs.ownParty != undefined
-      && !props.gs.ownParty.ready);
+      && props.gs.pov !== undefined
+      && !props.gs.parties[props.gs.pov].ready);
   const showFunds: boolean = (props.gs.started
       && !props.gs.ended
-      && props.gs.pov == props.index);
+      && props.gs.pov === props.index);
 
   return (
     <div className={styles.playerOuter + " " +

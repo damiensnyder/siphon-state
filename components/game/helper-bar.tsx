@@ -12,11 +12,11 @@ function startMsg(props: HelperBarProps) {
   if (!props.gs.started) {
     return "Click ready when you're ready for the game to start.";
   }
-  if (props.gs.activeProv.stage == 0) {
+  if (props.gs.stage == 0) {
     return "Choose 3 candidates to nominate. (" +
-        (props.gs.activeProv.candidates.length) + "/3)";
+        (props.gs.candidates.length) + "/3)";
   }
-  if (props.gs.provs[props.gs.activeProvId].stage == 1) {
+  if (props.gs.stage == 1) {
     return "Buy ads for your own candidates and smear other candidates to " +
         "help win the race.";
   }

@@ -123,7 +123,7 @@ class GameRoom {
 
       this.broadcastSystemMsg(
         viewer.socket,
-        `Player '${viewer.name}' has been replaced.`
+        `Player '${this.gs.parties[target].name}' has been replaced.`
       );
     }
   }

@@ -29,7 +29,7 @@ function bubbleJsx(props) {
 
 function buttonsJsx(props) {
   // Return nothing if the viewer is not playing
-  if (props.gs.pov === undefined) {
+  if (props.gs.pov == undefined) {
     return null;
   }
 

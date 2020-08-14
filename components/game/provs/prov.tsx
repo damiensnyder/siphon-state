@@ -10,8 +10,8 @@ function Prov(props) {
         <div className={styles.provInner}>
           <PolCategory gs={props.gs}
               name={"Officials"}
-              isTop={true}
               callback={props.callback}
+              provIndex={props.index}
               pols={props.gs.officials} />
         </div>
       </div>
@@ -22,15 +22,16 @@ function Prov(props) {
     return (
       <div className={styles.provOuter}>
         <div className={styles.provInner}>
-          <PolCategory gs={props.gs.provs[props.index].candidates}
+          <PolCategory gs={props.gs}
               name={"Candidates"}
               callback={props.callback}
               provIndex={props.index}
-              pols={props.gs.officials} />
-          <PolCategory gs={props.gs.provs[props.index].candidates}
+              pols={props.gs.provs[props.index].candidates} />
+          <PolCategory gs={props.gs}
               name={"Available"}
               callback={props.callback}
-              pols={props.gs.parties[props.gs.pov].candidates} />
+              provIndex={props.index}
+              pols={props.gs.parties[props.gs.pov].pols} />
         </div>
       </div>
     );
@@ -39,11 +40,11 @@ function Prov(props) {
   return (
     <div className={styles.provOuter}>
       <div className={styles.provInner}>
-        <PolCategory gs={props.gs.provs[props.index].candidates}
+        <PolCategory gs={props.gs}
             name={"Candidates"}
             callback={props.callback}
             provIndex={props.index}
-            pols={props.gs.officials} />
+            pols={props.gs.provs[props.index].candidates} />
       </div>
     </div>
   );
