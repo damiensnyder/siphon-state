@@ -110,7 +110,7 @@ class GamestateManager {
   }
 
   handleReady(): void {
-    this.ownParty().ready = !this.gs.ownParty().ready;
+    this.ownParty().ready = !this.ownParty().ready;
   }
 
   handleDisconnect(): void {
