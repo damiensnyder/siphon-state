@@ -71,6 +71,7 @@ class GamestateManager {
       this.actionQueue.adQueue = [];
       this.actionQueue.smearQueue = [];
       this.actionQueue.bribeQueue = [];
+      this.actionQueue.hitQueue = [];
     } else if (gs.stage === 2) {
       this.actionQueue.voteQueue = [];
       this.actionQueue.hitQueue = [];
