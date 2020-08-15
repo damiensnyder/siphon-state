@@ -386,7 +386,7 @@ class GameState {
     let party: Party = this.parties[partyIndex];
     if (party.pols.length > 0 &&
         party.funds >= 5 &&
-        runInfo.polIndex < this.parties[partyIndex].pols.length &&
+        runInfo.polIndex < this.pols.length &&
         runInfo.polIndex >= 0) {
       this.provs[runInfo.provIndex].candidates.push(
           party.pols[runInfo.polIndex]);
