@@ -180,12 +180,12 @@ var GameState = /** @class */ (function () {
     GameState.prototype.beginVoting = function () {
         var _this = this;
         this.officials = [];
-        // All remaining candidates become officials.
+        // The leading candidate in each province becomes an official.
         this.provs.forEach(function (prov) {
             prov.candidates.sort(function (a, b) {
                 return _this.pols[b].support - _this.pols[a].support;
             });
-            for (var i = 0; i < prov.seats; i++) {
+            for (var i = 0; i < prov.seats && i < prov.candidates.length; i++) {
                 _this.officials.push(prov.candidates[i]);
             }
         });
@@ -324,6 +324,7 @@ var GameState = /** @class */ (function () {
             runInfo.polIndex < this.parties[partyIndex].pols.length &&
             runInfo.polIndex >= 0) {
             this.provs[runInfo.provIndex].candidates.push(party.pols[runInfo.polIndex]);
+            party.funds -= 5;
         }
     };
     // Buy an ad for the given politician, increasing their support.

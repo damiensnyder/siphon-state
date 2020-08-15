@@ -234,12 +234,12 @@ class GameState {
   beginVoting(): void {
     this.officials = [];
     
-    // All remaining candidates become officials.
+    // The leading candidate in each province becomes an official.
     this.provs.forEach((prov) => {
       prov.candidates.sort((a: number, b: number) => {
         return this.pols[b].support - this.pols[a].support;
       });
-      for (let i = 0; i < prov.seats; i++) {
+      for (let i = 0; i < prov.seats && i < prov.candidates.length; i++) {
         this.officials.push(prov.candidates[i]);
       }
     });
