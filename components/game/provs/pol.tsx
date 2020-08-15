@@ -28,14 +28,15 @@ function bubbleJsx(props) {
 }
 
 function buttonsJsx(props) {
+  const ownParty = props.gs.parties[props.gs.pov];
+
   // Return nothing if the viewer is not playing
-  if (props.gs.pov == undefined) {
+  if (props.gs.pov == undefined || ownParty.ready) {
     return null;
   }
 
   const isCandidate: boolean = props.gs.provs[props.provIndex]
       .candidates.includes(props.polIndex);
-  const ownParty = props.gs.parties[props.gs.pov];
   const buttons = [];
   const runInfo = {
     polIndex: props.polIndex,
@@ -73,7 +74,7 @@ function buttonsJsx(props) {
       props.gs.parties[props.gs.pov].votes > 0) {
     buttons.push(
       <button className={general.actionBtn}
-          onClick={() => props.callback('vote', props.index)}>
+          onClick={() => props.callback('vote', props.polIndex)}>
         Vote
       </button>
     );
@@ -86,7 +87,7 @@ function buttonsJsx(props) {
       props.pol.support >= 1) {
     buttons.push(
       <button className={general.actionBtn}
-          onClick={() => props.callback('unvote', props.index)}>
+          onClick={() => props.callback('unvote', props.polIndex)}>
         Undo
       </button>
     );
@@ -98,14 +99,14 @@ function buttonsJsx(props) {
         if (props.pol.hasOwnProperty('adsBought')) {
           buttons.push(
             <button className={general.actionBtn}
-                onClick={() => props.callback('ad', props.index)}>
+                onClick={() => props.callback('ad', props.polIndex)}>
               Buy ad
             </button>
           );
         } else {
           buttons.push(
             <button className={general.actionBtn}
-                onClick={() => props.callback('ad', props.index)}>
+                onClick={() => props.callback('ad', props.polIndex)}>
               Buy ad: {formatMoneyString(3 + props.gs.rounds)}
             </button>
           );
@@ -114,7 +115,7 @@ function buttonsJsx(props) {
       if (props.pol.adsBought > 0) {
         buttons.push(
           <button className={general.actionBtn}
-              onClick={() => props.callback('unad', props.index)}>
+              onClick={() => props.callback('unad', props.polIndex)}>
             Undo
           </button>
         );
@@ -213,19 +214,18 @@ function buttonsJsx(props) {
 }
 
 function nameStyle(props) {
-  let nameStyle = styles.name;
-  if (props.pol.party == props.gs.pov) {
+  let nameStyle: string = styles.name;
+  const ownParty = props.gs.parties[props.gs.pov];
+
+  if (props.pol.party === props.gs.pov) {
     nameStyle += " " + styles.ownPol;
-  } else if (props.gs.pov !== undefined) {
-    for (let i = 0; i < props.gs.ownParty.bribed.length; i++) {
-      if (props.gs.ownParty.bribed[i].id == props.pol.id) {
-        nameStyle += " " + styles.bribed;
-      }
+  } else if (ownParty != undefined && ownParty.bribed != undefined) {
+    if (ownParty.bribed.includes(props.polIndex)) {
+      nameStyle += " " + styles.bribed;
     }
-    if (props.gs.ownParty.symps.length > 0 && 
-        props.gs.ownParty.symps[0].id == props.pol.id && 
-        !props.gs.ownParty.symps[0].flipped) {
-      nameStyle += " " + styles.symp;
+    if (ownParty.sympathetic.includes(props.polIndex) &&
+        !props.pol.flipped) {
+      nameStyle += " " + styles.sympathetic;
     }
   }
 
@@ -234,6 +234,7 @@ function nameStyle(props) {
 
 function Pol(props) {
   const imageUrl: string = "url('/politicians/" + props.pol.url + ".png')";
+  const polParty = props.gs.parties[props.pol.party];
 
   return (
     <div className={styles.polWrapper}>
@@ -243,14 +244,14 @@ function Pol(props) {
         <div className={styles.spacer} />
         <span className={styles.partyAbbr + ' ' +
             (props.pol.party == props.gs.pov ? styles.ownPol : '')}>
-          {props.gs.parties[props.pol.party].abbr}
+          {polParty.abbr}
         </span>
         <span className={nameStyle(props)}>
           {props.pol.name}
         </span>
         {bubbleJsx(props)}
       </div>
-      {props.gs.parties[props.gs.pov].ready ? null : buttonsJsx(props)}
+      {buttonsJsx(props)}
     </div>
   );
 }
