@@ -173,7 +173,7 @@ class GameState {
     const countSoFar: number[] = Array(this.parties.length).fill(0);
     this.provs.forEach((prov) => {
       prov.candidates.forEach((polIndex) => {
-        const pol = this.pols[polIndex];
+        const pol: Pol = this.pols[polIndex];
         const partyIndex: number = pol.party;
         const priority = (partyIndex - this.priority) % this.parties.length;
         let supportBonus = (countSoFar[partyIndex] * this.parties.length +
@@ -388,8 +388,7 @@ class GameState {
         party.funds >= 5 &&
         runInfo.polIndex < this.pols.length &&
         runInfo.polIndex >= 0) {
-      this.provs[runInfo.provIndex].candidates.push(
-          party.pols[runInfo.polIndex]);
+      this.provs[runInfo.provIndex].candidates.push(runInfo.polIndex);
       party.funds -= 5;
     }
   }

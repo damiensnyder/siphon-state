@@ -47,7 +47,7 @@ function buttonsJsx(props) {
   if (props.pol.party === props.gs.pov && 
       props.gs.stage === 0 &&
       ownParty.funds >= 5 &&
-      props.gs.parties[props.gs.pov].pols.includes(props.polIndex)) {
+      ownParty.pols.includes(props.polIndex)) {
     buttons.push(
       <button className={general.actionBtn}
           onClick={() => props.callback('run', runInfo)}>
