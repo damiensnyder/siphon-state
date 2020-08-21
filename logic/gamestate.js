@@ -74,11 +74,14 @@ var GameState = /** @class */ (function () {
     // province.
     GameState.prototype.beginNomination = function () {
         var _this = this;
-        // Advance to the next province.
+        // Increase decline and give priority to the prime minister's party (if
+        // there is one) or party after the last party to have priority.
         if (this.primeMinister !== null) {
             this.priority = this.pols[this.primeMinister].party;
         }
-        this.priority = (this.priority + 1) % this.parties.length;
+        else {
+            this.priority = (this.priority + 1) % this.parties.length;
+        }
         this.stage = 0;
         this.decline += 1;
         // Reset all parties' candidates.
@@ -268,14 +271,9 @@ var GameState = /** @class */ (function () {
         this.stage = 3;
     };
     GameState.prototype.checkIfGameWon = function () {
-        for (var i = 0; i < this.provs.length; i++) {
-            if (this.primeMinister !== null) {
-                var primeMinisterParty = this.pols[this.primeMinister].party;
-                this.parties[primeMinisterParty].funds += 10 * this.parties.length;
-                if (this.suspender === primeMinisterParty) {
-                    this.ended = true;
-                }
-            }
+        if (this.primeMinister !== null
+            && this.suspender === this.pols[this.primeMinister].party) {
+            this.ended = true;
         }
         // If someone suspended the constitution and failed, they lose the game.
         if (!this.ended && this.suspender !== null) {

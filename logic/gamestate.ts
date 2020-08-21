@@ -117,11 +117,13 @@ class GameState {
   // Advance to the next province and begin the nomination stage in the new
   // province.
   beginNomination(): void {
-    // Advance to the next province.
+    // Increase decline and give priority to the prime minister's party (if
+    // there is one) or party after the last party to have priority.
     if (this.primeMinister !== null) {
       this.priority = this.pols[this.primeMinister].party;
+    } else {
+      this.priority = (this.priority + 1) % this.parties.length;
     }
-    this.priority = (this.priority + 1) % this.parties.length;
     this.stage = 0;
     this.decline += 1;
 
@@ -173,7 +175,7 @@ class GameState {
     const countSoFar: number[] = Array(this.parties.length).fill(0);
     this.provs.forEach((prov) => {
       prov.candidates.forEach((polIndex) => {
-        const pol: Pol = this.pols[polIndex];
+        const pol = this.pols[polIndex];
         const partyIndex: number = pol.party;
         const priority = (partyIndex - this.priority) % this.parties.length;
         let supportBonus = (countSoFar[partyIndex] * this.parties.length +
@@ -324,15 +326,9 @@ class GameState {
   }
 
   checkIfGameWon(): void {
-    for (let i = 0; i < this.provs.length; i++) {
-      if (this.primeMinister !== null) {
-        let primeMinisterParty: number = this.pols[this.primeMinister].party;
-        this.parties[primeMinisterParty].funds += 10 * this.parties.length;
-  
-        if (this.suspender === primeMinisterParty) {
-          this.ended = true;
-        }
-      }
+    if (this.primeMinister !== null
+        && this.suspender === this.pols[this.primeMinister].party) {
+      this.ended = true;
     }
     
     // If someone suspended the constitution and failed, they lose the game.
