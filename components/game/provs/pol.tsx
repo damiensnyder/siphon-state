@@ -172,6 +172,39 @@ function buttonsJsx(props) {
     }
   }
 
+  // If no hit has been used and the user can afford it, and the decline is
+  // sufficient, add an "Order hit" button.
+  const hitCost = props.gs.stage == 2 ? 50 : 25;
+  if (!ownParty.usedHit &&
+      ownParty.funds >= hitCost &&
+      props.gs.decline >= 3) {
+    if (props.pol.hasOwnProperty('hitOrdered')) {
+      buttons.push(
+        <button className={general.actionBtn}
+            onClick={() => props.callback('hit', props.polIndex)}>
+          Order hit
+        </button>
+      );
+    } else {
+      buttons.push(
+        <button className={general.actionBtn}
+            onClick={() => props.callback('hit', props.polIndex)}>
+          Order hit: {formatMoneyString(hitCost)}
+        </button>
+      );
+    }
+  }
+
+  // If a hit has been ordered on the politician, add an "Undo" button.
+  if (props.pol.hitOrdered) {
+    buttons.push(
+      <button className={general.actionBtn}
+          onClick={() => props.callback('unhit')}>
+        Undo
+      </button>
+    );
+  }
+
   // If they are sympathetic, add a "Bribe" or "Undo" button depending on
   // whether they've been flipped.
   if (ownParty.sympathetic != undefined &&
@@ -180,7 +213,7 @@ function buttonsJsx(props) {
     if (props.pol.flipped) {
       buttons.push(
         <button className={general.actionBtn}
-            onClick={() => props.callback('unbribe')}>
+            onClick={() => props.callback('unbribe', props.polIndex)}>
           Undo
         </button>
       );
@@ -188,14 +221,14 @@ function buttonsJsx(props) {
       if (props.pol.hasOwnProperty('flipped')) {
         buttons.push(
           <button className={general.actionBtn}
-              onClick={() => props.callback('bribe')}>
+              onClick={() => props.callback('bribe', props.polIndex)}>
             Bribe
           </button>
         );
       } else {
         buttons.push(
           <button className={general.actionBtn}
-              onClick={() => props.callback('bribe')}>
+              onClick={() => props.callback('bribe', props.polIndex)}>
             Bribe: {formatMoneyString(10 * (2 + props.gs.rounds))}
           </button>
         );

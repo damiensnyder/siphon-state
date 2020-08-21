@@ -7,7 +7,7 @@
   "author": "Damien Snyder <damiensnyder@damiensnyder.com>",
   "scripts": {
     "build": "next build",
-    "test": "node test.js -p $PORT",
+    "test": "tsc logic/*.ts && node test.js -p $PORT",
     "start": "node app.js -p $PORT",
     "build-ts": "tsc",
     "watch-ts": "tsc -w"

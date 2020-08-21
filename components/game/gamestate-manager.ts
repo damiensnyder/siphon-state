@@ -39,6 +39,7 @@ class GamestateManager {
       'run': this.handleRun,
       'ad': this.handleAd,
       'smear': this.handleSmear,
+      'hit': this.handleHit,
       'bribe': this.handleBribe,
       'vote': this.handleVote,
       'unflip': this.handleUndoFlip,
@@ -46,6 +47,7 @@ class GamestateManager {
       'unrun': this.handleUndoRun,
       'unad': this.handleUndoAd,
       'unsmear': this.handleUndoSmear,
+      'unhit': this.handleUndoHit,
       'unbribe': this.handleUndoBribe,
       'unvote': this.handleUndoVote,
       'newreplace': this.handleNewReplace,
@@ -170,6 +172,13 @@ class GamestateManager {
     this.actionQueue.smearQueue.push(polIndex);
   }
 
+  handleHit(polIndex: number): void {
+    this.ownParty().funds -= (this.gs.stage >= 2) ? 50 : 25;
+    this.ownParty().usedHit = true;
+    this.gs.pols[polIndex].hitOrdered = true;
+    this.actionQueue.hitQueue.push(polIndex);
+  }
+
   handleBribe(polIndex: number): void {
     this.ownParty().funds -= 10 * (2 + this.gs.rounds);
     this.gs.pols[polIndex].flipped = true;
@@ -242,6 +251,13 @@ class GamestateManager {
     this.gs.pols[polIndex].support++;
     this.actionQueue.smearQueue.splice(
         this.actionQueue.smearQueue.indexOf(polIndex), 1);
+  }
+
+  handleUndoHit(): void {
+    this.ownParty().funds += (this.gs.stage == 2) ? 50 : 25;
+    this.ownParty().usedHit = false;
+    this.gs.pols[this.actionQueue.hitQueue[0]].hitOrdered = false;
+    this.actionQueue.hitQueue = [];
   }
 
   handleUndoBribe(polIndex: number): void {
