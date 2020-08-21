@@ -81,8 +81,7 @@ function buttonsJsx(props) {
   }
 
   // If they have votes, add "Undo" button
-  if (props.pol.party === props.gs.pov && 
-      props.gs.stage === 2 &&
+  if (props.gs.stage === 2 &&
       props.gs.officials.includes(props.polIndex) &&
       props.pol.support >= 1) {
     buttons.push(

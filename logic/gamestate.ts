@@ -145,7 +145,7 @@ class GameState {
         // Give the party with the prime minister an extra bonus.
         if (this.primeMinister != null &&
             partyIndex === this.pols[this.primeMinister].party) {
-          party.funds += 5 * this.decline * this.parties.length;
+          party.funds += 10 + 5 * this.decline * this.parties.length;
         }
         while (party.pols.length < this.provs.length) {
           this.pols.push(this.contentGenerator.newPol(partyIndex));
