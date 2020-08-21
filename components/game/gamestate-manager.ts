@@ -177,7 +177,7 @@ class GamestateManager {
   }
 
   handleVote(polIndex: number): void {
-    this.gs.pols[polIndex].votes++;
+    this.gs.pols[polIndex].support++;
     this.ownParty().votes--;
     this.actionQueue.voteQueue.push(polIndex);
   }
@@ -252,7 +252,7 @@ class GamestateManager {
   }
 
   handleUndoVote(polIndex: number): void {
-    this.gs.pols[polIndex].votes--;
+    this.gs.pols[polIndex].support--;
     this.ownParty().votes++;
     this.actionQueue.voteQueue.splice(
         this.actionQueue.voteQueue.indexOf(polIndex), 1);

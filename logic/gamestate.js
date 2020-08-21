@@ -94,9 +94,6 @@ var GameState = /** @class */ (function () {
             });
             prov.candidates = [];
         });
-        this.officials.forEach(function (polIndex) {
-            _this.parties[_this.pols[polIndex].party].pols.push(polIndex);
-        });
         // Give all parties $7.5M and enough candidates to equal one per province.
         this.parties.forEach(function (party, partyIndex) {
             if (!party.eliminated) {
@@ -104,7 +101,7 @@ var GameState = /** @class */ (function () {
                 // Give the party with the prime minister an extra bonus.
                 if (_this.primeMinister != null &&
                     partyIndex === _this.pols[_this.primeMinister].party) {
-                    party.funds += 10 * _this.decline;
+                    party.funds += 5 * _this.decline * _this.parties.length;
                 }
                 while (party.pols.length < _this.provs.length) {
                     _this.pols.push(_this.contentGenerator.newPol(partyIndex));
@@ -255,12 +252,13 @@ var GameState = /** @class */ (function () {
                     }
                 }
                 this.primeMinister = maxPol;
+                this.beginDistribution();
             }
         }
         else {
             this.primeMinister = maxPolIndices[0];
+            this.beginDistribution();
         }
-        this.beginDistribution();
     };
     /*
     ============
