@@ -30,12 +30,11 @@ function helperMsg(props: HelperBarProps): string {
   }
   if (props.gs.stage == 3) {
     let suspenderMsg = "";
-    if (props.gs.decline >= 0) {
+    if (props.gs.decline >= 3) {
       suspenderMsg = " If the prime minister's party also wins the next " +
           "election, they win the game. Otherwise, they lose the game.";
     }
-    const primeMinisterPayout = 1 +
-        props.gs.parties.length * props.gs.decline / 2;
+    const primeMinisterPayout = props.gs.parties.length * props.gs.decline / 2;
     return "At the end of this stage, the prime minister's party will " +
         "receive $" + primeMinisterPayout + " and all other parties will " +
         "receive $7.5M." + suspenderMsg;
