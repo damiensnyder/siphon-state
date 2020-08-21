@@ -42,6 +42,7 @@ function paymentJsx(props: PartyProps) {
     return (
       <Payment index={props.index}
           gs={props.gs}
+          ownParty={props.gs.parties[props.gs.pov]}
           callback={props.callback} />
     );
   }
@@ -59,13 +60,13 @@ function Party(props: PartyProps) {
 
   const showReplace: boolean = props.gs.pov === undefined && !self.connected;
   const showVotes: boolean = props.gs.stage == 2;
-  const showPayment: boolean = (props.gs.started
-      && !props.gs.ended
-      && props.gs.pov !== undefined
-      && !props.gs.parties[props.gs.pov].ready);
-  const showFunds: boolean = (props.gs.started
-      && !props.gs.ended
-      && props.gs.pov === props.index);
+  const showPayment: boolean = props.gs.started &&
+      !props.gs.ended &&
+      props.gs.pov !== undefined &&
+      !props.gs.parties[props.gs.pov].ready;
+  const showFunds: boolean = props.gs.started &&
+      !props.gs.ended &&
+      props.gs.pov === props.index;
 
   return (
     <div className={styles.playerOuter + " " +

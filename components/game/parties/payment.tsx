@@ -5,6 +5,7 @@ import styles from "./parties.module.css";
 
 interface PaymentProps {
   gs: any,
+  ownParty: any,
   callback: any,
   index: number
 }
@@ -26,7 +27,7 @@ class Payment extends React.Component {
   }
 
   payButtonJsx() {
-    if (this.state.amount > this.props.gs.ownParty.funds
+    if (this.state.amount > this.props.ownParty.funds
         || this.state.amount == 0) {
       return <span className={styles.spaced}>Pay:</span>;
     }
@@ -52,7 +53,7 @@ class Payment extends React.Component {
     const label = value > 0 ? "+" : "-";
 
     if (this.state.amount + value < 0
-        || this.state.amount + value > this.props.gs.ownParty.funds) {
+        || this.state.amount + value > this.props.ownParty.funds) {
       return (
         <button className={general.actionBtn + ' ' +
             styles.incrementBtn + ' ' +
@@ -102,8 +103,8 @@ class Payment extends React.Component {
 
     if (!this.props.gs.started
         || this.props.gs.ended
-        || this.props.gs.ownParty == undefined
-        || this.props.gs.ownParty.funds == 0) {
+        || this.props.ownParty == undefined
+        || this.props.ownParty.funds == 0) {
       return null;
     }
 

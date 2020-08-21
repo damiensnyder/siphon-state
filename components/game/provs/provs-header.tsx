@@ -28,7 +28,7 @@ function tabsToJsx(props) {
 function ProvsHeader(props) {
   if (!props.gs.started ||
       props.gs.stage >= 2) {
-    return <div className={styles.outerHeader} />;
+    return null;
   }
 
   return (
