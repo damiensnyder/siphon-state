@@ -467,7 +467,7 @@ class GameState {
   // Assign one vote from the given party to the given politician.
   vote(partyIndex: number, polIndex: number): void {
     if (this.parties[partyIndex].votes > 0 &&
-        polIndex < this.officials.length &&
+        polIndex < this.pols.length &&
         polIndex >= 0 &&
         this.stage === 2) {
       this.pols[polIndex].support += 1;

@@ -222,6 +222,7 @@ var GameState = /** @class */ (function () {
         var maxVotes = -1;
         var maxPolIndices = [];
         this.officials.forEach(function (polIndex) {
+            // console.log(this.pols[polIndex]);
             if (_this.pols[polIndex].support > maxVotes) {
                 maxPolIndices = [polIndex];
                 maxVotes = _this.pols[polIndex].support;
@@ -395,8 +396,9 @@ var GameState = /** @class */ (function () {
     };
     // Assign one vote from the given party to the given politician.
     GameState.prototype.vote = function (partyIndex, polIndex) {
+        // console.log(`party ${partyIndex} pol ${polIndex}`)
         if (this.parties[partyIndex].votes > 0 &&
-            polIndex < this.officials.length &&
+            polIndex < this.pols.length &&
             polIndex >= 0 &&
             this.stage === 2) {
             this.pols[polIndex].support += 1;
