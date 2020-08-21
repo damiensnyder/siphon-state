@@ -11,7 +11,7 @@ var GameState = /** @class */ (function () {
         this.turn = -1;
         this.rounds = 0;
         this.stage = 0;
-        this.decline = -1;
+        this.decline = 0;
         this.contentGenerator = new Generator.ContentGenerator(settings.nation);
         this.pols = [];
         this.parties = [];
@@ -83,7 +83,6 @@ var GameState = /** @class */ (function () {
             this.priority = (this.priority + 1) % this.parties.length;
         }
         this.stage = 0;
-        this.decline += 1;
         // Reset all parties' candidates.
         this.parties.forEach(function (party) {
             party.pols = [];
@@ -222,7 +221,6 @@ var GameState = /** @class */ (function () {
         var maxVotes = -1;
         var maxPolIndices = [];
         this.officials.forEach(function (polIndex) {
-            // console.log(this.pols[polIndex]);
             if (_this.pols[polIndex].support > maxVotes) {
                 maxPolIndices = [polIndex];
                 maxVotes = _this.pols[polIndex].support;
@@ -270,8 +268,8 @@ var GameState = /** @class */ (function () {
         this.stage = 3;
     };
     GameState.prototype.checkIfGameWon = function () {
-        if (this.primeMinister !== null
-            && this.suspender === this.pols[this.primeMinister].party) {
+        if (this.primeMinister !== null &&
+            this.suspender === this.pols[this.primeMinister].party) {
             this.ended = true;
         }
         // If someone suspended the constitution and failed, they lose the game.
@@ -290,7 +288,9 @@ var GameState = /** @class */ (function () {
                 this.ended = true;
             }
         }
-        if (this.decline >= 3) {
+        // Advance decline and set suspender after 4 rounds of decline
+        this.decline += 1;
+        if (this.decline >= 4) {
             this.suspender = this.pols[this.primeMinister].party;
         }
         // If there was no winner, advance to the next prov and begin nomination.
@@ -396,7 +396,6 @@ var GameState = /** @class */ (function () {
     };
     // Assign one vote from the given party to the given politician.
     GameState.prototype.vote = function (partyIndex, polIndex) {
-        // console.log(`party ${partyIndex} pol ${polIndex}`)
         if (this.parties[partyIndex].votes > 0 &&
             polIndex < this.pols.length &&
             polIndex >= 0 &&

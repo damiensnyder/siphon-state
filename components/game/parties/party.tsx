@@ -12,7 +12,7 @@ interface PartyProps {
 
 function ownFundsJsx(amount: number) {
   return (
-    <span className={styles.info}>
+    <span className={styles.funds}>
       Funds: {"$" + (amount * 100000).toLocaleString()}
     </span>
   );
@@ -20,7 +20,7 @@ function ownFundsJsx(amount: number) {
 
 function votesJsx(votes: number) {
   return (
-    <span className={styles.info}>
+    <span className={styles.funds}>
       Votes: {votes}
     </span>
   );
@@ -28,7 +28,7 @@ function votesJsx(votes: number) {
 
 function replaceBtnJsx(props: PartyProps) {
   return (
-    <div className={styles.info}>
+    <div className={styles.funds}>
       <button className={general.actionBtn}
           onClick={() => props.callback('replace', props.index)}>
         Replace
@@ -51,7 +51,7 @@ function paymentJsx(props: PartyProps) {
 
 function Party(props: PartyProps) {
   const self = props.gs.parties[props.index];
-  let nameStyle: string = styles.nameAndAbbr;
+  let nameStyle: string = styles.partyInfo;
   if (props.gs.pov == props.index) {
     nameStyle += " " + styles.ownParty;
   } else if (props.gs.priority == props.index) {
@@ -69,18 +69,20 @@ function Party(props: PartyProps) {
       props.gs.pov === props.index;
 
   return (
-    <div className={styles.playerOuter + " " +
+    <div className={styles.partyOuter + " " +
         (self.ready ? styles.ready : "")}>
       <div className={nameStyle}>
-        <span className={styles.name}>
+        <span className={styles.partyName}>
           {self.name}
         </span>
-        <span className={styles.abbr}>
-          {self.abbr}
-        </span>
+        <div className={styles.abbrAndVotes}>
+          <span className={styles.partyAbbr}>{self.abbr}</span>
+          <span className={styles.votes}>
+            {showVotes ? votesJsx(self.votes) : null}
+          </span>
+        </div>
       </div>
       {showReplace ? replaceBtnJsx(props) : null}
-      {showVotes ? votesJsx(self.votes) : null}
       {showPayment ? paymentJsx(props) : null}
       {showFunds ? ownFundsJsx(self.funds) : null}
     </div>

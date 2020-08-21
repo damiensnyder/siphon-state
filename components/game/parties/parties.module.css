@@ -8,7 +8,7 @@
   align-items: stretch;
 }
 
-.playerOuter {
+.partyOuter {
   margin-bottom: 16px;
 
   display: flex;
@@ -21,20 +21,59 @@
   background-color: #555;
 }
 
-.nameAndAbbr {
+.partyInfo {
+  flex-grow: 1;
+
   display: flex;
   flex-flow: column;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: stretch;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.info {
+.partyName {
+  min-width: 0;
+  margin-bottom: 4px;
+
+  font-size: 24px;
+  font-weight: 600;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.abbrAndVotes {
+  flex-grow: 1;
+  max-width: 200px;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.partyAbbr {
+  font-size: 16px;
+}
+
+.votes {
+  color: #ccc;
+}
+
+.funds {
   flex-grow: 0;
+  margin-left: 8px;
 
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
+
+  white-space: nowrap;
 }
 
 .paymentOuter {
@@ -68,7 +107,7 @@
   justify-content: center;
   align-items: center;
 
-  font-weight: default;
+  font-weight: 700;
 }
 
 .inactiveBtn {
@@ -83,17 +122,6 @@
 
 .inactiveBtn:active {
   color: inherit;
-}
-
-.name {
-  margin-bottom: 4px;
-
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.abbr {
-  font-size: 16px;
 }
 
 .ownParty {

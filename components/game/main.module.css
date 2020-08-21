@@ -15,8 +15,8 @@
 }
 
 #sidebar {
-  flex-basis: 0;
-  flex-grow: 1;
+  width: calc((100% - 48px) * 0.3);
+  min-width: 150px;
   margin: 16px;
   margin-right: 0;
 
@@ -27,8 +27,8 @@
 }
 
 #gamePane {
-  flex-basis: 0;
-  flex-grow: 2;
+  width: calc((100% - 48px) * 0.7);
+  min-width: 350px;
   margin: 16px;
 
   display: flex;

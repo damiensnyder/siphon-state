@@ -219,12 +219,12 @@ class GamestateManager {
         paymentIndex = i;
       }
     });
-    this.actionQueue.payQueue.splice(paymentIndex, 1);
     
     this.ownParty().funds += this.actionQueue.payQueue[paymentIndex].amount;
     this.gs.parties[partyIndex].funds -=
         this.actionQueue.payQueue[paymentIndex].amount;
     this.gs.parties[partyIndex].paid = false;
+    this.actionQueue.payQueue.splice(paymentIndex, 1);
   }
 
   handleUndoRun(runInfo: {polIndex: number, provIndex: number}): void {
