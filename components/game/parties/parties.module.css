@@ -22,7 +22,8 @@
 }
 
 #gameName {
-  margin: 0 4px 24px 4px;
+  font-size: 32px;
+  margin: -2px 4px 20px 4px;
 
   white-space: nowrap;
   overflow: hidden;

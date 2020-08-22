@@ -19,9 +19,9 @@ function partiesToJsx(gs, callback) {
 function PartiesView(props) {
   return (
     <div id={styles.partiesWrapper}>
-      <h1 id={styles.gameName}>
-        {props.gs.settings.name}
-      </h1>
+      <h2 id={styles.gameName}>
+        {props.gs.settings ? props.gs.settings.name : null}
+      </h2>
       {partiesToJsx(props.gs, props.callback)}
     </div>
   );

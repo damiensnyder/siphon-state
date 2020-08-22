@@ -1,5 +1,6 @@
 // @ts-ignore
 var GameRoom = require('./game-room');
+var ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 // @ts-ignore
 var GameManager = /** @class */ (function () {
     function GameManager(io) {
@@ -11,41 +12,30 @@ var GameManager = /** @class */ (function () {
     GameManager.prototype.callback = function (game) {
         delete this.activeGames[game.settings.gameCode];
     };
+    // Create a game and send the game code along with status 200.
     GameManager.prototype.createGame = function (req, res) {
-        var userSettings = req.body.settings;
         var gameCode = this.generateGameCode();
-        var settings = {
-            name: userSettings.name,
-            gameCode: gameCode,
-            private: userSettings.private,
-            nation: userSettings.nation
-        };
-        // Send error code 400 if the game code is already in use or is invalid.
-        // Otherwise, create a game at that game code and send status code 200.
-        if (settings.name.length < 1) {
-            res.status = 400;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ errMsg: "Name must not be empty." }));
+        var settings = req.body.settings;
+        settings.gameCode = gameCode;
+        if (settings.name.length === 0) {
+            settings.name = "My Game";
         }
-        else {
-            this.activeGames[gameCode] = new GameRoom(this.io, settings, this.callback.bind(this));
-            res.status = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ gameCode: gameCode }));
-        }
+        this.activeGames[gameCode] = new GameRoom(this.io, settings, this.callback.bind(this));
+        res.status = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ gameCode: gameCode }));
     };
     GameManager.prototype.addTestGame = function (gameRoom) {
         this.activeGames[gameRoom.settings.gameCode] = gameRoom;
     };
     GameManager.prototype.generateGameCode = function () {
-        var chars = "abcdefghijklmnopqrstuvwxyz";
-        var numChars = chars.length;
+        var numChars = ALPHABET.length;
         var gameCodeLength = Math.ceil(Math.log(Object.keys(this.activeGames).length + 2) / Math.log(26)) + 1;
         var gameCode = "";
         while (gameCode == "" || this.activeGames.hasOwnProperty(gameCode)) {
             gameCode = "";
             for (var i = 0; i < gameCodeLength; i++) {
-                gameCode += chars.charAt(Math.floor(Math.random() * numChars));
+                gameCode += ALPHABET.charAt(Math.floor(Math.random() * numChars));
             }
         }
         return gameCode;
@@ -55,7 +45,7 @@ var GameManager = /** @class */ (function () {
         for (var _i = 0, _a = Object.entries(this.activeGames); _i < _a.length; _i++) {
             var _b = _a[_i], gameCode = _b[0], game = _b[1];
             // @ts-ignore
-            if (!game.settings.hidden) {
+            if (!game.settings.private) {
                 // @ts-ignore
                 foundGames.push(game.joinInfo());
             }

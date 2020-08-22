@@ -4,14 +4,14 @@ import general from "./general.module.css";
 
 function CheckboxInput(props): React.ReactElement {
   const checkHandler = (e): void => {
-    props.checkCallback(e.target.value);
+    props.checkCallback(e.target.checked);
   };
 
   return (
     <div className={general.spacer}>
       {props.label}
       <input type={'checkbox'}
-          value={props.checked}
+          checked={props.checked}
           onChange={checkHandler} />
     </div>
   );

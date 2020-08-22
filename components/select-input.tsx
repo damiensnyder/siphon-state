@@ -18,6 +18,7 @@ function SelectInput(props): React.ReactElement {
       <div className={general.horizWrapper + ' ' + general.spacer}>
         {props.label}
         <select className={general.settingsInput}
+            key={props.selected}
             value={props.selected}
             onChange={selectHandler}>
           {optionsJsx(props.options)}
