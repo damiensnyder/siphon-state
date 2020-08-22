@@ -31,3 +31,11 @@ button {
   border: none;
   cursor: pointer;
 }
+
+select {
+  font: inherit;
+  border: none;
+  border-radius: 6px;
+  background-color: #333;
+  color: #ccc;
+}

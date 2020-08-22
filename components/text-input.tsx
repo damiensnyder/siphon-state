@@ -15,7 +15,7 @@ function TextInput(props): React.ReactElement {
 
   return (
     <div className={general.horizWrapper}>
-      <div className={general.spacer + ' ' + general.growable}>
+      <div className={general.spacer + " " + general.growable}>
         <div className={general.settingTextWrapper}>
           <div className={general.horizWrapper}>
             {props.label}

@@ -4,6 +4,12 @@ import Router from 'next/router';
 import TextInput from '../text-input';
 import general from '../general.module.css';
 import styles from './main.module.css';
+import SelectInput from "../select-input";
+
+const NATIONS: string[] = [
+  "Kallavur",
+  "Anbridge"
+];
 
 class CreateMenu extends React.Component {
   state: {
@@ -28,6 +34,14 @@ class CreateMenu extends React.Component {
     this.setState({
       name: text
     });
+  }
+
+  nationCallback(option: string): void {
+
+  }
+
+  privateCallback(isPrivate: boolean): void {
+
   }
 
   async createGame() {
@@ -55,13 +69,17 @@ class CreateMenu extends React.Component {
       <div className={styles.menuOuter}>
         <h2>Create Game</h2>
         <TextInput label={"Name:"}
-                   maxLength={40}
-                   text={this.state.name}
-                   textCallback={this.nameCallback.bind(this)}
-                   submitCallback={this.createGame.bind(this)} />
+            maxLength={40}
+            text={this.state.name}
+            textCallback={this.nameCallback.bind(this)}
+            submitCallback={this.createGame.bind(this)} />
+        <SelectInput label={"Nation:"}
+            options={NATIONS}
+            selected={NATIONS[0]}
+            selectCallback={this.nationCallback.bind(this)} />
         <div className={general.spacer}>
-          <button className={general.actionBtn + ' ' + general.priorityBtn}
-                  onClick={this.createGame.bind(this)}>
+          <button className={general.actionBtn + " " + general.priorityBtn}
+              onClick={this.createGame.bind(this)}>
             Create
           </button>
         </div>
