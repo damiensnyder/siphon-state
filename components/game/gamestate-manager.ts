@@ -198,18 +198,18 @@ class GamestateManager {
     // If they were an official, give a vote back to their old party, and if
     // the player's own party has voted with the unflipped politician, take
     // back the last vote.
-    if (this.gs.officials.includes(flipInfo.polIndex) && 
-        this.gs.stage === 2) {
+    if (this.gs.stage === 2) {
       this.ownParty().votes--;
       this.gs.parties[this.gs.pols[flipInfo.polIndex].oldParty].votes++;
-      if (this.actionQueue.voteQueue.length > this.ownParty().votes) {
-        this.actionQueue.voteQueue.splice(
-            this.actionQueue.voteQueue.length - 1, 1);
+      if (this.ownParty().votes < 0) {
+        const lastVote = this.actionQueue.voteQueue.pop();
+        this.gs.pols[lastVote].support--;
+        this.ownParty().votes++;
       }
     }
 
     this.actionQueue.flipQueue.splice(
-        this.actionQueue.flipQueue.indexOf[flipInfo.index], 1);
+        this.actionQueue.flipQueue.indexOf[flipInfo.polIndex], 1);
   }
 
   handleUndoPay(partyIndex: number): void {

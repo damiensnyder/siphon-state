@@ -54,6 +54,8 @@ function Party(props: PartyProps) {
   let nameStyle: string = styles.partyInfo;
   if (props.gs.pov == props.index) {
     nameStyle += " " + styles.ownParty;
+  } else if (props.gs.suspender === props.index) {
+    nameStyle += " " + styles.suspender;
   } else if (props.gs.priority == props.index) {
     nameStyle += " " + styles.priority;
   }

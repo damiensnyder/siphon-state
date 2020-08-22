@@ -12,6 +12,10 @@ function helperMsg(props: HelperBarProps): string {
   if (!props.gs.started) {
     return "Click ready when you're ready for the game to start.";
   }
+  if (props.gs.ended) {
+    return "" + props.gs.parties[props.gs.suspender].name + " wins! Click " +
+        "rematch when you're ready to play again.";
+  }
   if (props.gs.stage == 0) {
     return "Choose candidates to nominate in each province.";
   }
