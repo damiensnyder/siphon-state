@@ -148,19 +148,17 @@ class GameView extends React.Component {
   }
 
   rightPanelJsx(): React.ReactNode | void {
-    if (this.state.gs.started && !this.state.gs.ended) {
+    if (this.state.gs.started) {
       return (
         <ProvsView gs={this.state.gs}
             callback={this.callback} />
       );
-    } else if (!this.state.gs.started) {
-      return (
-        <PregameView joined={this.state.gs.pov >= 0}
-            callback={this.callback}
-            gameCode={this.props.gameCode} />
-      );
     }
-    return null;
+    return (
+      <PregameView joined={this.state.gs.pov >= 0}
+          callback={this.callback}
+          gameCode={this.props.gameCode} />
+    );
   }
 
   helperBarJsx(): React.ReactNode | void {
