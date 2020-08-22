@@ -34,8 +34,8 @@ var GameManager = /** @class */ (function () {
             res.end(JSON.stringify({ gameCode: gameCode }));
         }
     };
-    GameManager.prototype.addTestGame = function (gameCode, gameRoom) {
-        this.activeGames[gameCode] = gameRoom;
+    GameManager.prototype.addTestGame = function (gameRoom) {
+        this.activeGames[gameRoom.settings.gameCode] = gameRoom;
     };
     GameManager.prototype.generateGameCode = function () {
         var chars = "abcdefghijklmnopqrstuvwxyz";

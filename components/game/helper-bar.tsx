@@ -13,6 +13,9 @@ function helperMsg(props: HelperBarProps): string {
     return "Click ready when you're ready for the game to start.";
   }
   if (props.gs.ended) {
+    if (props.gs.suspender == null) {
+      return "Click rematch when you're ready to play again.";
+    }
     return "" + props.gs.parties[props.gs.suspender].name + " wins! Click " +
         "rematch when you're ready to play again.";
   }

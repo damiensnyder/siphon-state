@@ -68,7 +68,7 @@ var GameRoom = /** @class */ (function () {
             isSelf: false,
             isSystem: true
         });
-        if (this.gs.started && !this.gs.ended) {
+        if (this.gs.started) {
             viewer.begin();
         }
         viewer.emitGameState(this.gs);
@@ -176,7 +176,7 @@ var GameRoom = /** @class */ (function () {
     };
     GameRoom.prototype.rematch = function () {
         this.players.forEach(function (player) { player.reset(); });
-        this.gs = new GameState();
+        this.gs = new GameState(this.settings);
         this.players = [];
         this.actionQueue = [];
         this.emitGameStateToAll();

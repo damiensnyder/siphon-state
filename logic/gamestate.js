@@ -76,7 +76,7 @@ var GameState = /** @class */ (function () {
         var _this = this;
         // Increase decline and give priority to the prime minister's party (if
         // there is one) or party after the last party to have priority.
-        if (this.primeMinister !== null) {
+        if (this.primeMinister != null) {
             this.priority = this.pols[this.primeMinister].party;
         }
         else {
@@ -280,7 +280,7 @@ var GameState = /** @class */ (function () {
         this.stage = 3;
     };
     GameState.prototype.checkIfGameWon = function () {
-        if (this.primeMinister !== null &&
+        if (this.primeMinister != null &&
             this.suspender === this.pols[this.primeMinister].party) {
             this.ended = true;
         }
