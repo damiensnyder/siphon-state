@@ -23,7 +23,6 @@ var Viewer = /** @class */ (function () {
     };
     Viewer.prototype.end = function () {
         this.socket.removeAllListeners('msg');
-        this.socket.removeAllListeners('replace');
     };
     Viewer.prototype.ready = function (readyInfo) {
         if (readyInfo === false || readyInfo === true) {

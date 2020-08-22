@@ -22,7 +22,41 @@ function twoPartiesStart(): void {
   game.gs.commitAll();
   setAllPartiesToDisconnected(game.gs);
 
-  App.gameManager.addTestGame('2ps', game);
+  App.gameManager.addTestGame(game);
+}
+
+function twoPartiesEnd(): void {
+  const game = new GameRoom(App.gameManager.io, {
+    name: "two parties end",
+    gameCode: "2pe",
+    nation: "Kallavur",
+    private: false
+  }, () => {});
+
+  game.gs.addParty("party 1", "P1");
+  game.gs.addParty("party 2", "P2");
+  game.gs.commitAll();
+  setAllPartiesToDisconnected(game.gs);
+  game.gs.ended = true;
+
+  App.gameManager.addTestGame(game);
+}
+
+function twoPartiesThreeDecline(): void {
+  const game = new GameRoom(App.gameManager.io, {
+    name: "two parties end",
+    gameCode: "2p3d",
+    nation: "Kallavur",
+    private: false
+  }, () => {});
+
+  game.gs.addParty("party 1", "P1");
+  game.gs.addParty("party 2", "P2");
+  game.gs.commitAll();
+  setAllPartiesToDisconnected(game.gs);
+  game.gs.decline = 3;
+
+  App.gameManager.addTestGame(game);
 }
 
 function threePartiesStart(): void {
@@ -39,7 +73,7 @@ function threePartiesStart(): void {
   game.gs.commitAll();
   setAllPartiesToDisconnected(game.gs);
 
-  App.gameManager.addTestGame('3ps', game);
+  App.gameManager.addTestGame(game);
 }
 
 function fourPartiesStart(): void {
@@ -57,12 +91,13 @@ function fourPartiesStart(): void {
   game.gs.commitAll();
   setAllPartiesToDisconnected(game.gs);
 
-  App.gameManager.addTestGame('4ps', game);
+  App.gameManager.addTestGame(game);
 }
 
 const startTime = (new Date()).getUTCSeconds();
-(new Date()).getUTCSeconds();
 twoPartiesStart();
+twoPartiesThreeDecline();
+twoPartiesEnd();
 threePartiesStart();
 fourPartiesStart();
 const endTime = (new Date()).getUTCSeconds();

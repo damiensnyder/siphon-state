@@ -146,12 +146,24 @@ var GameState = /** @class */ (function () {
     };
     GameState.prototype.giveSympathizers = function (amountPerPlayer) {
         var _this = this;
+        // Add all running politicians to the list of possible sympathizers.
         var runningPols = [];
         this.provs.forEach(function (prov) {
             prov.candidates.forEach(function (polIndex) {
                 runningPols.push(polIndex);
             });
         });
+        // Remove all candidates who are already bribed from the list of possible
+        // sympathizers.
+        this.parties.forEach(function (party) {
+            party.bribed.forEach(function (polIndex) {
+                runningPols.splice(runningPols.indexOf(polIndex), 1);
+            });
+        });
+        // For each party, go down the list of possible sympathizers, skipping any
+        // that are disqualified because they are in the same party, until a
+        // sufficient number have been given or the end of the list has been
+        // reached. Sympathizers are removed from the list when given.
         this.parties.forEach(function (party, partyIndex) {
             party.sympathetic = [];
             for (var i = 0; i < runningPols.length; i++) {

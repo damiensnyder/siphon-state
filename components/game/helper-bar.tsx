@@ -40,7 +40,7 @@ function helperMsg(props: HelperBarProps): string {
     }
     const primeMinisterPayout = props.gs.parties.length * props.gs.decline / 2;
     return "At the end of this stage, the prime minister's party will " +
-        "receive $" + primeMinisterPayout + " and all other parties will " +
+        "receive $" + primeMinisterPayout + "M and all other parties will " +
         "receive $7.5M." + suspenderMsg;
   }
 }

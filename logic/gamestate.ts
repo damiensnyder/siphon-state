@@ -119,7 +119,7 @@ class GameState {
   beginNomination(): void {
     // Increase decline and give priority to the prime minister's party (if
     // there is one) or party after the last party to have priority.
-    if (this.primeMinister !== null) {
+    if (this.primeMinister != null) {
       this.priority = this.pols[this.primeMinister].party;
     } else {
       this.priority = (this.priority + 1) % this.parties.length;
@@ -336,7 +336,7 @@ class GameState {
   }
 
   checkIfGameWon(): void {
-    if (this.primeMinister !== null &&
+    if (this.primeMinister != null &&
         this.suspender === this.pols[this.primeMinister].party) {
       this.ended = true;
     }

@@ -49,7 +49,6 @@ class Viewer {
 
   end(): void {
     this.socket.removeAllListeners('msg');
-    this.socket.removeAllListeners('replace');
   }
 
   ready(readyInfo: boolean | ActionQueue): void {
