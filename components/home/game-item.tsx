@@ -5,7 +5,7 @@ import general from '../general.module.css';
 import styles from './join-menu.module.css';
 
 function joinGame(gameCode) {
-  Router.push('/game/' + gameCode);
+  Router.push('/game/' + gameCode).then();
 }
 
 function statusString(started, ended) {
@@ -18,7 +18,7 @@ function statusString(started, ended) {
   return "In lobby";
 }
 
-function GameItem(props) {
+function GameItem(props): React.ReactElement {
   const info = props.info;
   return (
     <div className={styles.gameItemOuter}>

@@ -42,29 +42,21 @@ class GameView extends React.Component {
     this.callback = this.callback.bind(this);
   }
 
-  // The game code mysteriously does not load immediately, so this waits for
-  // another function that checks until it gets it.
+  // The game code mysteriously does not load immediately, so this checks every
+  // 20 ms until it loads.
   async componentDidMount() {
-    await this.retryUntilGameCode();
-  }
-
-  // Checks every 20 ms until the game code is set by the router.
-  retryUntilGameCode(): Promise<void> {
-    return new Promise((resolve) => {
-      let timesChecked = 0;
-      let checkForRouter = setInterval(() => {
-        if (this.props.gameCode !== undefined) {
-          clearInterval(checkForRouter);
-          this.gameCode = this.props.gameCode;
-          this.initializeSocket();
-        }
-        timesChecked++;
-        if (timesChecked == 250) {
-          clearInterval(checkForRouter);
-        }
-      }, 20);
-      resolve(null);
-    });
+    let timesChecked = 0;
+    let checkForRouter = setInterval(() => {
+      if (this.props.gameCode !== undefined) {
+        clearInterval(checkForRouter);
+        this.gameCode = this.props.gameCode;
+        this.initializeSocket();
+      }
+      timesChecked++;
+      if (timesChecked == 250) {
+        clearInterval(checkForRouter);
+      }
+    }, 20);
   }
 
   // Creates the socket connection to the server and handlers for when messages
@@ -95,6 +87,7 @@ class GameView extends React.Component {
     this.socket.on('update', (gs) => {
       this.gamestateManager.setGs(gs);
       this.setState({gs: this.gamestateManager.gs});
+      document.title = gs.settings.name;
     });
 
     this.socket.on('newready', (readyInfo) => {

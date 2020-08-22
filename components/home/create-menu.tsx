@@ -6,15 +6,16 @@ import general from '../general.module.css';
 import styles from './main.module.css';
 
 class CreateMenu extends React.Component {
+  state: {
+    name: string
+  }
+
   constructor(props) {
     super(props);
 
     this.state = {
       name: ""
     }
-
-    this.nameInput = React.createRef();
-    this.nameInput = React.createRef();
   }
 
   componentWillUnmount() {
@@ -43,15 +44,16 @@ class CreateMenu extends React.Component {
       });
 
       const resInfo = await res.json();
-      if (res.status == 200) {
-        Router.push('/game/' + resInfo.gameCode);
+      if (res.status === 200) {
+        await Router.push('/game/' + resInfo.gameCode);
       }
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     return (
       <div className={styles.menuOuter}>
+        <h2>Create Game</h2>
         <TextInput label={"Name:"}
                    maxLength={40}
                    text={this.state.name}
@@ -60,7 +62,7 @@ class CreateMenu extends React.Component {
         <div className={general.spacer}>
           <button className={general.actionBtn + ' ' + general.priorityBtn}
                   onClick={this.createGame.bind(this)}>
-            Create Game
+            Create
           </button>
         </div>
       </div>

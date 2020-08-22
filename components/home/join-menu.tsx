@@ -8,6 +8,20 @@ import styles from './main.module.css';
 import joinStyles from './join-menu.module.css';
 
 class JoinMenu extends React.Component {
+  gameCodeInput: React.RefObject<any>;
+  numFetches: number;
+  state: {
+    gameCode: string,
+    fetched: boolean,
+    error: boolean,
+    games: {
+      gameCode: string,
+      nation: string,
+      name: string,
+      private: false
+    }[];
+  }
+
   constructor(props) {
     super(props);
 
@@ -23,7 +37,7 @@ class JoinMenu extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchGames();
+    this.fetchGames().then();
   }
 
   componentWillUnmount() {
@@ -80,10 +94,10 @@ class JoinMenu extends React.Component {
   }
 
   submitCallback() {
-    Router.push('/game/' + this.state.gameCode);
+    Router.push('/game/' + this.state.gameCode).then();
   }
 
-  render() {
+  render(): React.ReactNode {
     return (
       <div className={styles.menuOuter}>
         <h2>Active Games</h2>
