@@ -131,7 +131,7 @@ class GamestateManager {
     if (this.gs.officials.includes(flipInfo.polIndex) && 
         this.gs.stage === 2) {
       this.ownParty().votes++;
-      this.gs.parties[flipInfo.pol.oldParty].votes--;
+      this.gs.parties[this.gs.pols[flipInfo.polIndex].oldParty].votes--;
     }
 
     this.actionQueue.flipQueue.push(flipInfo.polIndex);
@@ -202,8 +202,9 @@ class GamestateManager {
         this.gs.stage === 2) {
       this.ownParty().votes--;
       this.gs.parties[this.gs.pols[flipInfo.polIndex].oldParty].votes++;
-      if (this.gs.voteQueue.length > this.ownParty().votes) {
-        this.gs.voteQueue.splice(this.gs.voteQueue.length - 1, 1);
+      if (this.actionQueue.voteQueue.length > this.ownParty().votes) {
+        this.actionQueue.voteQueue.splice(
+            this.actionQueue.voteQueue.length - 1, 1);
       }
     }
 

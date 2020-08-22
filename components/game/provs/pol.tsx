@@ -151,7 +151,8 @@ function buttonsJsx(props) {
   // If they have been bribed, add a "Flip" button or an "Undo" button depending
   // on whether they have already been flipped.
   if (ownParty.bribed != undefined &&
-      ownParty.bribed.includes(props.polIndex)) {
+      ownParty.bribed.includes(props.polIndex) &&
+      props.gs.stage >= 2) {
     if (props.pol.party !== props.gs.pov) {
       buttons.push(
         <button className={general.actionBtn}
@@ -172,23 +173,25 @@ function buttonsJsx(props) {
   }
 
   // If no hit has been used and the user can afford it, and the decline is
-  // sufficient, add an "Order hit" button.
+  // sufficient, add a "Hit" button.
   const hitCost = props.gs.stage == 2 ? 50 : 25;
   if (!ownParty.usedHit &&
       ownParty.funds >= hitCost &&
+      props.pol.party !== props.gs.pov &&
+      (props.gs.stage === 1 || props.gs.stage == 2) &&
       props.gs.decline >= 3) {
     if (props.pol.hasOwnProperty('hitOrdered')) {
       buttons.push(
         <button className={general.actionBtn}
             onClick={() => props.callback('hit', props.polIndex)}>
-          Order hit
+          Hit
         </button>
       );
     } else {
       buttons.push(
         <button className={general.actionBtn}
             onClick={() => props.callback('hit', props.polIndex)}>
-          Order hit: {formatMoneyString(hitCost)}
+          Hit: {formatMoneyString(hitCost)}
         </button>
       );
     }
@@ -252,11 +255,12 @@ function nameStyle(props) {
   if (props.pol.party === props.gs.pov) {
     nameStyle += " " + styles.ownPol;
   } else if (ownParty != undefined && ownParty.bribed != undefined) {
-    if (ownParty.bribed.includes(props.polIndex)) {
+    if (ownParty.bribed.includes(props.polIndex) ||
+        (props.pol.flipped &&
+         !ownParty.sympathetic.includes(props.polIndex))) {
       nameStyle += " " + styles.bribed;
     }
-    if (ownParty.sympathetic.includes(props.polIndex) &&
-        !props.pol.flipped) {
+    if (ownParty.sympathetic.includes(props.polIndex)) {
       nameStyle += " " + styles.sympathetic;
     }
   }

@@ -195,6 +195,7 @@ class GameState {
   }
 
   giveSympathizers(amountPerPlayer: number) {
+    // Add all running politicians to the list of possible sympathizers.
     const runningPols = [];
     this.provs.forEach((prov) => {
       prov.candidates.forEach((polIndex) => {
@@ -202,6 +203,18 @@ class GameState {
       });
     });
 
+    // Remove all candidates who are already bribed from the list of possible
+    // sympathizers.
+    this.parties.forEach((party) => {
+      party.bribed.forEach((polIndex) => {
+        runningPols.splice(runningPols.indexOf(polIndex), 1);
+      });
+    });
+
+    // For each party, go down the list of possible sympathizers, skipping any
+    // that are disqualified because they are in the same party, until a
+    // sufficient number have been given or the end of the list has been
+    // reached. Sympathizers are removed from the list when given.
     this.parties.forEach((party, partyIndex) => {
       party.sympathetic = [];
       for (let i = 0; i < runningPols.length; i++) {
