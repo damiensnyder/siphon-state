@@ -1,5 +1,5 @@
 {
-  "Otria": [
+  "Kenderland": [
     {
       "name": "Edie",
       "seats": 1
@@ -21,7 +21,7 @@
       "seats": 1
     }
   ],
-  "Kenderland": [
+  "Otria": [
     {
       "name": "Solister",
       "seats": 2
@@ -31,7 +31,7 @@
       "seats": 2
     },
     {
-      "name": "Neris Island",
+      "name": "Nerz Island",
       "seats": 2
     },
     {

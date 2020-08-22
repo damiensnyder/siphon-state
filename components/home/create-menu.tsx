@@ -8,8 +8,8 @@ import general from "../general.module.css";
 import styles from "./main.module.css";
 
 const NATIONS: string[] = [
-  "Kallavur",
-  "Anbridge"
+  "Kenderland",
+  "Otria"
 ];
 
 class CreateMenu extends React.Component {

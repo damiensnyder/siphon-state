@@ -11,7 +11,7 @@ function twoPartiesStart() {
     var game = new GameRoom(App.gameManager.io, {
         name: "two parties start",
         gameCode: "2ps",
-        nation: "Kallavur",
+        nation: "Kenderland",
         private: false
     }, function () { });
     game.gs.addParty("party 1", "P1");
@@ -24,7 +24,7 @@ function twoPartiesEnd() {
     var game = new GameRoom(App.gameManager.io, {
         name: "two parties end",
         gameCode: "2pe",
-        nation: "Kallavur",
+        nation: "Otria",
         private: false
     }, function () { });
     game.gs.addParty("party 1", "P1");
@@ -38,7 +38,7 @@ function twoPartiesThreeDecline() {
     var game = new GameRoom(App.gameManager.io, {
         name: "two parties end",
         gameCode: "2p3d",
-        nation: "Kallavur",
+        nation: "Kenderland",
         private: false
     }, function () { });
     game.gs.addParty("party 1", "P1");
@@ -52,7 +52,7 @@ function threePartiesStart() {
     var game = new GameRoom(App.gameManager.io, {
         name: "three parties start",
         gameCode: "3ps",
-        nation: "Kallavur",
+        nation: "Otria",
         private: false
     }, function () { });
     game.gs.addParty("party 1", "P1");
@@ -66,7 +66,7 @@ function fourPartiesStart() {
     var game = new GameRoom(App.gameManager.io, {
         name: "four parties start",
         gameCode: "4ps",
-        nation: "Kallavur",
+        nation: "Otria",
         private: false
     }, function () { });
     game.gs.addParty("party 1", "P1");
