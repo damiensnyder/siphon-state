@@ -25,7 +25,10 @@ class GamestateManager {
       parties: [],
       pov: -1,
       started: false,
-      ended: false
+      ended: false,
+      settings: {
+        name: "Loading..."
+      }
     };
 
     this.handlers = {

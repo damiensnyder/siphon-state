@@ -20,7 +20,7 @@ function PartiesView(props) {
   return (
     <div id={styles.partiesWrapper}>
       <h2 id={styles.gameName}>
-        {props.gs.settings ? props.gs.settings.name : null}
+        {props.gs.settings.name}
       </h2>
       {partiesToJsx(props.gs, props.callback)}
     </div>
