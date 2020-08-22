@@ -75,7 +75,7 @@ class GameManager {
 
     for (const [gameCode, game] of Object.entries(this.activeGames)) {
       // @ts-ignore
-      if (!game.settings.hidden) {
+      if (!game.settings.private) {
         // @ts-ignore
         foundGames.push(game.joinInfo());
       }
