@@ -1,10 +1,11 @@
-import React from 'react';
-import Router from 'next/router';
+import React from "react";
+import Router from "next/router";
 
-import TextInput from '../text-input';
-import general from '../general.module.css';
-import styles from './main.module.css';
+import TextInput from "../text-input";
 import SelectInput from "../select-input";
+import CheckboxInput from "../checkbox-input";
+import general from "../general.module.css";
+import styles from "./main.module.css";
 
 const NATIONS: string[] = [
   "Kallavur",
@@ -13,14 +14,18 @@ const NATIONS: string[] = [
 
 class CreateMenu extends React.Component {
   state: {
-    name: string
+    name: string,
+    nation: string,
+    private: boolean
   }
 
   constructor(props) {
     super(props);
 
     this.state = {
-      name: ""
+      name: "",
+      nation: NATIONS[0],
+      private: false
     }
   }
 
@@ -37,11 +42,15 @@ class CreateMenu extends React.Component {
   }
 
   nationCallback(option: string): void {
-
+    this.setState({
+      nation: option
+    });
   }
 
   privateCallback(isPrivate: boolean): void {
-
+    this.setState({
+      private: isPrivate
+    })
   }
 
   async createGame() {
@@ -52,7 +61,8 @@ class CreateMenu extends React.Component {
         body: JSON.stringify({
           settings: {
             name: this.state.name,
-            private: false
+            nation: this.state.nation,
+            private: this.state.private
           }
         })
       });
@@ -75,8 +85,11 @@ class CreateMenu extends React.Component {
             submitCallback={this.createGame.bind(this)} />
         <SelectInput label={"Nation:"}
             options={NATIONS}
-            selected={NATIONS[0]}
+            selected={this.state.nation}
             selectCallback={this.nationCallback.bind(this)} />
+        <CheckboxInput label={"Private:"}
+            checked={false}
+            checkCallback={this.privateCallback.bind(this)} />
         <div className={general.spacer}>
           <button className={general.actionBtn + " " + general.priorityBtn}
               onClick={this.createGame.bind(this)}>
