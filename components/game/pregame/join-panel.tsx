@@ -1,12 +1,25 @@
-import React from 'react';
+import React from "react";
 
-import TextInput from '../../text-input';
-import InviteLink from './invite-link';
-import general from '../../general.module.css';
-import styles from './pregame.module.css';
+import TextInput from "../../text-input";
+import InviteLink from "./invite-link";
+import general from "../../general.module.css";
+import styles from "./pregame.module.css";
+
+interface JoinPanelProps {
+  gameCode: string,
+  callback: any
+}
 
 class JoinPanel extends React.Component {
-  constructor(props) {
+  state: {
+    partyName: string,
+    abbr: string,
+    abbrPlaceholder: string
+  };
+  partyAbbr: any;
+  props: JoinPanelProps;
+
+  constructor(props: JoinPanelProps) {
     super(props);
 
     this.state = {
@@ -16,9 +29,6 @@ class JoinPanel extends React.Component {
     }
 
     this.partyAbbr = React.createRef();
-    this.updateAbbr = this.updateAbbr.bind(this);
-    this.updatePartyName = this.updatePartyName.bind(this);
-    this.joinGame = this.joinGame.bind(this);
   }
 
   updatePartyName(text) {
@@ -54,17 +64,17 @@ class JoinPanel extends React.Component {
           <TextInput label={"Party name:"}
                      maxLength={40}
                      text={this.state.partyName}
-                     textCallback={this.updatePartyName}
-                     submitCallback={this.joinGame} />
+                     textCallback={this.updatePartyName.bind(this)}
+                     submitCallback={this.joinGame.bind(this)} />
           <TextInput label={"Abbreviation:"}
                      maxLength={4}
                      text={this.state.abbr}
                      placeholder={this.state.abbrPlaceholder}
-                     textCallback={this.updateAbbr}
-                     submitCallback={this.joinGame} />
+                     textCallback={this.updateAbbr.bind(this)}
+                     submitCallback={this.joinGame.bind(this)} />
           <div className={general.spacer}>
             <button className={general.actionBtn + ' ' + general.priorityBtn}
-                    onClick={this.joinGame}>
+                    onClick={this.joinGame.bind(this)}>
               Join Game
             </button>
           </div>

@@ -1,11 +1,17 @@
-import React from 'react';
+import React from "react";
 
-import JoinPanel from './join-panel';
-import InviteLink from './invite-link';
-import general from '../../general.module.css';
-import styles from './pregame.module.css';
+import JoinPanel from "./join-panel";
+import InviteLink from "./invite-link";
+import general from "../../general.module.css";
+import styles from "./pregame.module.css";
 
-function joinPanelJsx(props) {
+interface PregameViewProps {
+  joined: boolean,
+  gameCode: string,
+  callback: any
+}
+
+function joinPanelJsx(props: PregameViewProps) {
   if (!props.joined) {
     return (
       <JoinPanel callback={props.callback}
@@ -15,7 +21,7 @@ function joinPanelJsx(props) {
   return <InviteLink gameCode={props.gameCode} />;
 }
 
-function PregameView(props) {
+function PregameView(props: PregameViewProps) {
   return (
     <div className={general.outerWrapper + ' ' +
         general.horizWrapper + ' ' +

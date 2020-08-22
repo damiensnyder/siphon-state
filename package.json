@@ -1,18 +1,28 @@
 {
-  "name": "filter-state",
-  "version": "0.0.0",
+  "name": "siphon-state",
+  "version": "0.2.0",
+  "description": "A multi-player game of politics and corruption. Make and break alliances with other parties as you try to seize control of an eroding state. Implemented with NextJS and TypeScript.",
+  "homepage": "https://www.siphonstate.com/",
   "private": true,
+  "author": "Damien Snyder <damiensnyder@damiensnyder.com>",
   "scripts": {
-    "next-dev": "next dev",
     "build": "next build",
-    "next-start": "next start",
-    "start": "node app.js -p $PORT"
+    "test": "tsc logic/*.ts && node test.js -p $PORT",
+    "start": "node app.js -p $PORT",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.27",
+    "@types/react": "^16.9.45",
+    "typescript": "^3.9.7"
   }
 }

@@ -1,0 +1,42 @@
+{
+  "Kallavur": [
+    {
+      "name": "Otria",
+      "seats": 1
+    },
+    {
+      "name": "Symarta",
+      "seats": 1
+    },
+    {
+      "name": "Kedlion",
+      "seats": 1
+    },
+    {
+      "name": "Arasint",
+      "seats": 1
+    },
+    {
+      "name": "Londris",
+      "seats": 1
+    }
+  ],
+  "Anbridge": [
+    {
+      "name": "Solister",
+      "seats": 2
+    },
+    {
+      "name": "Nidian",
+      "seats": 2
+    },
+    {
+      "name": "Paros Island",
+      "seats": 2
+    },
+    {
+      "name": "Eastfeld",
+      "seats": 1
+    }
+  ]
+}
