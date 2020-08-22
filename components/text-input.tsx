@@ -2,14 +2,14 @@ import React from 'react';
 
 import general from './general.module.css';
 
-function TextInput(props) {
-  const submitIfEnterPressed = (key) => {
+function TextInput(props): React.ReactElement {
+  const submitIfEnterPressed = (key): void => {
     if (key.keyCode == 13) {
       props.submitCallback();
     }
   };
 
-  const textChangeHandler = (e) => {
+  const textChangeHandler = (e): void => {
     props.textCallback(e.target.value);
   };
 
@@ -20,11 +20,11 @@ function TextInput(props) {
           <div className={general.horizWrapper}>
             {props.label}
             <input className={general.settingsInput}
-                   maxLength={props.maxLength}
-                   value={props.text}
-                   placeholder={props.placeholder}
-                   onChange={textChangeHandler}
-                   onKeyDown={submitIfEnterPressed} />
+                maxLength={props.maxLength}
+                value={props.text}
+                placeholder={props.placeholder}
+                onChange={textChangeHandler}
+                onKeyDown={submitIfEnterPressed} />
           </div>
         </div>
       </div>

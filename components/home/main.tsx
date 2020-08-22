@@ -11,13 +11,11 @@ function HomeView(): React.ReactNode {
   });
 
   return (
-    <div id={styles.pageOuter}>
-      <div id={styles.mainBody}>
-        <h1>Siphon State</h1>
-        <div className={general.horizWrapper}>
-          <CreateMenu />
-          <JoinMenu />
-        </div>
+    <div id={styles.mainBody}>
+      <h1>Siphon State</h1>
+      <div className={general.horizWrapper}>
+        <CreateMenu />
+        <JoinMenu />
       </div>
     </div>
   );
