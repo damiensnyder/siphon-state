@@ -1,6 +1,6 @@
 {
   "name": "siphon-state",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "A multi-player game of politics and corruption. Make and break alliances with other parties as you try to seize control of an eroding state. Implemented with NextJS and TypeScript.",
   "homepage": "https://www.siphonstate.com/",
   "private": true,

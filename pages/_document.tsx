@@ -14,7 +14,7 @@ class CustomDocument extends Document {
         <Head>
           <link rel="stylesheet"
               type="text/css"
-              href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,800&subset=latin" />
+              href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900" />
         </Head>
         <body>
           <Main />
