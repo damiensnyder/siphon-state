@@ -195,8 +195,8 @@ class GameState {
 
     // Remove all candidates who are already bribed from the list of possible
     // sympathizers.
-    this.parties.forEach((party) => {
-      party.bribed.forEach((polIndex) => {
+    this.parties.forEach((party: Party) => {
+      party.bribed.forEach((polIndex: number) => {
         runningPols.splice(runningPols.indexOf(polIndex), 1);
       });
     });
@@ -205,11 +205,14 @@ class GameState {
     // that are disqualified because they are in the same party, until a
     // sufficient number have been given or the end of the list has been
     // reached. Sympathizers are removed from the list when given.
-    this.parties.forEach((party, partyIndex) => {
+    this.parties.forEach((party: Party, partyIndex: number) => {
       party.sympathetic = [];
       for (let i = 0; i < runningPols.length; i++) {
+        const polParty = this.pols[runningPols[i]].party
         if (party.sympathetic.length < amountPerPlayer &&
-            this.pols[runningPols[i]].party !== partyIndex) {
+            (this.primeMinister == null ||
+             polParty != this.pols[this.primeMinister].party) &&
+            polParty !== partyIndex) {
           party.sympathetic.push(runningPols[i]);
           runningPols.splice(i, 1);
           i--;
@@ -361,12 +364,11 @@ class GameState {
   // The given politician becomes a candidate in the chosen province.
   run(partyIndex: number,
       runInfo: {polIndex: number, provIndex: number}): void {
-    let party: Party = this.parties[partyIndex];
-    if (party.pols.length > 0 &&
-        party.funds >= 5 &&
-        runInfo.polIndex < this.pols.length &&
-        runInfo.polIndex >= 0) {
+    const party: Party = this.parties[partyIndex];
+    if (party.pols.includes(runInfo.polIndex) &&
+        party.funds >= 5) {
       this.provs[runInfo.provIndex].candidates.push(runInfo.polIndex);
+      party.pols.splice(party.pols.indexOf(runInfo.polIndex));
       party.funds -= 5;
     }
   }
@@ -407,9 +409,7 @@ class GameState {
   // Transfer the symp from their old party to their new party.
   flip(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
-    if (polIndex < this.pols.length &&
-        polIndex >= 0 &&
-        this.stage >= 2) {
+    if (party.bribed.includes(polIndex) && this.stage >= 2) {
       // Remove from their old party
       const oldParty = this.parties[this.pols[polIndex].party];
       oldParty.pols.splice(oldParty.pols.indexOf(polIndex), 1);

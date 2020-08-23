@@ -25,7 +25,6 @@ var GameState = /** @class */ (function () {
             name: name,
             abbr: abbr,
             ready: false,
-            eliminated: false,
             connected: true,
             funds: 0,
             votes: 0,
@@ -38,7 +37,7 @@ var GameState = /** @class */ (function () {
     // Returns true if all parties are ready, false otherwise.
     GameState.prototype.allReady = function () {
         for (var i = 0; i < this.parties.length; i++) {
-            if (!this.parties[i].ready && !this.parties[i].eliminated) {
+            if (!this.parties[i].ready) {
                 return false;
             }
         }
@@ -95,17 +94,15 @@ var GameState = /** @class */ (function () {
         });
         // Give all parties $7.5M and enough candidates to equal one per province.
         this.parties.forEach(function (party, partyIndex) {
-            if (!party.eliminated) {
-                party.funds += 75;
-                // Give the party with the prime minister an extra bonus.
-                if (_this.primeMinister != null) {
-                    var pmParty = _this.parties[_this.pols[_this.primeMinister].party];
-                    pmParty.funds += 5 * _this.decline;
-                }
-                while (party.pols.length < _this.provs.length) {
-                    _this.pols.push(_this.contentGenerator.newPol(partyIndex));
-                    party.pols.push(_this.pols.length - 1);
-                }
+            party.funds += 75;
+            // Give the party with the prime minister an extra bonus.
+            if (_this.primeMinister != null) {
+                var pmParty = _this.parties[_this.pols[_this.primeMinister].party];
+                pmParty.funds += 5 * _this.decline;
+            }
+            while (party.pols.length < _this.provs.length) {
+                _this.pols.push(_this.contentGenerator.newPol(partyIndex));
+                party.pols.push(_this.pols.length - 1);
             }
         });
         this.officials = [];
@@ -129,19 +126,11 @@ var GameState = /** @class */ (function () {
                 var priority = (partyIndex - _this.priority) % _this.parties.length;
                 var supportBonus = (countSoFar[partyIndex] * _this.parties.length +
                     priority) / (_this.provs.length * _this.parties.length + 1);
-                // Give a bonus to all pols from the party who suspended the
-                // constitution.
-                if (partyIndex === _this.suspender) {
-                    supportBonus += _this.decline;
-                }
                 pol.support = pol.baseSupport + supportBonus;
             });
         });
-        if (this.decline == 1) {
+        if (this.decline >= 1) {
             this.giveSympathizers(1);
-        }
-        else if (this.decline > 1) {
-            this.giveSympathizers(2);
         }
     };
     GameState.prototype.giveSympathizers = function (amountPerPlayer) {
@@ -167,9 +156,11 @@ var GameState = /** @class */ (function () {
         this.parties.forEach(function (party, partyIndex) {
             party.sympathetic = [];
             for (var i = 0; i < runningPols.length; i++) {
+                var polParty = _this.pols[runningPols[i]].party;
                 if (party.sympathetic.length < amountPerPlayer &&
-                    _this.pols[runningPols[i]].party !== partyIndex &&
-                    !party.eliminated) {
+                    (_this.primeMinister == null ||
+                        polParty != _this.pols[_this.primeMinister].party) &&
+                    polParty !== partyIndex) {
                     party.sympathetic.push(runningPols[i]);
                     runningPols.splice(i, 1);
                     i--;
@@ -207,7 +198,7 @@ var GameState = /** @class */ (function () {
         if (this.officials.length === 0) {
             this.beginDistribution();
         }
-        else if (this.officials.length === 1 && this.decline < 3) {
+        else if (this.officials.length === 1) {
             this.primeMinister = this.officials[0];
             this.beginDistribution();
         }
@@ -284,25 +275,9 @@ var GameState = /** @class */ (function () {
             this.suspender === this.pols[this.primeMinister].party) {
             this.ended = true;
         }
-        // If someone suspended the constitution and failed, they lose the game.
-        if (!this.ended && this.suspender !== null) {
-            this.parties[this.suspender].eliminated = true;
-            var numRemaining_1 = 0;
-            var remainingParty_1 = 0;
-            // If only one party remains, they win the game.
-            this.parties.forEach(function (party, partyIndex) {
-                if (!party.eliminated) {
-                    numRemaining_1++;
-                    remainingParty_1 = partyIndex;
-                }
-            });
-            if (numRemaining_1 === 1) {
-                this.ended = true;
-            }
-        }
-        // Advance decline and set suspender after 4 rounds of decline
+        // Advance decline and set suspender after 3 rounds of decline
         this.decline += 1;
-        if (this.decline >= 4 && this.primeMinister != null) {
+        if (this.decline >= 3 && this.primeMinister != null) {
             this.suspender = this.pols[this.primeMinister].party;
         }
         // If there was no winner, advance to the next prov and begin nomination.
@@ -319,8 +294,7 @@ var GameState = /** @class */ (function () {
     GameState.prototype.pay = function (partyIndex, paymentInfo) {
         if (this.parties[partyIndex].funds > paymentInfo.amount &&
             paymentInfo.target < this.parties.length &&
-            paymentInfo.target >= 0 &&
-            !this.parties[paymentInfo.target].eliminated) {
+            paymentInfo.target >= 0) {
             this.parties[partyIndex].funds -= paymentInfo.amount;
             this.parties[paymentInfo.target].funds += paymentInfo.amount;
         }
@@ -328,11 +302,10 @@ var GameState = /** @class */ (function () {
     // The given politician becomes a candidate in the chosen province.
     GameState.prototype.run = function (partyIndex, runInfo) {
         var party = this.parties[partyIndex];
-        if (party.pols.length > 0 &&
-            party.funds >= 5 &&
-            runInfo.polIndex < this.pols.length &&
-            runInfo.polIndex >= 0) {
+        if (party.pols.includes(runInfo.polIndex) &&
+            party.funds >= 5) {
             this.provs[runInfo.provIndex].candidates.push(runInfo.polIndex);
+            party.pols.splice(party.pols.indexOf(runInfo.polIndex));
             party.funds -= 5;
         }
     };
@@ -369,9 +342,7 @@ var GameState = /** @class */ (function () {
     // Transfer the symp from their old party to their new party.
     GameState.prototype.flip = function (partyIndex, polIndex) {
         var party = this.parties[partyIndex];
-        if (polIndex < this.pols.length &&
-            polIndex >= 0 &&
-            this.stage >= 2) {
+        if (party.bribed.includes(polIndex) && this.stage >= 2) {
             // Remove from their old party
             var oldParty = this.parties[this.pols[polIndex].party];
             oldParty.pols.splice(oldParty.pols.indexOf(polIndex), 1);
@@ -391,7 +362,7 @@ var GameState = /** @class */ (function () {
         var cost = this.stage >= 2 ? 50 : 25;
         var party = this.parties[partyIndex];
         if (party.funds >= cost &&
-            this.decline >= 3 &&
+            this.decline >= 2 &&
             !party.usedHit &&
             this.pols[polIndex].party !== this.suspender) {
             if (this.officials.includes(polIndex)) {

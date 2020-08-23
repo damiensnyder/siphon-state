@@ -27,9 +27,7 @@ var ContentGenerator = /** @class */ (function () {
         newPol.party = party;
         newPol.url = newPol.name.replace(' ', '-').toLowerCase();
         newPol.url = newPol.url.replace(/[,.]/, '');
-        if (this.resets > 1) {
-            newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
-        }
+        newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
         newPol.baseSupport = 5;
         newPol.support = newPol.baseSupport;
         return newPol;
@@ -56,6 +54,12 @@ var ContentGenerator = /** @class */ (function () {
     return ContentGenerator;
 }());
 function toRomanNumerals(num) {
+    if (num == 1) {
+        return "";
+    }
+    if (num == 2) {
+        return "Jr.";
+    }
     var result = "";
     for (var i = 0; i < ARABIC.length; i++) {
         if (Math.floor(num / ARABIC[i]) > 0) {

@@ -237,8 +237,11 @@ class GamestateManager {
     this.ownParty().pols.push(runInfo.polIndex);
     this.ownParty().funds += 5;
 
-    this.actionQueue.runQueue.splice(
-        this.actionQueue.runQueue.indexOf(runInfo, 1));
+    for (let i = 0; i < this.actionQueue.runQueue.length; i++) {
+      if (this.actionQueue.runQueue[i].polIndex == runInfo.polIndex) {
+        this.actionQueue.runQueue.splice(i, 1);
+      }
+    }
   }
 
   handleUndoAd(polIndex: number): void {
