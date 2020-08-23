@@ -1,17 +1,16 @@
 body {
-  padding: 0;
   margin: 0;
 
+  padding: 0;
+
   font-size: 18px;
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  font-family: "Source Sans Pro", Whitney, "Droid Sans", Roboto, -apple-system,
-    "Helvetica Neue", Helvetica, Arial, Inter, sans-serif;
+  font-family: "Source Sans Pro", Whitney, sans-serif;
   font-variant-alternates: normal;
   color: #ccc;
   background-color: #444;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 textarea {

@@ -4,7 +4,10 @@ import general from "./general.module.css";
 
 function optionsJsx(options: string[]): React.ReactNode {
   return options.map((option) => {
-    return <option value={option}>{option}</option>;
+    return (
+      <option value={option}
+          key={option}>{option}</option>
+    );
   });
 }
 
@@ -18,7 +21,6 @@ function SelectInput(props): React.ReactElement {
       <div className={general.horizWrapper + ' ' + general.spacer}>
         {props.label}
         <select className={general.settingsInput}
-            key={props.selected}
             value={props.selected}
             onChange={selectHandler}>
           {optionsJsx(props.options)}
