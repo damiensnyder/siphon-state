@@ -179,20 +179,12 @@ class GameState {
         let supportBonus = (countSoFar[partyIndex] * this.parties.length +
             priority) / (this.provs.length * this.parties.length + 1);
 
-        // Give a bonus to all pols from the party who suspended the
-        // constitution.
-        if (partyIndex === this.suspender) {
-          supportBonus += this.decline;
-        }
-
         pol.support = pol.baseSupport + supportBonus;
       });
     });
 
-    if (this.decline == 1) {
+    if (this.decline >= 1) {
       this.giveSympathizers(1);
-    } else if (this.decline > 1) {
-      this.giveSympathizers(2);
     }
   }
 
@@ -264,7 +256,7 @@ class GameState {
     // If there are no officials, skip to the next stage.
     if (this.officials.length === 0) {
       this.beginDistribution();
-    } else if (this.officials.length === 1 && this.decline < 3) {
+    } else if (this.officials.length === 1) {
       this.primeMinister = this.officials[0];
       this.beginDistribution();
     }
@@ -361,9 +353,9 @@ class GameState {
       }
     }
 
-    // Advance decline and set suspender after 4 rounds of decline
+    // Advance decline and set suspender after 3 rounds of decline
     this.decline += 1;
-    if (this.decline >= 4 && this.primeMinister != null) {
+    if (this.decline >= 3 && this.primeMinister != null) {
       this.suspender = this.pols[this.primeMinister].party;
     }
 
@@ -464,7 +456,7 @@ class GameState {
     const cost = this.stage >= 2 ? 50 : 25;
     const party = this.parties[partyIndex]
     if (party.funds >= cost &&
-        this.decline >= 3 &&
+        this.decline >= 2 &&
         !party.usedHit &&
         this.pols[polIndex].party !== this.suspender) {
       if (this.officials.includes(polIndex)) {
