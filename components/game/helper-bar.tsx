@@ -24,7 +24,7 @@ function helperMsg(props: HelperBarProps): string {
   }
   if (props.gs.stage == 1) {
     return "Buy ads for your own candidates and smear other candidates to " +
-        "help win the race. Rounds remaining: " + (3 - props.gs.rounds);
+        "help win the race. Rounds remaining: " + (2 - props.gs.rounds);
   }
   if (props.gs.stage == 2) {
     const votesRemaining = props.gs.parties[props.gs.pov].votes;
@@ -41,7 +41,12 @@ function helperMsg(props: HelperBarProps): string {
       suspenderMsg = " If the prime minister's party also wins the next " +
           "election, they win the game. Otherwise, they lose the game.";
     }
-    const primeMinisterPayout = props.gs.parties.length * props.gs.decline / 2;
+    let primeMinisterPayout = 7.5;
+    props.gs.parties.forEach((remainingParty) => {
+      if (!remainingParty.eliminated) {
+        primeMinisterPayout += 0.5 * (props.gs.decline + 1);
+      }
+    });
     return "At the end of this stage, the prime minister's party will " +
         "receive $" + primeMinisterPayout + "M and all other parties will " +
         "receive $7.5M." + suspenderMsg;

@@ -141,11 +141,13 @@ class GameState {
     this.parties.forEach((party, partyIndex) => {
       if (!party.eliminated) {
         party.funds += 75;
+
         // Give the party with the prime minister an extra bonus.
-        if (this.primeMinister != null &&
-            partyIndex === this.pols[this.primeMinister].party) {
-          party.funds += 5 * this.decline * this.parties.length;
+        if (this.primeMinister != null) {
+          const pmParty = this.parties[this.pols[this.primeMinister].party];
+          pmParty.funds += 5 * this.decline;
         }
+
         while (party.pols.length < this.provs.length) {
           this.pols.push(this.contentGenerator.newPol(partyIndex));
           party.pols.push(this.pols.length - 1);
@@ -262,7 +264,7 @@ class GameState {
     // If there are no officials, skip to the next stage.
     if (this.officials.length === 0) {
       this.beginDistribution();
-    } else if (this.officials.length === 1) {
+    } else if (this.officials.length === 1 && this.decline < 3) {
       this.primeMinister = this.officials[0];
       this.beginDistribution();
     }
@@ -361,7 +363,7 @@ class GameState {
 
     // Advance decline and set suspender after 4 rounds of decline
     this.decline += 1;
-    if (this.decline >= 4) {
+    if (this.decline >= 4 && this.primeMinister != null) {
       this.suspender = this.pols[this.primeMinister].party;
     }
 

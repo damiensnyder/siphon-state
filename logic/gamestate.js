@@ -98,9 +98,9 @@ var GameState = /** @class */ (function () {
             if (!party.eliminated) {
                 party.funds += 75;
                 // Give the party with the prime minister an extra bonus.
-                if (_this.primeMinister != null &&
-                    partyIndex === _this.pols[_this.primeMinister].party) {
-                    party.funds += 5 * _this.decline * _this.parties.length;
+                if (_this.primeMinister != null) {
+                    var pmParty = _this.parties[_this.pols[_this.primeMinister].party];
+                    pmParty.funds += 5 * _this.decline;
                 }
                 while (party.pols.length < _this.provs.length) {
                     _this.pols.push(_this.contentGenerator.newPol(partyIndex));
@@ -207,7 +207,7 @@ var GameState = /** @class */ (function () {
         if (this.officials.length === 0) {
             this.beginDistribution();
         }
-        else if (this.officials.length === 1) {
+        else if (this.officials.length === 1 && this.decline < 3) {
             this.primeMinister = this.officials[0];
             this.beginDistribution();
         }
@@ -302,7 +302,7 @@ var GameState = /** @class */ (function () {
         }
         // Advance decline and set suspender after 4 rounds of decline
         this.decline += 1;
-        if (this.decline >= 4) {
+        if (this.decline >= 4 && this.primeMinister != null) {
             this.suspender = this.pols[this.primeMinister].party;
         }
         // If there was no winner, advance to the next prov and begin nomination.
