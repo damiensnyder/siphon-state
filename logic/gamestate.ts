@@ -5,7 +5,6 @@ interface Party {
   name: string,
   abbr: string,
   ready: boolean,
-  eliminated: boolean,
   connected: boolean,
   funds: number,
   votes: number,
@@ -68,7 +67,6 @@ class GameState {
       name: name,
       abbr: abbr,
       ready: false,
-      eliminated: false,
       connected: true,
       funds: 0,
       votes: 0,
@@ -82,7 +80,7 @@ class GameState {
   // Returns true if all parties are ready, false otherwise.
   allReady(): boolean {
     for (let i = 0; i < this.parties.length; i++) {
-      if (!this.parties[i].ready && !this.parties[i].eliminated) {
+      if (!this.parties[i].ready) {
         return false;
       }
     }
@@ -139,19 +137,17 @@ class GameState {
 
     // Give all parties $7.5M and enough candidates to equal one per province.
     this.parties.forEach((party, partyIndex) => {
-      if (!party.eliminated) {
-        party.funds += 75;
+      party.funds += 75;
 
-        // Give the party with the prime minister an extra bonus.
-        if (this.primeMinister != null) {
-          const pmParty = this.parties[this.pols[this.primeMinister].party];
-          pmParty.funds += 5 * this.decline;
-        }
+      // Give the party with the prime minister an extra bonus.
+      if (this.primeMinister != null) {
+        const pmParty = this.parties[this.pols[this.primeMinister].party];
+        pmParty.funds += 5 * this.decline;
+      }
 
-        while (party.pols.length < this.provs.length) {
-          this.pols.push(this.contentGenerator.newPol(partyIndex));
-          party.pols.push(this.pols.length - 1);
-        }
+      while (party.pols.length < this.provs.length) {
+        this.pols.push(this.contentGenerator.newPol(partyIndex));
+        party.pols.push(this.pols.length - 1);
       }
     });
 
@@ -213,8 +209,7 @@ class GameState {
       party.sympathetic = [];
       for (let i = 0; i < runningPols.length; i++) {
         if (party.sympathetic.length < amountPerPlayer &&
-            this.pols[runningPols[i]].party !== partyIndex &&
-            !party.eliminated) {
+            this.pols[runningPols[i]].party !== partyIndex) {
           party.sympathetic.push(runningPols[i]);
           runningPols.splice(i, 1);
           i--;
@@ -334,24 +329,6 @@ class GameState {
         this.suspender === this.pols[this.primeMinister].party) {
       this.ended = true;
     }
-    
-    // If someone suspended the constitution and failed, they lose the game.
-    if (!this.ended && this.suspender !== null) {
-      this.parties[this.suspender].eliminated = true;
-      let numRemaining: number = 0;
-      let remainingParty: number = 0;
-      
-      // If only one party remains, they win the game.
-      this.parties.forEach((party, partyIndex) => {
-        if (!party.eliminated) {
-          numRemaining++;
-          remainingParty = partyIndex;
-        }
-      });
-      if (numRemaining === 1) {
-        this.ended = true;
-      }
-    }
 
     // Advance decline and set suspender after 3 rounds of decline
     this.decline += 1;
@@ -375,8 +352,7 @@ class GameState {
   pay(partyIndex: number, paymentInfo): void {
     if (this.parties[partyIndex].funds > paymentInfo.amount && 
         paymentInfo.target < this.parties.length && 
-        paymentInfo.target >= 0 && 
-        !this.parties[paymentInfo.target].eliminated) {
+        paymentInfo.target >= 0) {
       this.parties[partyIndex].funds -= paymentInfo.amount;
       this.parties[paymentInfo.target].funds += paymentInfo.amount;
     }
