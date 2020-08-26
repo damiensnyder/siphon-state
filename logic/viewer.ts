@@ -3,10 +3,6 @@ interface ActionQueue {
     partyIndex: number,
     amount: number
   }[];
-  runQueue?: {
-    polIndex: number,
-    provIndex: number
-  }[];
   adQueue?: number[];
   smearQueue?: number[];
   bribeQueue?: number[];

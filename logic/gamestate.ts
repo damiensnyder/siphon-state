@@ -8,10 +8,11 @@ interface Party {
   connected: boolean,
   funds: number,
   votes: number,
-  pols: number[],
+  baseSupport: number,
   sympathetic: number[],
   bribed: number[],
-  usedHit: boolean
+  usedHit: boolean,
+  pmChoice: boolean
 }
 
 interface HiddenInfo {
@@ -48,9 +49,9 @@ class GameState {
     this.priority = -1;
     this.pov = -1;
     this.turn = -1;
-    this.rounds = 0;
-    this.stage = 0;
-    this.decline = 0;
+    this.rounds = -1;
+    this.stage = 1;
+    this.decline = -1;
     
     this.contentGenerator = new Generator.ContentGenerator(settings.nation);
   
@@ -70,10 +71,11 @@ class GameState {
       connected: true,
       funds: 0,
       votes: 0,
-      pols: [],
+      baseSupport: 5,
       sympathetic: [],
       bribed: [],
-      usedHit: false
+      usedHit: false,
+      pmChoice: false
     });
   }
 
@@ -96,7 +98,7 @@ class GameState {
       this.started = true;
       this.beginRace();
     } else if (this.stage === 1) {
-      this.advanceRaceStage();
+      this.advanceRaceRound();
     } else if (this.stage === 2) {
       this.tallyVotes();
     } else if (this.stage === 3) {
@@ -118,71 +120,108 @@ class GameState {
     } else {
       this.priority = (this.priority + 1) % this.parties.length;
     }
-    this.stage = 0;
-
-    // Put all the officials back as candidates in their province.
-    this.provs.forEach((prov: Prov) => {
-      const returningCandidates = [];
-      let incumbentParty = -1;
-      prov.candidates.forEach((polIndex: number) => {
-        if (this.officials.includes(polIndex)) {
-          returningCandidates.push(polIndex);
-          this.pols[polIndex].support = this.pols[polIndex].baseSupport + 1;
-          incumbentParty = this.pols[polIndex].party;
-        }
-      });
-      prov.candidates = returningCandidates;
-
-      // Give each party without an incumbent a new pol in the province.
-      for (let i = 0; i < this.parties.length; i++) {
-        if (i != incumbentParty) {
-          const newPol = this.contentGenerator.newPol(i)
-          this.pols.push(newPol);
-          newPol.support = newPol.baseSupport;
-          prov.candidates.push(this.pols.length - 1);
-        }
-      }
-    });
-    this.officials = [];
+    this.stage = 1;
+    this.rounds = 0;
+    this.decline += 1;
 
     // Give all parties $7.5M, and bonus money to the prime minister's party.
     this.parties.forEach((party: Party) => {
       party.funds += 75;
-
-      // Give the party with the prime minister an extra bonus.
-      if (this.primeMinister != null) {
-        const pmParty = this.parties[this.priority];
-        pmParty.funds += 5 * this.decline;
-      }
     });
 
-    this.updatePriority();
+    this.updateBaseSupport();
+    this.givePmBonus();
+    this.replenishCandidates();
 
     if (this.decline >= 1) {
       this.giveSympathizers(1);
     }
 
-    this.stage = 1;
-    this.rounds = 0;
+    this.officials = [];
     this.primeMinister = null;
   }
 
-  // Assign each candidate a priority value, such that the highest-priority
-  // parties have the lowest-priority candidates (when it comes to
-  // tiebreakers in support).
-  updatePriority(): void {
-    const countSoFar: number[] = Array(this.parties.length).fill(0);
+  // Return all officials to be candidates in their province with a +1 bonus to
+  // support, then refill the province with candidates until each party has one
+  // per seat.
+  replenishCandidates(): void {
     this.provs.forEach((prov: Prov) => {
+      // Put all the officials back as candidates in their province.
+      const returningCandidates = [];
+      let returningPerParty = Array(this.parties.length).fill(0);
       prov.candidates.forEach((polIndex: number) => {
-        const pol: Pol = this.pols[polIndex];
-        const partyIndex: number = pol.party;
-        const priority = (partyIndex - this.priority) % this.parties.length;
-        let supportBonus = (countSoFar[partyIndex] * this.parties.length +
-            priority) / (this.provs.length * this.parties.length + 1);
+        if (this.officials.includes(polIndex)) {
+          returningCandidates.push(polIndex);
+          const polParty = this.pols[polIndex].party
+          this.pols[polIndex].support = this.parties[polParty].baseSupport + 1;
+          returningPerParty[polParty] += 1;
+        }
+      });
+      prov.candidates = returningCandidates;
 
-        pol.support += supportBonus;
+      // Give each party news politician in the province until they have one
+      // per seat.
+      this.parties.forEach((party: Party, partyIndex: number) => {
+        while (returningPerParty[partyIndex] < prov.seats) {
+          const newPol: Pol = this.contentGenerator.newPol(partyIndex);
+          const priorityNudge: number = returningPerParty[partyIndex] /
+              (this.parties.length * prov.seats);
+          newPol.support = party.baseSupport + priorityNudge;
+
+          this.pols.push(newPol);
+          prov.candidates.push(this.pols.length - 1);
+          returningPerParty[partyIndex]++;
+        }
       });
     });
+  }
+
+  // Assign each party a base support value, such that the highest-priority
+  // parties have the lowest-priority candidates (when it comes to
+  // tiebreakers in support). Regress parties with base support higher or lower
+  // than 5 back to 5 by one.
+  updateBaseSupport(): void {
+    this.parties.forEach((party: Party, partyIndex: number) => {
+      let previousSupport: number = Math.round(party.baseSupport);
+      const partyPriority: number = (partyIndex - this.priority +
+          this.parties.length) % this.parties.length;
+
+      if (previousSupport < 5) {
+        previousSupport++;
+      } else if (previousSupport > 5) {
+        previousSupport--;
+      }
+      party.baseSupport = previousSupport +
+          partyPriority / (this.parties.length * 2);
+    });
+  }
+
+  // Give a bonus to the party with the prime minister, if there is one,
+  // depending on the amount of decline and the choice the player made.
+  givePmBonus(): void {
+    const numOtherParties: number = this.parties.length - 1;
+    if (this.primeMinister != null) {
+      const pmParty: Party = this.parties[this.priority];
+      if (this.decline == 0) {
+        if (pmParty.pmChoice) {
+          pmParty.funds += 10 * numOtherParties;
+        } else {
+          pmParty.baseSupport += 1;
+        }
+      } else if (this.decline == 1) {
+        if (pmParty.pmChoice) {
+          pmParty.funds += 20 * numOtherParties;
+        } else {
+          pmParty.baseSupport += 2;
+        }
+      } else if (pmParty.pmChoice) {
+        pmParty.baseSupport += this.decline - 2;
+        pmParty.funds += 30 * numOtherParties;
+        this.suspender = this.priority;
+      } else {
+        this.suspender = null;
+      }
+    }
   }
 
   // Give the specified number of sympathizers to each player, but don't give
@@ -214,8 +253,7 @@ class GameState {
       for (let i = 0; i < runningPols.length; i++) {
         const polParty = this.pols[runningPols[i]].party
         if (party.sympathetic.length < amountPerPlayer &&
-            (this.primeMinister == null ||
-             polParty != this.pols[this.primeMinister].party) &&
+            (this.primeMinister == null || polParty != this.priority) &&
             polParty !== partyIndex) {
           party.sympathetic.push(runningPols[i]);
           runningPols.splice(i, 1);
@@ -225,7 +263,9 @@ class GameState {
     });
   }
 
-  advanceRaceStage(): void {
+  // Advance to the next round of the race. If it has been 3 rounds, advance to
+  // the voting stage.
+  advanceRaceRound(): void {
     this.rounds++;
     if (this.rounds === 3) {
       this.beginVoting();
@@ -329,18 +369,21 @@ class GameState {
 
   beginDistribution(): void {
     this.stage = 3;
+    this.parties.forEach((party: Party) => {
+      party.pmChoice = false;
+    });
   }
 
+  // End the game if a player suspended the constitution and won prime minister
+  // in the next race. If a player suspended the constitution and did not win,
+  // remove all their funds and give them a penalty to support. If the game has
+  // not ended, begin a new race.
   checkIfGameWon(): void {
-    if (this.primeMinister != null &&
-        this.suspender === this.pols[this.primeMinister].party) {
+    if (this.suspender === this.priority) {
       this.ended = true;
-    }
-
-    // Advance decline and set suspender after 3 rounds of decline
-    this.decline += 1;
-    if (this.decline >= 3 && this.primeMinister != null) {
-      this.suspender = this.pols[this.primeMinister].party;
+    } else if (this.suspender !== null) {
+      this.parties[this.suspender].baseSupport = 2;   // becomes 3 before race
+      this.parties[this.suspender].funds = 0;
     }
 
     // If there was no winner, advance to the next prov and begin nomination.
@@ -402,9 +445,6 @@ class GameState {
   flip(partyIndex: number, polIndex: number): void {
     const party = this.parties[partyIndex];
     if (party.bribed.includes(polIndex) && this.stage >= 2) {
-      // Remove from their old party
-      const oldParty = this.parties[this.pols[polIndex].party];
-      oldParty.pols.splice(oldParty.pols.indexOf(polIndex), 1);
       
       // If they were an official, transfer their vote from their old party to
       // their new party
@@ -414,7 +454,6 @@ class GameState {
       }
       
       this.pols[polIndex].party = partyIndex;
-      party.pols.push(polIndex);
       party.bribed.splice(party.bribed.indexOf(polIndex), 1);
     }
   }
@@ -449,6 +488,11 @@ class GameState {
       this.pols[polIndex].support += 1;
       this.parties[partyIndex].votes--;
     }
+  }
+
+  // Choose between the two prime minister options.
+  choose(partyIndex: number, choice: boolean): void {
+    this.parties[partyIndex].pmChoice = choice;
   }
 
   // Censor secret info so the gamestate can be sent to the client, and return

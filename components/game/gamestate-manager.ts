@@ -3,16 +3,13 @@ interface ActionQueue {
     partyIndex: number,
     amount: number
   }[];
-  runQueue?: {
-    polIndex: number,
-    provIndex: number
-  }[];
   adQueue?: number[];
   smearQueue?: number[];
   bribeQueue?: number[];
   hitQueue?: number[];
   voteQueue?: number[];
   flipQueue?: number[];
+  pmChoice?: boolean;
 }
 
 class GamestateManager {
@@ -39,15 +36,14 @@ class GamestateManager {
       'disconnect': this.handleDisconnect,
       'flip': this.handleFlip,
       'pay': this.handlePay,
-      'run': this.handleRun,
       'ad': this.handleAd,
       'smear': this.handleSmear,
       'hit': this.handleHit,
       'bribe': this.handleBribe,
       'vote': this.handleVote,
+      'choose': this.handleChoose,
       'unflip': this.handleUndoFlip,
       'unpay': this.handleUndoPay,
-      'unrun': this.handleUndoRun,
       'unad': this.handleUndoAd,
       'unsmear': this.handleUndoSmear,
       'unhit': this.handleUndoHit,
@@ -70,9 +66,7 @@ class GamestateManager {
     this.actionQueue = {
       payQueue: []
     }
-    if (gs.stage === 0) {
-      this.actionQueue.runQueue = [];
-    } else if (gs.stage === 1) {
+    if (gs.stage === 1) {
       this.actionQueue.adQueue = [];
       this.actionQueue.smearQueue = [];
       this.actionQueue.bribeQueue = [];
@@ -147,14 +141,6 @@ class GamestateManager {
     this.actionQueue.payQueue.push(paymentInfo);
   }
 
-  handleRun(runInfo: {polIndex: number, provIndex: number}): void {
-    this.gs.provs[runInfo.provIndex].candidates.push(runInfo.polIndex);
-    this.ownParty().pols.splice(
-        this.ownParty().pols.indexOf(runInfo.polIndex), 1);
-    this.ownParty().funds -= 5;
-    this.actionQueue.runQueue.push(runInfo);
-  }
-
   handleAd(polIndex: number): void {
     this.ownParty().funds -= 3 + this.gs.rounds;
     if (this.gs.pols[polIndex].adsBought === undefined) {
@@ -194,6 +180,10 @@ class GamestateManager {
     this.actionQueue.voteQueue.push(polIndex);
   }
 
+  handleChoose(choice: boolean): void {
+    this.actionQueue.pmChoice = choice;
+  }
+
   handleUndoFlip(flipInfo): void {
     this.gs.pols[flipInfo.polIndex].party =
         this.gs.pols[flipInfo.polIndex].oldParty;
@@ -229,19 +219,6 @@ class GamestateManager {
         this.actionQueue.payQueue[paymentIndex].amount;
     this.gs.parties[partyIndex].paid = false;
     this.actionQueue.payQueue.splice(paymentIndex, 1);
-  }
-
-  handleUndoRun(runInfo: {polIndex: number, provIndex: number}): void {
-    const candidates = this.gs.provs[runInfo.provIndex].candidates;
-    candidates.splice(candidates.indexOf(runInfo.polIndex), 1);
-    this.ownParty().pols.push(runInfo.polIndex);
-    this.ownParty().funds += 5;
-
-    for (let i = 0; i < this.actionQueue.runQueue.length; i++) {
-      if (this.actionQueue.runQueue[i].polIndex == runInfo.polIndex) {
-        this.actionQueue.runQueue.splice(i, 1);
-      }
-    }
   }
 
   handleUndoAd(polIndex: number): void {
