@@ -204,6 +204,10 @@ class GameRoom {
           this.gs.vote(playerIndex, action);
         });
       });
+    } else {
+      this.players.forEach((player, playerIndex) => {
+        this.gs.choose(playerIndex, player.actionQueue.pmChoice);
+      });
     }
   }
 

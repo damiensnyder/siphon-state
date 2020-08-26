@@ -9,6 +9,7 @@ interface ActionQueue {
   hitQueue?: number[];
   voteQueue?: number[];
   flipQueue?: number[];
+  pmChoice?: boolean;
 }
 
 // @ts-ignore

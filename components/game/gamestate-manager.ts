@@ -1,6 +1,6 @@
 interface ActionQueue {
   payQueue: {
-    partyIndex: number,
+    target: number,
     amount: number
   }[];
   adQueue?: number[];
@@ -74,6 +74,8 @@ class GamestateManager {
     } else if (gs.stage === 2) {
       this.actionQueue.voteQueue = [];
       this.actionQueue.hitQueue = [];
+    } else if (gs.stage === 3) {
+      this.actionQueue.pmChoice = false;
     }
     if (gs.stage >= 2) {
       this.actionQueue.flipQueue = [];
@@ -119,22 +121,22 @@ class GamestateManager {
     }
   }
 
-  handleFlip(flipInfo): void {
-    this.gs.pols[flipInfo.polIndex].oldParty =
-        this.gs.pols[flipInfo.polIndex].party;
-    this.gs.pols[flipInfo.polIndex].party = this.gs.pov;
+  handleFlip(polIndex: number): void {
+    this.gs.pols[polIndex].oldParty =
+        this.gs.pols[polIndex].party;
+    this.gs.pols[polIndex].party = this.gs.pov;
 
     // If the flipped politician was an active official, gain a vote.
-    if (this.gs.officials.includes(flipInfo.polIndex) && 
+    if (this.gs.officials.includes(polIndex) &&
         this.gs.stage === 2) {
       this.ownParty().votes++;
-      this.gs.parties[this.gs.pols[flipInfo.polIndex].oldParty].votes--;
+      this.gs.parties[this.gs.pols[polIndex].oldParty].votes--;
     }
 
-    this.actionQueue.flipQueue.push(flipInfo.polIndex);
+    this.actionQueue.flipQueue.push(polIndex);
   }
 
-  handlePay(paymentInfo): void {
+  handlePay(paymentInfo: {target: number, amount: number}): void {
     this.ownParty().funds -= paymentInfo.amount;
     this.gs.parties[paymentInfo.target].funds += paymentInfo.amount;
     this.gs.parties[paymentInfo.target].paid = true;

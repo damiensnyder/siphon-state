@@ -148,16 +148,15 @@ function buttonsJsx(props) {
     }
   }
 
-  // If they have been bribed, add a "Flip" button or an "Undo" button depending
-  // on whether they have already been flipped.
+  // If they have been bribed, add a "Flip" button or an "Undo" button
+  // depending on whether they have already been flipped.
   if (ownParty.bribed != undefined &&
       ownParty.bribed.includes(props.polIndex) &&
       props.gs.stage >= 2) {
     if (props.pol.party !== props.gs.pov) {
       buttons.push(
         <button className={general.actionBtn}
-            onClick={() => props.callback('flip',
-                {polIndex: props.polIndex})}>
+            onClick={() => props.callback('flip', props.polIndex)}>
           Flip
         </button>
       );

@@ -166,6 +166,11 @@ var GameRoom = /** @class */ (function () {
                 });
             });
         }
+        else {
+            this.players.forEach(function (player, playerIndex) {
+                _this.gs.choose(playerIndex, player.actionQueue.pmChoice);
+            });
+        }
     };
     GameRoom.prototype.rematch = function () {
         this.players.forEach(function (player) { player.reset(); });
