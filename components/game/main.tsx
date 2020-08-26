@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import PartiesView from "./parties/parties-view";
 import ProvsView from "./provs/provs-view";
 import PregameView from "./pregame/pregame-view";
-import HelperBar from "./helper-bar";
+import HelperBar from "./helper-bar/helper-bar";
 import Chat from "./chat/chat";
 import styles from "./main.module.css";
 import GamestateManager from "./gamestate-manager";

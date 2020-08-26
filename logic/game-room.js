@@ -118,7 +118,7 @@ var GameRoom = /** @class */ (function () {
             msg.trim().length > 0 &&
             viewer.pov !== undefined) {
             viewer.socket.broadcast.emit('msg', {
-                sender: viewer.name,
+                sender: this.gs.parties[viewer.pov].name,
                 text: msg.trim(),
                 isSelf: false,
                 isSystem: false

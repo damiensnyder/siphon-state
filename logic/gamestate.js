@@ -110,18 +110,21 @@ var GameState = /** @class */ (function () {
                 }
             });
             prov.candidates = returningCandidates;
-            // Give each party news politician in the province until they have one
+            // Give each party new politicians in the province until they have one
             // per seat.
             _this.parties.forEach(function (party, partyIndex) {
                 while (returningPerParty[partyIndex] < prov.seats) {
                     var newPol = _this.contentGenerator.newPol(partyIndex);
                     var priorityNudge = returningPerParty[partyIndex] /
-                        (_this.parties.length * prov.seats);
+                        (_this.parties.length * prov.seats * 2);
                     newPol.support = party.baseSupport + priorityNudge;
                     _this.pols.push(newPol);
                     prov.candidates.push(_this.pols.length - 1);
                     returningPerParty[partyIndex]++;
                 }
+            });
+            prov.candidates.sort(function (a, b) {
+                return _this.pols[b].support - _this.pols[a].support;
             });
         });
     };
@@ -268,47 +271,36 @@ var GameState = /** @class */ (function () {
     // Count each official's votes. If there is a winner, elect them and begin
     // distribution. Otherwise, start the voting again.
     GameState.prototype.tallyVotes = function () {
-        var _this = this;
-        var maxVotes = -1;
-        var maxPolIndices = [];
-        this.officials.forEach(function (polIndex) {
-            if (_this.pols[polIndex].support > maxVotes) {
-                maxPolIndices = [polIndex];
-                maxVotes = _this.pols[polIndex].support;
-            }
-            else if (_this.pols[polIndex].support === maxVotes) {
-                maxPolIndices.push(polIndex);
-            }
-        });
+        var sortedOfficials = this.officials.slice().sort(this.compareByVotesAndPriority);
         // If the election was not disputed, elect the winner. If it was disputed
         // and this was the third voting round, elect the official belonging to the
         // highest-priority party. Otherwise, reset every politician's votes and
         // start again.
-        if (maxPolIndices.length > 1) {
-            this.rounds++;
-            if (this.rounds < 3) {
-                this.resetVotes();
-            }
-            else {
-                var maxPol = maxPolIndices[0];
-                var maxPriority = (this.pols[maxPol].party - this.priority) %
-                    this.parties.length;
-                for (var i = 1; i < maxPolIndices.length; i++) {
-                    var priority = (this.pols[maxPolIndices[i]].party - this.priority) %
-                        this.parties.length;
-                    if (priority < maxPriority) {
-                        maxPol = maxPolIndices[i];
-                        maxPriority = priority;
-                    }
-                }
-                this.primeMinister = maxPol;
-                this.beginDistribution();
-            }
-        }
-        else {
-            this.primeMinister = maxPolIndices[0];
+        if (this.officials.length == 0) {
             this.beginDistribution();
         }
+        else if (this.officials.length > 1 &&
+            this.rounds < 3 &&
+            (this.pols[sortedOfficials[0]].support ==
+                this.pols[sortedOfficials[1]].support)) {
+            this.rounds++;
+            this.resetVotes();
+        }
+        else {
+            this.officials = sortedOfficials;
+            this.primeMinister = this.officials[0];
+            this.beginDistribution();
+        }
+    };
+    GameState.prototype.compareByVotesAndPriority = function (a, b) {
+        var _this = this;
+        if (this.pols[b].support != this.pols[a].support) {
+            return this.pols[b].support - this.pols[a].support;
+        }
+        var priority = function (partyIndex) {
+            return (partyIndex - _this.priority) % _this.parties.length;
+        };
+        return priority(this.pols[a].party) - priority(this.pols[b].party);
     };
     /*
     ============
