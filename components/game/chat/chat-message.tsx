@@ -17,7 +17,9 @@ function ChatMessage(props) {
 
   return (
     <div>
-      <span className={senderStyle(props.msg.isSelf)}>{props.msg.sender}:</span>
+      <span className={senderStyle(props.msg.isSelf)}>
+        {props.msg.sender}:
+      </span>
       &nbsp;&nbsp;{props.msg.text}
     </div>
   );

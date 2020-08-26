@@ -33,7 +33,7 @@ class Chat extends React.Component {
     let msgsJsx: any[] = [];
     this.props.messages.forEach((msg, msgIndex) => {
       msgsJsx.push(
-          <ChatMessage msg={msg} key={msgIndex} />
+        <ChatMessage msg={msg} key={msgIndex} />
       );
     });
     return msgsJsx;
@@ -98,8 +98,8 @@ class Chat extends React.Component {
                  onKeyDown={this.checkIfEnterPressed}
                  ref={this.textInput} />
           <button className={general.actionBtn}
-                  id={styles.sendBtn}
-                  onClick={this.sendMsg}>
+              id={styles.sendBtn}
+              onClick={this.sendMsg}>
             Send
           </button>
         </div>

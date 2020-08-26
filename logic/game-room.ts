@@ -155,7 +155,7 @@ class GameRoom {
         msg.trim().length > 0 &&
         viewer.pov !== undefined) {
       viewer.socket.broadcast.emit('msg', {
-        sender: viewer.name,
+        sender: this.gs.parties[viewer.pov].name,
         text: msg.trim(),
         isSelf: false,
         isSystem: false
@@ -222,7 +222,7 @@ class GameRoom {
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
   handleDisconnect(viewer: typeof Viewer): void {
-    let index = this.viewers.indexOf(viewer);
+    let index: number = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
 
     if (viewer.pov !== undefined) {
