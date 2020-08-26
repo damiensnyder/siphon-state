@@ -159,19 +159,23 @@ class GameState {
       });
       prov.candidates = returningCandidates;
 
-      // Give each party news politician in the province until they have one
+      // Give each party new politicians in the province until they have one
       // per seat.
       this.parties.forEach((party: Party, partyIndex: number) => {
         while (returningPerParty[partyIndex] < prov.seats) {
           const newPol: Pol = this.contentGenerator.newPol(partyIndex);
           const priorityNudge: number = returningPerParty[partyIndex] /
-              (this.parties.length * prov.seats);
+              (this.parties.length * prov.seats * 2);
           newPol.support = party.baseSupport + priorityNudge;
 
           this.pols.push(newPol);
           prov.candidates.push(this.pols.length - 1);
           returningPerParty[partyIndex]++;
         }
+      });
+
+      prov.candidates.sort((a: number, b: number) => {
+        return this.pols[b].support - this.pols[a].support;
       });
     });
   }
@@ -321,44 +325,36 @@ class GameState {
   // Count each official's votes. If there is a winner, elect them and begin
   // distribution. Otherwise, start the voting again.
   tallyVotes(): void {
-    let maxVotes: number = -1;
-    let maxPolIndices: number[] = [];
-    this.officials.forEach((polIndex) => {
-      if (this.pols[polIndex].support > maxVotes) {
-        maxPolIndices = [polIndex];
-        maxVotes = this.pols[polIndex].support;
-      } else if (this.pols[polIndex].support === maxVotes) {
-        maxPolIndices.push(polIndex);
-      }
-    });
+    const sortedOfficials: number[] =
+        this.officials.slice().sort(this.compareByVotesAndPriority);
 
     // If the election was not disputed, elect the winner. If it was disputed
     // and this was the third voting round, elect the official belonging to the
     // highest-priority party. Otherwise, reset every politician's votes and
     // start again.
-    if (maxPolIndices.length > 1) {
+    if (this.officials.length == 0) {
+      this.beginDistribution();
+    } else if (this.officials.length > 1 &&
+        this.rounds < 3 &&
+        (this.pols[sortedOfficials[0]].support ==
+         this.pols[sortedOfficials[1]].support)) {
       this.rounds++;
-      if (this.rounds < 3) {
-        this.resetVotes();
-      } else {
-        let maxPol: number = maxPolIndices[0];
-        let maxPriority: number = (this.pols[maxPol].party - this.priority) %
-            this.parties.length;
-        for (let i = 1; i < maxPolIndices.length; i++) {
-          let priority = (this.pols[maxPolIndices[i]].party - this.priority) %
-              this.parties.length;
-          if (priority < maxPriority) {
-            maxPol = maxPolIndices[i];
-            maxPriority = priority;
-          }
-        }
-        this.primeMinister = maxPol;
-        this.beginDistribution();
-      }
+      this.resetVotes();
     } else {
-      this.primeMinister = maxPolIndices[0];
+      this.officials = sortedOfficials
+      this.primeMinister = this.officials[0];
       this.beginDistribution();
     }
+  }
+
+  compareByVotesAndPriority(a: number, b: number): number {
+    if (this.pols[b].support != this.pols[a].support) {
+      return this.pols[b].support - this.pols[a].support;
+    }
+    const priority = (partyIndex: number) => {
+      return (partyIndex - this.priority) % this.parties.length;
+    };
+    return priority(this.pols[a].party) - priority(this.pols[b].party);
   }
 
   /*
