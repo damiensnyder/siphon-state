@@ -169,14 +169,6 @@ class GameRoom {
         this.gs.pay(playerIndex, action);
       });
     });
-
-    if (this.gs.stage === 1 || this.gs.stage === 2) {
-      this.players.forEach((player, playerIndex) => {
-        player.actionQueue.hitQueue.forEach((action) => {
-          this.gs.hit(playerIndex, action);
-        });
-      });
-    }
   
     if (this.gs.stage >= 2) {
       this.players.forEach((player, playerIndex) => {
@@ -186,13 +178,15 @@ class GameRoom {
       });
     }
 
-    if (this.gs.stage === 0) {
+    if (this.gs.stage <= 2) {
       this.players.forEach((player, playerIndex) => {
-        player.actionQueue.runQueue.forEach((action) => {
-          this.gs.run(playerIndex, action);
+        player.actionQueue.hitQueue.forEach((action) => {
+          this.gs.hit(playerIndex, action);
         });
       });
-    } else if (this.gs.stage === 1) {
+    }
+
+    if (this.gs.stage === 1) {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.bribeQueue.forEach((action) => {
           this.gs.bribe(playerIndex, action);

@@ -132,13 +132,6 @@ var GameRoom = /** @class */ (function () {
                 _this.gs.pay(playerIndex, action);
             });
         });
-        if (this.gs.stage === 1 || this.gs.stage === 2) {
-            this.players.forEach(function (player, playerIndex) {
-                player.actionQueue.hitQueue.forEach(function (action) {
-                    _this.gs.hit(playerIndex, action);
-                });
-            });
-        }
         if (this.gs.stage >= 2) {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.flipQueue.forEach(function (action) {
@@ -146,14 +139,14 @@ var GameRoom = /** @class */ (function () {
                 });
             });
         }
-        if (this.gs.stage === 0) {
+        if (this.gs.stage <= 2) {
             this.players.forEach(function (player, playerIndex) {
-                player.actionQueue.runQueue.forEach(function (action) {
-                    _this.gs.run(playerIndex, action);
+                player.actionQueue.hitQueue.forEach(function (action) {
+                    _this.gs.hit(playerIndex, action);
                 });
             });
         }
-        else if (this.gs.stage === 1) {
+        if (this.gs.stage === 1) {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.bribeQueue.forEach(function (action) {
                     _this.gs.bribe(playerIndex, action);
