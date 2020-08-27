@@ -326,7 +326,7 @@ class GameState {
   // distribution. Otherwise, start the voting again.
   tallyVotes(): void {
     const sortedOfficials: number[] =
-        this.officials.slice().sort(this.compareByVotesAndPriority);
+        this.officials.slice().sort(this.compareByVotesAndPriority.bind(this));
 
     // If the election was not disputed, elect the winner. If it was disputed
     // and this was the third voting round, elect the official belonging to the
@@ -347,6 +347,9 @@ class GameState {
     }
   }
 
+  // Compare two candidates such that a candidates whose party has higher
+  // priority is less than a candidate who doesn't, and a candidate with more
+  // support is less, which supersedes that.
   compareByVotesAndPriority(a: number, b: number): number {
     if (this.pols[b].support != this.pols[a].support) {
       return this.pols[b].support - this.pols[a].support;

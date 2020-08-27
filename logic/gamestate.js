@@ -271,7 +271,7 @@ var GameState = /** @class */ (function () {
     // Count each official's votes. If there is a winner, elect them and begin
     // distribution. Otherwise, start the voting again.
     GameState.prototype.tallyVotes = function () {
-        var sortedOfficials = this.officials.slice().sort(this.compareByVotesAndPriority);
+        var sortedOfficials = this.officials.slice().sort(this.compareByVotesAndPriority.bind(this));
         // If the election was not disputed, elect the winner. If it was disputed
         // and this was the third voting round, elect the official belonging to the
         // highest-priority party. Otherwise, reset every politician's votes and
