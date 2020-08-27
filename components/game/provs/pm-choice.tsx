@@ -26,22 +26,26 @@ function chooserText(props): React.ReactElement {
 
 function PmChoice(props): React.ReactElement {
   const numOtherParties: number = props.gs.parties.length - 1;
+  const pmIsOwnParty: boolean = props.gs.primeMinister != null &&
+      props.gs.pols[props.gs.primeMinister].party == props.gs.pov;
+  const pmIsOtherParty: boolean = props.gs.primeMinister != null &&
+      props.gs.pols[props.gs.primeMinister].party != props.gs.pov;
 
   let option1: string = "Gain $" + (0.5 * numOtherParties) + "M";
-  let option2: string = "Your politicians get +1 support in the next race";
+  let option2: string = "+1 support in the next race";
   if (props.gs.decline == 1) {
     option1 = "Gain $" + numOtherParties + "M";
-    option2 = "Get +2 support in the next race and +1 in the race after that";
+    option2 = "+2 support in the next race and +1 in the race after that";
   } else if (props.gs.decline == 2) {
     option1 = "SUSPEND THE CONSTITUTION: Gain $" + (3 * numOtherParties) +
-        "M. If you win the next prime minister, you win the game, but if " +
-        "you fail, you lose all your funds and get -2 support temporarily";
+        "M. Winning the next prime minister wins the game, but failing " +
+        "docks all remaining funds and gives -2 support temporarily";
     option2 = "No effects";
   } else if (props.gs.decline > 3) {
     option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M and ` +
-        `get ${props.gs.decline - 2} support. If you win the next prime ` +
-        "minister, you win the game, but if you fail, you lose all your " +
-        "funds and get -2 support";
+        `get ${props.gs.decline - 2} support. Winning the next prime ` +
+        "minister wins the game, but failing docks all remaining funds and " +
+        "gives -2 support temporarily";
     option2 = "No effects";
   }
 
@@ -50,14 +54,16 @@ function PmChoice(props): React.ReactElement {
       {chooserText(props)}
       <div className={styles.buttonRow}>
         <button className={styles.optionButton + ' ' +
-            (props.gs.decline >= 2 ? styles.suspend + ' ' : '') +
-            general.actionBtn}
+                general.actionBtn + ' ' +
+                (props.gs.decline >= 2 ? styles.suspend + ' ' : '') +
+                (pmIsOwnParty ? '' : general.inactiveBtn2)}
             onClick={() => props.callback('choose', true)}>
           {option1}
         </button>
         <span>OR</span>
         <button className={styles.optionButton + ' ' +
-            general.actionBtn}
+                general.actionBtn + ' ' +
+                (pmIsOwnParty ? '' : general.inactiveBtn2)}
             onClick={() => props.callback('choose', false)}>
           {option2}
         </button>
