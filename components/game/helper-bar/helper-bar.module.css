@@ -1,13 +1,30 @@
-.barWrapper {
-  flex: 0;
+.outerWrapper {
   margin-top: 16px;
+
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  padding: 16px;
+
+  border-radius: 6px;
+  background-color: #555;
+}
+
+.helpText {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.buttonsRow {
+  flex: 0;
 
   display: flex;
   flex-flow: row;
   justify-content: space-between;
   align-items: center;
-  padding: 8px;
+}
 
-  border-radius: 6px;
-  background-color: #555;
+.bigButton {
+  min-width: 100px;
+  font-size: 20px;
 }

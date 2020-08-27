@@ -5,79 +5,114 @@ import styles from "./helper-bar.module.css";
 
 interface HelperBarProps {
   gs: any,
-  callback: any
+  callback: (string) => void,
+  activeTab: number,
+  tabCallback: (number) => void
 }
 
-function helperMsg(props: HelperBarProps): string {
-  if (!props.gs.started) {
-    return "Click ready when you're ready for the game to start.";
+class HelperBar extends React.Component {
+  props: HelperBarProps;
+  state: {helpIsVisible: boolean};
+
+  constructor(props: HelperBarProps) {
+    super(props);
+
+    this.state = {
+      helpIsVisible: false
+    };
   }
-  if (props.gs.ended) {
-    if (props.gs.suspender == null) {
-      return "Click rematch when you're ready to play again.";
-    }
-    return "" + props.gs.parties[props.gs.suspender].name + " wins! Click " +
-        "rematch when you're ready to play again.";
-  }
-  if (props.gs.stage == 1) {
-    return "Buy ads for your own candidates and smear other candidates to " +
-        "help win the race. Rounds remaining: " + (2 - props.gs.rounds);
-  }
-  if (props.gs.stage == 2) {
-    const votesRemaining = props.gs.parties[props.gs.pov].votes;
-    let votesRemainingMsg = "";
-    if (votesRemaining > 0) {
-      votesRemainingMsg = " Votes remaining: " + votesRemaining;
-    }
-    return "Vote for a candidate to be elected prime minister." +
-        votesRemainingMsg;
-  }
-  if (props.gs.stage == 3) {
-    let suspenderMsg = "";
-    if (props.gs.decline >= 3) {
-      suspenderMsg = " If the prime minister's party also wins the next " +
-          "election, they win the game. Otherwise, they lose the game.";
-    }
-    let primeMinisterPayout = 7.5;
-    props.gs.parties.forEach((remainingParty) => {
-      if (!remainingParty.eliminated) {
-        primeMinisterPayout += 0.5 * (props.gs.decline + 1);
-      }
+
+  toggleHelp(): void {
+    this.setState({
+      helpIsVisible: !this.state.helpIsVisible
     });
-    return "At the end of this stage, the prime minister's party will " +
-        "receive $" + primeMinisterPayout + "M and all other parties will " +
-        "receive $7.5M." + suspenderMsg;
   }
-}
 
-function buttonMsg(props: HelperBarProps) {
-  if (props.gs.parties[props.gs.pov].ready) {
-    return "Cancel";
+  readyButtonLabel(): string {
+    if (this.props.gs.parties[this.props.gs.pov].ready) {
+      return "Cancel";
+    }
+    if (!this.props.gs.started) {
+      return "Ready";
+    }
+    if (this.props.gs.ended) {
+      return "Rematch";
+    }
+    return "Done";
   }
-  if (!props.gs.started) {
-    return "Ready";
-  }
-  if (props.gs.ended) {
-    return "Rematch";
-  }
-  return "Done";
-}
 
-function HelperBar(props: HelperBarProps) {
-  if (props.gs.parties[props.gs.pov] == null) {
-    return null;
+  helpMessage() {
+    if (!this.state.helpIsVisible) {
+      return null;
+    }
+
+    let helpText = "ass face";
+
+    return (
+      <div className={styles.helpText}>
+        {helpText}
+      </div>
+    );
   }
-  return (
-    <div className={styles.barWrapper}>
-      <span>
-        {helperMsg(props)}
-      </span>
-      <button className={general.actionBtn + ' ' + general.priorityBtn}
-          onClick={() => props.callback('ready')}>
-        {buttonMsg(props)}
+
+  render() {
+    if (this.props.gs.parties[this.props.gs.pov] == null) {
+      return null;
+    }
+
+    const buttonStyle: string = general.actionBtn + ' ' +
+        styles.bigButton + ' ';
+    const inactiveStyle: string = general.inactiveBtn2 + ' ' +
+        styles.bigButton + ' ';
+    const priorityStyle: string = buttonStyle + general.priorityBtn + ' ';
+
+    let backButton = (
+      <button className={buttonStyle}
+          onClick={() => this.props.tabCallback(this.props.activeTab - 1)}>
+        &lt;&lt; Back
       </button>
-    </div>
-  );
+    );
+    let nextButton: React.ReactElement = (
+      <button className={buttonStyle}
+          onClick={() => this.props.tabCallback(this.props.activeTab + 1)}>
+        Next &gt;&gt;
+      </button>
+    );
+    if (this.props.activeTab == 0) {
+      backButton = (
+        <button className={inactiveStyle}>
+          &lt;&lt; Back
+        </button>
+      );
+    }
+    if (this.props.activeTab == this.props.gs.provs.length - 1) {
+      nextButton = (
+        <button className={inactiveStyle}>
+          Next &gt;&gt;
+        </button>
+      );
+    }
+
+    return (
+      <div className={styles.outerWrapper}>
+        {this.helpMessage.bind(this)()}
+        <div className={styles.buttonsRow}>
+          <button className={priorityStyle}
+              onClick={this.toggleHelp.bind(this)}>
+            Help
+          </button>
+          {backButton}
+          {nextButton}
+          <button className={priorityStyle}
+              onClick={() => this.props.callback('ready')}>
+            {this.readyButtonLabel()}
+          </button>
+        </div>
+      </div>
+    );
+  }
 }
+
+
 
 export default HelperBar;

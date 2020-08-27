@@ -57,7 +57,7 @@ class Payment extends React.Component {
       return (
         <button className={general.actionBtn + ' ' +
             styles.incrementBtn + ' ' +
-            styles.inactiveBtn}>
+            general.inactiveBtn2}>
           {label}
         </button>
       );

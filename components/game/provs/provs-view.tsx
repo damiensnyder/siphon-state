@@ -47,7 +47,9 @@ class ProvsView extends React.Component {
                 callback={this.props.callback}
                 index={this.state.tab} />
             <HelperBar gs={this.props.gs}
-                callback={this.props.callback} />
+                callback={this.props.callback}
+                activeTab={this.state.tab}
+                tabCallback={this.switchTab.bind(this)} />
           </div>
         </div>
       </div>
