@@ -2,7 +2,13 @@
 var App = require('./app');
 // @ts-ignore
 var GameRoom = require('./logic/game-room');
-function setAllPartiesToDisconnected(gs) {
+// Add the specified number of parties to the game, and set all of them to
+// disconnected.
+function addParties(gs, numParties) {
+    for (var i = 1; i <= numParties; i++) {
+        gs.addParty("party " + i, "P" + i);
+    }
+    gs.commitAll();
     gs.parties.forEach(function (party) {
         party.connected = false;
     });
@@ -14,10 +20,7 @@ function twoPartiesStart() {
         nation: "Kenderland",
         private: false
     }, function () { });
-    game.gs.addParty("party 1", "P1");
-    game.gs.addParty("party 2", "P2");
-    game.gs.commitAll();
-    setAllPartiesToDisconnected(game.gs);
+    addParties(game.gs, 2);
     App.gameManager.addTestGame(game);
 }
 function twoPartiesEnd() {
@@ -27,25 +30,31 @@ function twoPartiesEnd() {
         nation: "Otria",
         private: false
     }, function () { });
-    game.gs.addParty("party 1", "P1");
-    game.gs.addParty("party 2", "P2");
-    game.gs.commitAll();
-    setAllPartiesToDisconnected(game.gs);
-    game.gs.ended = true;
+    addParties(game.gs, 2);
     App.gameManager.addTestGame(game);
 }
-function twoPartiesThreeDecline() {
+function twoPartiesVoting() {
     var game = new GameRoom(App.gameManager.io, {
-        name: "two parties end",
-        gameCode: "2p3d",
+        name: "two parties voting",
+        gameCode: "2pv",
         nation: "Kenderland",
         private: false
     }, function () { });
-    game.gs.addParty("party 1", "P1");
-    game.gs.addParty("party 2", "P2");
+    addParties(game.gs, 2);
     game.gs.commitAll();
-    setAllPartiesToDisconnected(game.gs);
-    game.gs.decline = 3;
+    game.gs.commitAll();
+    game.gs.commitAll();
+    App.gameManager.addTestGame(game);
+}
+function twoPartiesTwoDecline() {
+    var game = new GameRoom(App.gameManager.io, {
+        name: "two parties two decline",
+        gameCode: "2p2d",
+        nation: "Kenderland",
+        private: false
+    }, function () { });
+    addParties(game.gs, 2);
+    game.gs.decline = 2;
     App.gameManager.addTestGame(game);
 }
 function threePartiesStart() {
@@ -55,11 +64,7 @@ function threePartiesStart() {
         nation: "Otria",
         private: false
     }, function () { });
-    game.gs.addParty("party 1", "P1");
-    game.gs.addParty("party 2", "P2");
-    game.gs.addParty("party 3", "P3");
-    game.gs.commitAll();
-    setAllPartiesToDisconnected(game.gs);
+    addParties(game.gs, 3);
     App.gameManager.addTestGame(game);
 }
 function fourPartiesStart() {
@@ -69,17 +74,13 @@ function fourPartiesStart() {
         nation: "Otria",
         private: false
     }, function () { });
-    game.gs.addParty("party 1", "P1");
-    game.gs.addParty("party 2", "P2");
-    game.gs.addParty("party 3", "P3");
-    game.gs.addParty("party 4", "P4");
-    game.gs.commitAll();
-    setAllPartiesToDisconnected(game.gs);
+    addParties(game.gs, 4);
     App.gameManager.addTestGame(game);
 }
 var startTime = (new Date()).getUTCSeconds();
 twoPartiesStart();
-twoPartiesThreeDecline();
+twoPartiesVoting();
+twoPartiesTwoDecline();
 twoPartiesEnd();
 threePartiesStart();
 fourPartiesStart();

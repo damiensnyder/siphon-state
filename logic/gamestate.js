@@ -31,7 +31,7 @@ var GameState = /** @class */ (function () {
             baseSupport: 5,
             sympathetic: [],
             bribed: [],
-            usedHit: false,
+            hitAvailable: false,
             pmChoice: false
         });
     };
@@ -89,8 +89,12 @@ var GameState = /** @class */ (function () {
         if (this.decline >= 1) {
             this.giveSympathizers(1);
         }
+        if ((this.decline % 3) == 2) {
+            this.parties.forEach(function (party) {
+                party.hitAvailable = true;
+            });
+        }
         this.officials = [];
-        this.primeMinister = null;
     };
     // Return all officials to be candidates in their province with a +1 bonus to
     // support, then refill the province with candidates until each party has one
@@ -105,7 +109,7 @@ var GameState = /** @class */ (function () {
                 if (_this.officials.includes(polIndex)) {
                     returningCandidates.push(polIndex);
                     var polParty = _this.pols[polIndex].party;
-                    _this.pols[polIndex].support = _this.parties[polParty].baseSupport + 1;
+                    _this.pols[polIndex].support = _this.parties[polParty].baseSupport;
                     returningPerParty[polParty] += 1;
                 }
             });
@@ -292,6 +296,9 @@ var GameState = /** @class */ (function () {
             this.beginDistribution();
         }
     };
+    // Compare two candidates such that a candidates whose party has higher
+    // priority is less than a candidate who doesn't, and a candidate with more
+    // support is less, which supersedes that.
     GameState.prototype.compareByVotesAndPriority = function (a, b) {
         var _this = this;
         if (this.pols[b].support != this.pols[a].support) {
@@ -312,13 +319,18 @@ var GameState = /** @class */ (function () {
         this.parties.forEach(function (party) {
             party.pmChoice = false;
         });
+        if (this.officials.length == 0) {
+            this.primeMinister = null;
+            this.checkIfGameWon();
+        }
     };
     // End the game if a player suspended the constitution and won prime minister
     // in the next race. If a player suspended the constitution and did not win,
     // remove all their funds and give them a penalty to support. If the game has
     // not ended, begin a new race.
     GameState.prototype.checkIfGameWon = function () {
-        if (this.suspender === this.priority) {
+        if (this.primeMinister != null &&
+            this.suspender === this.pols[this.primeMinister].party) {
             this.ended = true;
         }
         else if (this.suspender !== null) {
@@ -390,11 +402,13 @@ var GameState = /** @class */ (function () {
     };
     // Call a hit the given politician, removing them from the game.
     GameState.prototype.hit = function (partyIndex, polIndex) {
-        var cost = this.stage >= 2 ? 50 : 25;
         var party = this.parties[partyIndex];
+        var cost = this.stage >= 2 ? 50 : 25;
+        if (partyIndex == this.priority && this.primeMinister != null) {
+            cost += 25;
+        }
         if (party.funds >= cost &&
-            this.decline >= 2 &&
-            !party.usedHit &&
+            party.hitAvailable &&
             this.pols[polIndex].party !== this.suspender) {
             if (this.officials.includes(polIndex)) {
                 this.officials.splice(this.officials.indexOf(polIndex), 1);
@@ -403,7 +417,7 @@ var GameState = /** @class */ (function () {
                 if (prov.candidates.includes(polIndex)) {
                     prov.candidates.splice(prov.candidates.indexOf(polIndex), 1);
                     party.funds -= cost;
-                    party.usedHit = true;
+                    party.hitAvailable = false;
                 }
             });
         }

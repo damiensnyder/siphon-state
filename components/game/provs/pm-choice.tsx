@@ -11,9 +11,8 @@ function chooserText(props): React.ReactElement {
       </h3>
     );
   }
-  if (props.gs.primeMinister == null ||
-      props.gs.pols[props.gs.primeMinister].party == props.gs.pov) {
-    return null;
+  if (props.gs.pols[props.gs.primeMinister].party == props.gs.pov) {
+    return <h3 className={styles.chooserText}>Choose between:</h3>;
   }
 
   return (
@@ -26,21 +25,19 @@ function chooserText(props): React.ReactElement {
 
 function PmChoice(props): React.ReactElement {
   const numOtherParties: number = props.gs.parties.length - 1;
-  const pmIsOwnParty: boolean = props.gs.primeMinister != null &&
+  const pmIsOwnParty: boolean = props.gs.stage == 3 &&
       props.gs.pols[props.gs.primeMinister].party == props.gs.pov;
-  const pmIsOtherParty: boolean = props.gs.primeMinister != null &&
-      props.gs.pols[props.gs.primeMinister].party != props.gs.pov;
   const chosenTrue: boolean = pmIsOwnParty &&
       props.gs.parties[props.gs.pov].pmChoice;
 
-  let option1: string = "Gain $" + (0.5 * numOtherParties) + "M";
+  let option1: string = "$" + numOtherParties + "M";
   let option2: string = "+1 support in the next race";
   if (props.gs.decline == 1) {
-    option1 = "Gain $" + numOtherParties + "M";
+    option1 = "$" + (2 * numOtherParties) + "M";
     option2 = "+2 support in the next race and +1 in the race after that";
   } else if (props.gs.decline == 2) {
-    option1 = "SUSPEND THE CONSTITUTION: Gain $" + (3 * numOtherParties) +
-        "M. Winning the next prime minister wins the game, but failing " +
+    option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M.` +
+        "Winning the next prime minister wins the game, but failing " +
         "docks all remaining funds and gives -2 support temporarily";
     option2 = "No effects";
   } else if (props.gs.decline > 3) {
@@ -50,6 +47,9 @@ function PmChoice(props): React.ReactElement {
         "gives -2 support temporarily";
     option2 = "No effects";
   }
+
+  const hitAddendum: string = ", and calling a hit on a member of the prime " +
+      "minister's party costs $2.5M extra";
 
   return (
     <div className={styles.outerWrapper}>
@@ -70,6 +70,10 @@ function PmChoice(props): React.ReactElement {
             onClick={() => props.callback('choose', false)}>
           {option2}
         </button>
+      </div>
+      <div className={styles.addendum}>
+        Members of the prime minister's party cannot be bribed
+        {props.gs.decline >= 1 ? hitAddendum : ""}.
       </div>
     </div>
   );

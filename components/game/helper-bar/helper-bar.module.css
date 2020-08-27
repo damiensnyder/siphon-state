@@ -10,10 +10,13 @@
 }
 
 .helpText {
+  margin: 0 16px;
+
   font-size: 20px;
 }
 
 .buttonsRow {
+  margin: 16px;
   flex: 0;
 
   display: flex;
@@ -23,7 +26,6 @@
 }
 
 .bigButton {
-  margin: 16px;
   min-width: 100px;
 
   font-size: 20px;

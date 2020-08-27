@@ -71,12 +71,12 @@ const VOTING: string[] = [
   "rounds of voting, a tiebreaker will be used."
 ];
 
-const CHOICE_PM: string[] = [
+const CHOICE_OWN_PM: string[] = [
   "Since you control the prime minister, you can choose whether to rule " +
   "your nation for the people or for yourself. No matter which choice you " +
   "make, though, the nation will sink further into disarray."
 ];
-const CHOICE_NO_PM: string[] = [
+const CHOICE_OTHER_PM: string[] = [
   "Since {} controls the prime minister, they can choose whether to rule " +
   "the nation for the people or for themselves. No matter which choice they " +
   "make, though, the nation will sink further into disarray."
@@ -129,20 +129,7 @@ class HelperBar extends React.Component {
     }
 
     if (this.props.gs.stage == 2) {
-      let bonusDollars: number = 0.5 * (this.props.gs.parties.length - 1);
-      let pmChoices: string = `+1 support next round, OR $${bonusDollars}M`;
-
-      if (this.props.gs.decline == 1) {
-        pmChoices = `+2 support next round, OR $${2 * bonusDollars}M`;
-      } else if (this.props.gs.decline >= 2) {
-        pmChoices = "the option to suspend the constitution (!)";
-      }
-
-      return (
-        <div className={styles.helpText}>
-          The prime minister's party gets {pmChoices}
-        </div>
-      );
+      return null;
     }
 
     if (this.props.gs.stage == 3) {
@@ -169,25 +156,35 @@ class HelperBar extends React.Component {
   currentHelpMessageSet(): string[] {
     if (this.props.gs.stage == 1) {
       if (this.props.gs.decline == 0) {
+        const roundCardinals = ["first", "second", "third"];
+        RACE_NO_DECLINE[2] = RACE_NO_DECLINE[2].replace('{}',
+            roundCardinals[this.props.gs.rounds]);
         return RACE_NO_DECLINE;
-      } else if (this.props.gs.decline == 1) {
-        return RACE_ONE_DECLINE;
-      } else if (this.props.gs.suspender != this.props.gs.pov) {
-        return RACE_SUSPENDING;
-      } else if (this.props.gs.suspender != null) {
-        return RACE_SUSPENDED;
-      } else {
-        return RACE_TWO_DECLINE;
       }
-    } else if (this.props.gs.stage == 2) {
-      return VOTING;
-    } else if (this.props.gs.primeMinister != null &&
-        this.props.gs.pols[this.props.gs.primeMinister.party] ==
-            this.props.gs.pov) {
-      return CHOICE_PM;
-    } else {
-      return CHOICE_NO_PM;
+      if (this.props.gs.decline == 1) {
+        return RACE_ONE_DECLINE;
+      }
+      if (this.props.gs.suspender != this.props.gs.pov) {
+        return RACE_SUSPENDING;
+      }
+      if (this.props.gs.suspender != null) {
+        RACE_SUSPENDED[0] = RACE_SUSPENDED[0].replace('{}',
+            '' + this.props.gs.suspender);
+        return RACE_SUSPENDED;
+      }
+      return RACE_TWO_DECLINE;
     }
+    if (this.props.gs.stage == 2) {
+      return VOTING;
+    }
+
+    const pmParty: number =
+        this.props.gs.pols[this.props.gs.primeMinister].party;
+    if (pmParty == this.props.gs.pov) {
+      return CHOICE_OWN_PM;
+    }
+    CHOICE_OTHER_PM[0] = CHOICE_OTHER_PM[0].replace('{}', '' + pmParty);
+    return CHOICE_OTHER_PM;
   }
 
   goBack(): void {
