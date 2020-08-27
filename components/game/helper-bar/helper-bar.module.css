@@ -4,7 +4,6 @@
   display: flex;
   flex-flow: column;
   align-items: stretch;
-  padding: 16px;
 
   border-radius: 6px;
   background-color: #555;
@@ -12,7 +11,6 @@
 
 .helpText {
   font-size: 20px;
-  margin-bottom: 16px;
 }
 
 .buttonsRow {
@@ -25,6 +23,8 @@
 }
 
 .bigButton {
+  margin: 16px;
   min-width: 100px;
+
   font-size: 20px;
 }

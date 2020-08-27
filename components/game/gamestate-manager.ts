@@ -211,7 +211,7 @@ class GamestateManager {
     // Remove from pay queue
     let paymentIndex: number = 0;
     this.actionQueue.payQueue.forEach((payment, i) => {
-      if (payment.partyIndex === partyIndex) {
+      if (payment.target === partyIndex) {
         paymentIndex = i;
       }
     });

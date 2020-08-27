@@ -234,7 +234,6 @@ class HelperBar extends React.Component {
       </button>
     );
     if ((!this.state.helpIsVisible && this.props.activeTab == 0) ||
-        (!this.state.helpIsVisible && this.props.gs.stage > 1) ||
         (this.state.helpIsVisible && this.state.helpMessageIndex == 0)) {
       backButton = (
         <button className={inactiveStyle}>
@@ -244,7 +243,6 @@ class HelperBar extends React.Component {
     }
     if ((!this.state.helpIsVisible &&
             this.props.activeTab == this.props.gs.provs.length - 1) ||
-        (!this.state.helpIsVisible && this.props.gs.stage > 1) ||
         this.state.helpMessageIndex ==
             this.currentHelpMessageSet.bind(this)().length - 1) {
       nextButton = (
@@ -253,10 +251,14 @@ class HelperBar extends React.Component {
         </button>
       );
     }
+    if (!this.state.helpIsVisible && this.props.gs.stage > 1) {
+      backButton = null;
+      nextButton = null;
+    }
 
     return (
       <div className={styles.outerWrapper}>
-        {this.explanationJsx.bind(this)()}
+        {this.state.helpIsVisible ? this.explanationJsx.bind(this)() : null}
         <div className={styles.buttonsRow}>
           <button className={priorityStyle}
               onClick={this.toggleHelp.bind(this)}>
@@ -264,6 +266,7 @@ class HelperBar extends React.Component {
           </button>
           {backButton}
           {nextButton}
+          {this.state.helpIsVisible ? null : this.explanationJsx.bind(this)()}
           <button className={priorityStyle}
               onClick={() => this.props.callback('ready')}>
             {this.readyButtonLabel()}
