@@ -1,7 +1,6 @@
 import React from "react";
 
 import PolCategory from "../pols/pol-category";
-import styles from "./provs.module.css";
 
 function Prov(props) {
   if (props.gs.stage >= 2) {
