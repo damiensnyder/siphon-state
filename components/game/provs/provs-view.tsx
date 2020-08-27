@@ -3,6 +3,8 @@ import React from "react";
 import ProvsHeader from "./provs-header";
 import Prov from "./prov";
 import general from "../../general.module.css";
+import HelperBar from "../helper-bar/helper-bar";
+import styles from "./provs.module.css";
 
 interface ProvsViewProps {
   gs: any,
@@ -39,9 +41,15 @@ class ProvsView extends React.Component {
         <ProvsHeader gs={this.props.gs}
             activeTab={this.state.tab}
             tabCallback={this.switchTab.bind(this)} />
-        <Prov gs={this.props.gs}
-            callback={this.props.callback}
-            index={this.state.tab} />
+        <div className={styles.provOuter}>
+          <div className={styles.provInner}>
+            <Prov gs={this.props.gs}
+                callback={this.props.callback}
+                index={this.state.tab} />
+            <HelperBar gs={this.props.gs}
+                callback={this.props.callback} />
+          </div>
+        </div>
       </div>
     );
   }

@@ -64,6 +64,9 @@ function buttonMsg(props: HelperBarProps) {
 }
 
 function HelperBar(props: HelperBarProps) {
+  if (props.gs.parties[props.gs.pov] == null) {
+    return null;
+  }
   return (
     <div className={styles.barWrapper}>
       <span>

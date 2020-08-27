@@ -4,7 +4,6 @@ import Pol from "./pol";
 import styles from "./pol-category.module.css";
 
 function PolCategory(props) {
-  const isTop = props.gs.stage != 0 || props.name != "Available";
   return (
     <div className={styles.categoryWrapper}>
       <div className={styles.polsOuter}>
