@@ -76,6 +76,9 @@ class GamestateManager {
       this.actionQueue.hitQueue = [];
     } else if (gs.stage === 3) {
       this.actionQueue.pmChoice = false;
+      if (this.ownParty() != null) {
+        this.ownParty().pmChoice = false;
+      }
     }
     if (gs.stage >= 2) {
       this.actionQueue.flipQueue = [];
@@ -184,6 +187,9 @@ class GamestateManager {
 
   handleChoose(choice: boolean): void {
     this.actionQueue.pmChoice = choice;
+    if (this.gs.pov >= 0) {
+      this.ownParty().pmChoice = choice;
+    }
   }
 
   handleUndoFlip(flipInfo): void {

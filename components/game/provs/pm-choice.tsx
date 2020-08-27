@@ -30,6 +30,8 @@ function PmChoice(props): React.ReactElement {
       props.gs.pols[props.gs.primeMinister].party == props.gs.pov;
   const pmIsOtherParty: boolean = props.gs.primeMinister != null &&
       props.gs.pols[props.gs.primeMinister].party != props.gs.pov;
+  const chosenTrue: boolean = pmIsOwnParty &&
+      props.gs.parties[props.gs.pov].pmChoice;
 
   let option1: string = "Gain $" + (0.5 * numOtherParties) + "M";
   let option2: string = "+1 support in the next race";
@@ -55,15 +57,16 @@ function PmChoice(props): React.ReactElement {
       <div className={styles.buttonRow}>
         <button className={styles.optionButton + ' ' +
                 general.actionBtn + ' ' +
-                (props.gs.decline >= 2 ? styles.suspend + ' ' : '') +
-                (pmIsOwnParty ? '' : general.inactiveBtn2)}
+                (pmIsOwnParty ? '' : general.inactiveBtn2 + ' ') +
+                ((chosenTrue) ? styles.chosen : '')}
             onClick={() => props.callback('choose', true)}>
           {option1}
         </button>
         <span>OR</span>
         <button className={styles.optionButton + ' ' +
                 general.actionBtn + ' ' +
-                (pmIsOwnParty ? '' : general.inactiveBtn2)}
+                (pmIsOwnParty ? '' : general.inactiveBtn2 + ' ') +
+                ((pmIsOwnParty && !chosenTrue) ? styles.chosen : '')}
             onClick={() => props.callback('choose', false)}>
           {option2}
         </button>
