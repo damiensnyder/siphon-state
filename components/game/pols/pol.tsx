@@ -16,7 +16,7 @@ function bubbleJsx(props) {
       (props.pol.support <= -1 ? styles.negativeSupport : "");
   
   let bubbleInfo: string | number;
-  if (props.gs.primeMinister === props.polIndex) {
+  if (props.gs.stage == 3 && props.gs.primeMinister === props.polIndex) {
     bubbleInfo = "★";
   } else if (props.gs.stage === 0) {
     bubbleInfo = props.pol.baseSupport;
