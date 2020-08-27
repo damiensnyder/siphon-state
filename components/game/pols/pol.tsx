@@ -173,12 +173,15 @@ function buttonsJsx(props) {
 
   // If no hit has been used and the user can afford it, and the decline is
   // sufficient, add a "Hit" button.
-  const hitCost = props.gs.stage == 2 ? 50 : 25;
-  if (!ownParty.usedHit &&
+  let hitCost = props.gs.stage == 2 ? 50 : 25;
+  if (props.gs.primeMinister != null && props.gs.priority == props.pol.party) {
+    hitCost += 25;
+  }
+  if (ownParty.hitAvailable &&
       ownParty.funds >= hitCost &&
       props.pol.party !== props.gs.pov &&
       (props.gs.stage === 1 || props.gs.stage == 2) &&
-      props.gs.decline >= 3) {
+      props.gs.decline >= 2) {
     if (props.pol.hasOwnProperty('hitOrdered')) {
       buttons.push(
         <button className={general.actionBtn}

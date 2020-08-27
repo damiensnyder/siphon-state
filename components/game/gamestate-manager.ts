@@ -168,7 +168,7 @@ class GamestateManager {
 
   handleHit(polIndex: number): void {
     this.ownParty().funds -= (this.gs.stage >= 2) ? 50 : 25;
-    this.ownParty().usedHit = true;
+    this.ownParty().hitAvailable = false;
     this.gs.pols[polIndex].hitOrdered = true;
     this.actionQueue.hitQueue.push(polIndex);
   }
@@ -247,7 +247,7 @@ class GamestateManager {
 
   handleUndoHit(): void {
     this.ownParty().funds += (this.gs.stage == 2) ? 50 : 25;
-    this.ownParty().usedHit = false;
+    this.ownParty().hitAvailable = true;
     this.gs.pols[this.actionQueue.hitQueue[0]].hitOrdered = false;
     this.actionQueue.hitQueue = [];
   }
