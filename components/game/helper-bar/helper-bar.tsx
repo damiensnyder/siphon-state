@@ -138,7 +138,7 @@ class HelperBar extends React.Component {
           "suspend the constitution (!).";
 
       if (this.props.gs.decline % 3 == 1) {
-        newDecline += " AND each party can call in a hit on one politician";
+        newDecline += " AND can call a hit on one politician";
       }
 
       return (
@@ -169,7 +169,7 @@ class HelperBar extends React.Component {
       }
       if (this.props.gs.suspender != null) {
         RACE_SUSPENDED[0] = RACE_SUSPENDED[0].replace('{}',
-            '' + this.props.gs.suspender);
+            '' + this.props.gs.parties[this.props.gs.suspender].name);
         return RACE_SUSPENDED;
       }
       return RACE_TWO_DECLINE;
@@ -183,7 +183,8 @@ class HelperBar extends React.Component {
     if (pmParty == this.props.gs.pov) {
       return CHOICE_OWN_PM;
     }
-    CHOICE_OTHER_PM[0] = CHOICE_OTHER_PM[0].replace('{}', '' + pmParty);
+    CHOICE_OTHER_PM[0] = CHOICE_OTHER_PM[0].replace('{}',
+        '' + this.props.gs.parties[pmParty].name);
     return CHOICE_OTHER_PM;
   }
 

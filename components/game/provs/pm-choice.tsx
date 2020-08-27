@@ -36,20 +36,22 @@ function PmChoice(props): React.ReactElement {
     option1 = "$" + numOtherParties + "M";
     option2 = "+2 support in the next race and +1 in the race after that";
   } else if (props.gs.decline == 2) {
-    option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M.` +
+    option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M. ` +
         "Winning the next prime minister wins the game, but failing " +
-        "docks all remaining funds and gives -2 support temporarily";
+        "docks all remaining funds and temporarily gives -2 support";
     option2 = "No effects";
   } else if (props.gs.decline > 3) {
     option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M and ` +
-        `get ${props.gs.decline - 2} support. Winning the next prime ` +
-        "minister wins the game, but failing docks all remaining funds and " +
-        "gives -2 support temporarily";
+        `+{props.gs.decline - 2} support. Winning the next prime minister ` +
+        "wins the game, but failing docks all remaining funds and " +
+        "temporarily gives -2 support";
     option2 = "No effects";
   }
 
   const hitAddendum: string = ", and calling a hit on a member of the prime " +
       "minister's party costs $2.5M extra";
+  const suspenderAddendum: string = " Members of a party that has suspended " +
+      "the constitution cannot be targeted at all."
 
   return (
     <div className={styles.outerWrapper}>
@@ -74,6 +76,7 @@ function PmChoice(props): React.ReactElement {
       <div className={styles.addendum}>
         Members of the prime minister's party cannot be bribed
         {props.gs.decline >= 1 ? hitAddendum : ""}.
+        {props.gs.decline >= 2 ? suspenderAddendum : ""}
       </div>
     </div>
   );
