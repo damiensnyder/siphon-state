@@ -221,7 +221,7 @@ function buttonsJsx(props) {
           Undo
         </button>
       );
-    } else if (ownParty.funds >= 10 * (2 + props.gs.rounds)) {
+    } else if (ownParty.funds >= 25 + 10 * props.gs.rounds) {
       if (props.pol.hasOwnProperty('flipped')) {
         buttons.push(
           <button className={general.actionBtn}
@@ -233,7 +233,7 @@ function buttonsJsx(props) {
         buttons.push(
           <button className={general.actionBtn}
               onClick={() => props.callback('bribe', props.polIndex)}>
-            Bribe: {formatMoneyString(10 * (2 + props.gs.rounds))}
+            Bribe: {formatMoneyString(25 + 10 * props.gs.rounds)}
           </button>
         );
       }

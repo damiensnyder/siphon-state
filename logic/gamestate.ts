@@ -210,15 +210,15 @@ class GameState {
     const numOtherParties: number = this.parties.length - 1;
     if (this.primeMinister != null) {
       const pmParty: Party = this.parties[this.priority];
-      if (this.decline == 0) {
+      if (this.decline == 1) {
         if (pmParty.pmChoice) {
-          pmParty.funds += 10 * numOtherParties;
+          pmParty.funds += 5 * numOtherParties;
         } else {
           pmParty.baseSupport += 1;
         }
-      } else if (this.decline == 1) {
+      } else if (this.decline == 2) {
         if (pmParty.pmChoice) {
-          pmParty.funds += 20 * numOtherParties;
+          pmParty.funds += 10 * numOtherParties;
         } else {
           pmParty.baseSupport += 2;
         }
@@ -305,10 +305,10 @@ class GameState {
 
     // If there are no officials, skip to the next stage.
     if (this.officials.length === 0) {
-      this.beginDistribution();
+      this.beginChoice();
     } else if (this.officials.length === 1) {
       this.primeMinister = this.officials[0];
-      this.beginDistribution();
+      this.beginChoice();
     }
   }
 
@@ -337,7 +337,7 @@ class GameState {
     // highest-priority party. Otherwise, reset every politician's votes and
     // start again.
     if (this.officials.length == 0) {
-      this.beginDistribution();
+      this.beginChoice();
     } else if (this.officials.length > 1 &&
         this.rounds < 3 &&
         (this.pols[sortedOfficials[0]].support ==
@@ -347,7 +347,7 @@ class GameState {
     } else {
       this.officials = sortedOfficials
       this.primeMinister = this.officials[0];
-      this.beginDistribution();
+      this.beginChoice();
     }
   }
 
@@ -365,12 +365,12 @@ class GameState {
   }
 
   /*
-  ============
-  DISTRIBUTION
-  ============
+  ======
+  CHOICE
+  ======
   */
 
-  beginDistribution(): void {
+  beginChoice(): void {
     this.stage = 3;
     this.parties.forEach((party: Party) => {
       party.pmChoice = false;

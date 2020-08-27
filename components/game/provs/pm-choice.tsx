@@ -30,10 +30,10 @@ function PmChoice(props): React.ReactElement {
   const chosenTrue: boolean = pmIsOwnParty &&
       props.gs.parties[props.gs.pov].pmChoice;
 
-  let option1: string = "$" + numOtherParties + "M";
+  let option1: string = "$" + (0.5 * numOtherParties) + "M";
   let option2: string = "+1 support in the next race";
   if (props.gs.decline == 1) {
-    option1 = "$" + (2 * numOtherParties) + "M";
+    option1 = "$" + numOtherParties + "M";
     option2 = "+2 support in the next race and +1 in the race after that";
   } else if (props.gs.decline == 2) {
     option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M.` +
