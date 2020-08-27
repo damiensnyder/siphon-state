@@ -11,7 +11,7 @@ interface Party {
   baseSupport: number,
   sympathetic: number[],
   bribed: number[],
-  usedHit: boolean,
+  hitAvailable: boolean,
   pmChoice: boolean
 }
 
@@ -74,7 +74,7 @@ class GameState {
       baseSupport: 5,
       sympathetic: [],
       bribed: [],
-      usedHit: false,
+      hitAvailable: false,
       pmChoice: false
     });
   }
@@ -136,9 +136,13 @@ class GameState {
     if (this.decline >= 1) {
       this.giveSympathizers(1);
     }
+    if ((this.decline % 3) == 2) {
+      this.parties.forEach((party: Party) => {
+        party.hitAvailable = true;
+      });
+    }
 
     this.officials = [];
-    this.primeMinister = null;
   }
 
   // Return all officials to be candidates in their province with a +1 bonus to
@@ -153,7 +157,7 @@ class GameState {
         if (this.officials.includes(polIndex)) {
           returningCandidates.push(polIndex);
           const polParty = this.pols[polIndex].party
-          this.pols[polIndex].support = this.parties[polParty].baseSupport + 1;
+          this.pols[polIndex].support = this.parties[polParty].baseSupport;
           returningPerParty[polParty] += 1;
         }
       });
@@ -371,6 +375,10 @@ class GameState {
     this.parties.forEach((party: Party) => {
       party.pmChoice = false;
     });
+    if (this.officials.length == 0) {
+      this.primeMinister = null;
+      this.checkIfGameWon();
+    }
   }
 
   // End the game if a player suspended the constitution and won prime minister
@@ -378,7 +386,8 @@ class GameState {
   // remove all their funds and give them a penalty to support. If the game has
   // not ended, begin a new race.
   checkIfGameWon(): void {
-    if (this.suspender === this.priority) {
+    if (this.primeMinister != null &&
+        this.suspender === this.pols[this.primeMinister].party) {
       this.ended = true;
     } else if (this.suspender !== null) {
       this.parties[this.suspender].baseSupport = 2;   // becomes 3 before race
@@ -459,11 +468,13 @@ class GameState {
 
   // Call a hit the given politician, removing them from the game.
   hit(partyIndex: number, polIndex: number) {
-    const cost = this.stage >= 2 ? 50 : 25;
-    const party = this.parties[partyIndex]
+    const party = this.parties[partyIndex];
+    let cost = this.stage >= 2 ? 50 : 25;
+    if (partyIndex == this.priority && this.primeMinister != null) {
+      cost += 25;
+    }
     if (party.funds >= cost &&
-        this.decline >= 2 &&
-        !party.usedHit &&
+        party.hitAvailable &&
         this.pols[polIndex].party !== this.suspender) {
       if (this.officials.includes(polIndex)) {
         this.officials.splice(this.officials.indexOf(polIndex), 1);
@@ -472,7 +483,7 @@ class GameState {
         if (prov.candidates.includes(polIndex)) {
           prov.candidates.splice(prov.candidates.indexOf(polIndex), 1);
           party.funds -= cost;
-          party.usedHit = true;
+          party.hitAvailable = false;
         }
       })
     }
