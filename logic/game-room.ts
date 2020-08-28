@@ -101,16 +101,28 @@ class GameRoom {
     viewer.emitGameState(this.gs);
   }
 
+  // Add the player to the game, unless their party name or abbreviation are
+  // already taken.
   handleJoin(viewer: typeof Viewer, partyInfo: PartyInfo): void {
-    viewer.join(this.players.length, partyInfo.name);
-    this.players.push(viewer);
-    this.gs.addParty(partyInfo.name, partyInfo.abbr);
+    let nameAndAbbrAreUnique = true;
+    this.gs.parties.forEach((party) => {
+      if (party.name == partyInfo.name || party.abbr == partyInfo.abbr) {
+        nameAndAbbrAreUnique = false;
+      }
+    });
+    if (nameAndAbbrAreUnique) {
+      viewer.join(this.players.length, partyInfo.name);
+      this.players.push(viewer);
+      this.gs.addParty(partyInfo.name, partyInfo.abbr);
 
-    this.broadcastSystemMsg(
-      viewer.socket,
-      `Player '${partyInfo.name}' (${partyInfo.abbr}) has joined the game.`
-    );
-    this.emitGameStateToAll();
+      this.broadcastSystemMsg(
+        viewer.socket,
+        `Player '${partyInfo.name}' (${partyInfo.abbr}) has joined the game.`
+      );
+      this.emitGameStateToAll();
+    } else {
+      viewer.emitGameState(this.gs);
+    }
   }
 
   handleReplace(viewer: typeof Viewer, target: number): void {

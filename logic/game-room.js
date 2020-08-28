@@ -1,4 +1,4 @@
-var Settings = require('./game-manager').Settings;
+var Settings = require('./room-manager').Settings;
 // @ts-ignore
 var GameState = require('./gamestate').GameState;
 // @ts-ignore
@@ -73,12 +73,25 @@ var GameRoom = /** @class */ (function () {
         }
         viewer.emitGameState(this.gs);
     };
+    // Add the player to the game, unless their party name or abbreviation are
+    // already taken.
     GameRoom.prototype.handleJoin = function (viewer, partyInfo) {
-        viewer.join(this.players.length, partyInfo.name);
-        this.players.push(viewer);
-        this.gs.addParty(partyInfo.name, partyInfo.abbr);
-        this.broadcastSystemMsg(viewer.socket, "Player '" + partyInfo.name + "' (" + partyInfo.abbr + ") has joined the game.");
-        this.emitGameStateToAll();
+        var nameAndAbbrAreUnique = true;
+        this.gs.parties.forEach(function (party) {
+            if (party.name == partyInfo.name || party.abbr == partyInfo.abbr) {
+                nameAndAbbrAreUnique = false;
+            }
+        });
+        if (nameAndAbbrAreUnique) {
+            viewer.join(this.players.length, partyInfo.name);
+            this.players.push(viewer);
+            this.gs.addParty(partyInfo.name, partyInfo.abbr);
+            this.broadcastSystemMsg(viewer.socket, "Player '" + partyInfo.name + "' (" + partyInfo.abbr + ") has joined the game.");
+            this.emitGameStateToAll();
+        }
+        else {
+            viewer.emitGameState(this.gs);
+        }
     };
     GameRoom.prototype.handleReplace = function (viewer, target) {
         this.io.emit('newreplace', target);
