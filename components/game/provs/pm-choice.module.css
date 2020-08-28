@@ -1,0 +1,38 @@
+.outerWrapper {
+  margin-top: 16px;
+
+  padding: 16px;
+
+  font-size: 20px;
+  background-color: #555;
+  border-radius: 6px;
+}
+
+.buttonRow {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.chooserText {
+  margin: 0;
+  margin-bottom: 16px;
+}
+
+.addendum {
+  margin-top: 16px;
+}
+
+.optionButton {
+  max-width: 250px;
+  flex-grow: 1;
+
+  padding: 8px;
+
+  font-size: inherit;
+}
+
+.chosen {
+  color: #9999dd;
+}

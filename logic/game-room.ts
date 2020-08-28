@@ -1,4 +1,4 @@
-const Settings = require('./game-manager').Settings;
+const Settings = require('./room-manager').Settings;
 // @ts-ignore
 const GameState = require('./gamestate').GameState;
 // @ts-ignore
@@ -101,16 +101,28 @@ class GameRoom {
     viewer.emitGameState(this.gs);
   }
 
+  // Add the player to the game, unless their party name or abbreviation are
+  // already taken.
   handleJoin(viewer: typeof Viewer, partyInfo: PartyInfo): void {
-    viewer.join(this.players.length, partyInfo.name);
-    this.players.push(viewer);
-    this.gs.addParty(partyInfo.name, partyInfo.abbr);
+    let nameAndAbbrAreUnique = true;
+    this.gs.parties.forEach((party) => {
+      if (party.name == partyInfo.name || party.abbr == partyInfo.abbr) {
+        nameAndAbbrAreUnique = false;
+      }
+    });
+    if (nameAndAbbrAreUnique) {
+      viewer.join(this.players.length, partyInfo.name);
+      this.players.push(viewer);
+      this.gs.addParty(partyInfo.name, partyInfo.abbr);
 
-    this.broadcastSystemMsg(
-      viewer.socket,
-      `Player '${partyInfo.name}' (${partyInfo.abbr}) has joined the game.`
-    );
-    this.emitGameStateToAll();
+      this.broadcastSystemMsg(
+        viewer.socket,
+        `Player '${partyInfo.name}' (${partyInfo.abbr}) has joined the game.`
+      );
+      this.emitGameStateToAll();
+    } else {
+      viewer.emitGameState(this.gs);
+    }
   }
 
   handleReplace(viewer: typeof Viewer, target: number): void {
@@ -155,7 +167,7 @@ class GameRoom {
         msg.trim().length > 0 &&
         viewer.pov !== undefined) {
       viewer.socket.broadcast.emit('msg', {
-        sender: viewer.name,
+        sender: this.gs.parties[viewer.pov].name,
         text: msg.trim(),
         isSelf: false,
         isSystem: false
@@ -169,14 +181,6 @@ class GameRoom {
         this.gs.pay(playerIndex, action);
       });
     });
-
-    if (this.gs.stage === 1 || this.gs.stage === 2) {
-      this.players.forEach((player, playerIndex) => {
-        player.actionQueue.hitQueue.forEach((action) => {
-          this.gs.hit(playerIndex, action);
-        });
-      });
-    }
   
     if (this.gs.stage >= 2) {
       this.players.forEach((player, playerIndex) => {
@@ -186,13 +190,15 @@ class GameRoom {
       });
     }
 
-    if (this.gs.stage === 0) {
+    if (this.gs.stage <= 2) {
       this.players.forEach((player, playerIndex) => {
-        player.actionQueue.runQueue.forEach((action) => {
-          this.gs.run(playerIndex, action);
+        player.actionQueue.hitQueue.forEach((action) => {
+          this.gs.hit(playerIndex, action);
         });
       });
-    } else if (this.gs.stage === 1) {
+    }
+
+    if (this.gs.stage === 1) {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.bribeQueue.forEach((action) => {
           this.gs.bribe(playerIndex, action);
@@ -210,6 +216,10 @@ class GameRoom {
           this.gs.vote(playerIndex, action);
         });
       });
+    } else {
+      this.players.forEach((player, playerIndex) => {
+        this.gs.choose(playerIndex, player.actionQueue.pmChoice);
+      });
     }
   }
 
@@ -224,7 +234,7 @@ class GameRoom {
   // When a player disconnects, remove them from the list of viewers, fix the
   // viewer indices of all other viewers, and remove them from the game.
   handleDisconnect(viewer: typeof Viewer): void {
-    let index = this.viewers.indexOf(viewer);
+    let index: number = this.viewers.indexOf(viewer);
     this.viewers.splice(index, 1);
 
     if (viewer.pov !== undefined) {

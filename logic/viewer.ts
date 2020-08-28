@@ -3,16 +3,13 @@ interface ActionQueue {
     partyIndex: number,
     amount: number
   }[];
-  runQueue?: {
-    polIndex: number,
-    provIndex: number
-  }[];
   adQueue?: number[];
   smearQueue?: number[];
   bribeQueue?: number[];
   hitQueue?: number[];
   voteQueue?: number[];
   flipQueue?: number[];
+  pmChoice?: boolean;
 }
 
 // @ts-ignore

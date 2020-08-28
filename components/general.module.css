@@ -81,6 +81,20 @@
   cursor: default;
 }
 
+.inactiveBtn2 {
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.inactiveBtn2:hover {
+  color: inherit;
+  background-color: inherit;
+}
+
+.inactiveBtn2:active {
+  color: inherit;
+}
+
 .settingTextWrapper {
   flex-grow: 1;
 

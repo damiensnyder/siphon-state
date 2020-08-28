@@ -36,7 +36,6 @@
 }
 
 #inputRow {
-  width: 100%;
   height: 32px;
   flex-grow: 0;
 
@@ -47,26 +46,23 @@
 }
 
 #inputBox {
-  height: 100%;
   flex-grow: 1;
   margin-right: 8px;
 
   padding: 0 8px;
 
   background-color: #333;
-  border: none;
   border-radius: 6px;
 }
 
 #inputText::-webkit-input-placeholder {
-    color: #999;
+  color: #999;
 }
 #inputText::-moz-placeholder {
-    color: #999;
+  color: #999;
 }
 
 #sendBtn {
-  height: 100%;
   flex-grow: 0;
 
   padding: 0 8px;

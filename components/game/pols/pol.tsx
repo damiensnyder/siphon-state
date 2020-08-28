@@ -16,7 +16,7 @@ function bubbleJsx(props) {
       (props.pol.support <= -1 ? styles.negativeSupport : "");
   
   let bubbleInfo: string | number;
-  if (props.gs.primeMinister === props.polIndex) {
+  if (props.gs.stage == 3 && props.gs.primeMinister === props.polIndex) {
     bubbleInfo = "★";
   } else if (props.gs.stage === 0) {
     bubbleInfo = props.pol.baseSupport;
@@ -148,16 +148,15 @@ function buttonsJsx(props) {
     }
   }
 
-  // If they have been bribed, add a "Flip" button or an "Undo" button depending
-  // on whether they have already been flipped.
+  // If they have been bribed, add a "Flip" button or an "Undo" button
+  // depending on whether they have already been flipped.
   if (ownParty.bribed != undefined &&
       ownParty.bribed.includes(props.polIndex) &&
       props.gs.stage >= 2) {
     if (props.pol.party !== props.gs.pov) {
       buttons.push(
         <button className={general.actionBtn}
-            onClick={() => props.callback('flip',
-                {polIndex: props.polIndex})}>
+            onClick={() => props.callback('flip', props.polIndex)}>
           Flip
         </button>
       );
@@ -174,12 +173,15 @@ function buttonsJsx(props) {
 
   // If no hit has been used and the user can afford it, and the decline is
   // sufficient, add a "Hit" button.
-  const hitCost = props.gs.stage == 2 ? 50 : 25;
-  if (!ownParty.usedHit &&
+  let hitCost = props.gs.stage == 2 ? 50 : 25;
+  if (props.gs.primeMinister != null && props.gs.priority == props.pol.party) {
+    hitCost += 25;
+  }
+  if (ownParty.hitAvailable &&
       ownParty.funds >= hitCost &&
       props.pol.party !== props.gs.pov &&
       (props.gs.stage === 1 || props.gs.stage == 2) &&
-      props.gs.decline >= 3) {
+      props.gs.decline >= 2) {
     if (props.pol.hasOwnProperty('hitOrdered')) {
       buttons.push(
         <button className={general.actionBtn}
@@ -219,7 +221,7 @@ function buttonsJsx(props) {
           Undo
         </button>
       );
-    } else if (ownParty.funds >= 10 * (2 + props.gs.rounds)) {
+    } else if (ownParty.funds >= 25 + 10 * props.gs.rounds) {
       if (props.pol.hasOwnProperty('flipped')) {
         buttons.push(
           <button className={general.actionBtn}
@@ -231,7 +233,7 @@ function buttonsJsx(props) {
         buttons.push(
           <button className={general.actionBtn}
               onClick={() => props.callback('bribe', props.polIndex)}>
-            Bribe: {formatMoneyString(10 * (2 + props.gs.rounds))}
+            Bribe: {formatMoneyString(25 + 10 * props.gs.rounds)}
           </button>
         );
       }

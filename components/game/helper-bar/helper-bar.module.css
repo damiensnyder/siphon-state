@@ -1,0 +1,32 @@
+.outerWrapper {
+  margin-top: 16px;
+
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+
+  border-radius: 6px;
+  background-color: #555;
+}
+
+.helpText {
+  margin: 0 16px;
+
+  font-size: 20px;
+}
+
+.buttonsRow {
+  margin: 16px;
+  flex: 0;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bigButton {
+  min-width: 100px;
+
+  font-size: 20px;
+}

@@ -1,11 +1,7 @@
 interface ActionQueue {
   payQueue: {
-    partyIndex: number,
+    target: number,
     amount: number
-  }[];
-  runQueue?: {
-    polIndex: number,
-    provIndex: number
   }[];
   adQueue?: number[];
   smearQueue?: number[];
@@ -13,6 +9,7 @@ interface ActionQueue {
   hitQueue?: number[];
   voteQueue?: number[];
   flipQueue?: number[];
+  pmChoice?: boolean;
 }
 
 class GamestateManager {
@@ -39,15 +36,14 @@ class GamestateManager {
       'disconnect': this.handleDisconnect,
       'flip': this.handleFlip,
       'pay': this.handlePay,
-      'run': this.handleRun,
       'ad': this.handleAd,
       'smear': this.handleSmear,
       'hit': this.handleHit,
       'bribe': this.handleBribe,
       'vote': this.handleVote,
+      'choose': this.handleChoose,
       'unflip': this.handleUndoFlip,
       'unpay': this.handleUndoPay,
-      'unrun': this.handleUndoRun,
       'unad': this.handleUndoAd,
       'unsmear': this.handleUndoSmear,
       'unhit': this.handleUndoHit,
@@ -70,9 +66,7 @@ class GamestateManager {
     this.actionQueue = {
       payQueue: []
     }
-    if (gs.stage === 0) {
-      this.actionQueue.runQueue = [];
-    } else if (gs.stage === 1) {
+    if (gs.stage === 1) {
       this.actionQueue.adQueue = [];
       this.actionQueue.smearQueue = [];
       this.actionQueue.bribeQueue = [];
@@ -80,6 +74,11 @@ class GamestateManager {
     } else if (gs.stage === 2) {
       this.actionQueue.voteQueue = [];
       this.actionQueue.hitQueue = [];
+    } else if (gs.stage === 3) {
+      this.actionQueue.pmChoice = false;
+      if (this.ownParty() != null) {
+        this.ownParty().pmChoice = false;
+      }
     }
     if (gs.stage >= 2) {
       this.actionQueue.flipQueue = [];
@@ -125,34 +124,26 @@ class GamestateManager {
     }
   }
 
-  handleFlip(flipInfo): void {
-    this.gs.pols[flipInfo.polIndex].oldParty =
-        this.gs.pols[flipInfo.polIndex].party;
-    this.gs.pols[flipInfo.polIndex].party = this.gs.pov;
+  handleFlip(polIndex: number): void {
+    this.gs.pols[polIndex].oldParty =
+        this.gs.pols[polIndex].party;
+    this.gs.pols[polIndex].party = this.gs.pov;
 
     // If the flipped politician was an active official, gain a vote.
-    if (this.gs.officials.includes(flipInfo.polIndex) && 
+    if (this.gs.officials.includes(polIndex) &&
         this.gs.stage === 2) {
       this.ownParty().votes++;
-      this.gs.parties[this.gs.pols[flipInfo.polIndex].oldParty].votes--;
+      this.gs.parties[this.gs.pols[polIndex].oldParty].votes--;
     }
 
-    this.actionQueue.flipQueue.push(flipInfo.polIndex);
+    this.actionQueue.flipQueue.push(polIndex);
   }
 
-  handlePay(paymentInfo): void {
+  handlePay(paymentInfo: {target: number, amount: number}): void {
     this.ownParty().funds -= paymentInfo.amount;
     this.gs.parties[paymentInfo.target].funds += paymentInfo.amount;
     this.gs.parties[paymentInfo.target].paid = true;
     this.actionQueue.payQueue.push(paymentInfo);
-  }
-
-  handleRun(runInfo: {polIndex: number, provIndex: number}): void {
-    this.gs.provs[runInfo.provIndex].candidates.push(runInfo.polIndex);
-    this.ownParty().pols.splice(
-        this.ownParty().pols.indexOf(runInfo.polIndex), 1);
-    this.ownParty().funds -= 5;
-    this.actionQueue.runQueue.push(runInfo);
   }
 
   handleAd(polIndex: number): void {
@@ -177,13 +168,13 @@ class GamestateManager {
 
   handleHit(polIndex: number): void {
     this.ownParty().funds -= (this.gs.stage >= 2) ? 50 : 25;
-    this.ownParty().usedHit = true;
+    this.ownParty().hitAvailable = false;
     this.gs.pols[polIndex].hitOrdered = true;
     this.actionQueue.hitQueue.push(polIndex);
   }
 
   handleBribe(polIndex: number): void {
-    this.ownParty().funds -= 10 * (2 + this.gs.rounds);
+    this.ownParty().funds -= 25 + 10 * this.gs.rounds;
     this.gs.pols[polIndex].flipped = true;
     this.actionQueue.bribeQueue.push(polIndex);
   }
@@ -192,6 +183,13 @@ class GamestateManager {
     this.gs.pols[polIndex].support++;
     this.ownParty().votes--;
     this.actionQueue.voteQueue.push(polIndex);
+  }
+
+  handleChoose(choice: boolean): void {
+    this.actionQueue.pmChoice = choice;
+    if (this.gs.pov >= 0) {
+      this.ownParty().pmChoice = choice;
+    }
   }
 
   handleUndoFlip(flipInfo): void {
@@ -219,7 +217,7 @@ class GamestateManager {
     // Remove from pay queue
     let paymentIndex: number = 0;
     this.actionQueue.payQueue.forEach((payment, i) => {
-      if (payment.partyIndex === partyIndex) {
+      if (payment.target === partyIndex) {
         paymentIndex = i;
       }
     });
@@ -229,16 +227,6 @@ class GamestateManager {
         this.actionQueue.payQueue[paymentIndex].amount;
     this.gs.parties[partyIndex].paid = false;
     this.actionQueue.payQueue.splice(paymentIndex, 1);
-  }
-
-  handleUndoRun(runInfo: {polIndex: number, provIndex: number}): void {
-    const candidates = this.gs.provs[runInfo.provIndex].candidates;
-    candidates.splice(candidates.indexOf(runInfo.polIndex), 1);
-    this.ownParty().pols.push(runInfo.polIndex);
-    this.ownParty().funds += 5;
-
-    this.actionQueue.runQueue.splice(
-        this.actionQueue.runQueue.indexOf(runInfo, 1));
   }
 
   handleUndoAd(polIndex: number): void {
@@ -259,13 +247,13 @@ class GamestateManager {
 
   handleUndoHit(): void {
     this.ownParty().funds += (this.gs.stage == 2) ? 50 : 25;
-    this.ownParty().usedHit = false;
+    this.ownParty().hitAvailable = true;
     this.gs.pols[this.actionQueue.hitQueue[0]].hitOrdered = false;
     this.actionQueue.hitQueue = [];
   }
 
   handleUndoBribe(polIndex: number): void {
-    this.ownParty().funds += 10 * (2 + this.gs.rounds);
+    this.ownParty().funds += 25 + 10 * this.gs.rounds;
     this.gs.pols[polIndex].flipped = false;
     this.actionQueue.bribeQueue.splice(
         this.actionQueue.bribeQueue.indexOf(polIndex));

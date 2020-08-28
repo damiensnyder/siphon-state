@@ -49,9 +49,7 @@ class ContentGenerator {
     newPol.party = party;
     newPol.url = newPol.name.replace(' ', '-').toLowerCase();
     newPol.url = newPol.url.replace(/[,.]/, '');
-    if (this.resets > 1) {
-      newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
-    }
+    newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
     newPol.baseSupport = 5;
     newPol.support = newPol.baseSupport;
     return newPol;
@@ -80,6 +78,13 @@ class ContentGenerator {
 }
 
 function toRomanNumerals(num: number): string {
+  if (num == 1) {
+    return "";
+  }
+  if (num == 2) {
+    return "Jr.";
+  }
+
   let result: string = "";
   for (let i = 0; i < ARABIC.length; i++) {
       if (Math.floor(num / ARABIC[i]) > 0){

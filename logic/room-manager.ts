@@ -11,7 +11,7 @@ interface Settings {
 }
 
 // @ts-ignore
-class GameManager {
+class RoomManager {
   activeGames: any;
   io: any;
 
@@ -89,5 +89,5 @@ class GameManager {
 }
 
 module.exports = {
-  GameManager: GameManager
+  GameManager: RoomManager
 }
