@@ -2,7 +2,7 @@
 var GameRoom = require('./game-room');
 var ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 // @ts-ignore
-var GameManager = /** @class */ (function () {
+var RoomManager = /** @class */ (function () {
     function GameManager(io) {
         this.io = io;
         this.activeGames = {};
@@ -65,5 +65,5 @@ var GameManager = /** @class */ (function () {
     return GameManager;
 }());
 module.exports = {
-    GameManager: GameManager
+    GameManager: RoomManager
 };

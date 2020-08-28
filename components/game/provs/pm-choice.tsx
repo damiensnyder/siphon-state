@@ -40,9 +40,9 @@ function PmChoice(props): React.ReactElement {
         "Winning the next prime minister wins the game, but failing " +
         "docks all remaining funds and temporarily gives -2 support";
     option2 = "No effects";
-  } else if (props.gs.decline > 3) {
+  } else if (props.gs.decline >= 3) {
     option1 = `SUSPEND THE CONSTITUTION: Gain $${3 * numOtherParties}M and ` +
-        `+{props.gs.decline - 2} support. Winning the next prime minister ` +
+        `+${props.gs.decline - 2} support. Winning the next prime minister ` +
         "wins the game, but failing docks all remaining funds and " +
         "temporarily gives -2 support";
     option2 = "No effects";

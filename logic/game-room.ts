@@ -1,4 +1,4 @@
-const Settings = require('./game-manager').Settings;
+const Settings = require('./room-manager').Settings;
 // @ts-ignore
 const GameState = require('./gamestate').GameState;
 // @ts-ignore
