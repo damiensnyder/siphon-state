@@ -4,11 +4,13 @@ import JoinPanel from "./join-panel";
 import InviteLink from "./invite-link";
 import general from "../../general.module.css";
 import styles from "./pregame.module.css";
+import HelperBar from "../helper-bar/helper-bar";
 
 interface PregameViewProps {
   joined: boolean,
   gameCode: string,
-  callback: any
+  callback: any,
+  gs: any
 }
 
 function joinPanelJsx(props: PregameViewProps) {
@@ -27,6 +29,10 @@ function PregameView(props: PregameViewProps) {
         general.horizWrapper + ' ' +
         styles.panelContainer}>
       {joinPanelJsx(props)}
+      <HelperBar gs={props.gs}
+          callback={props.callback}
+          activeTab={0}
+          tabCallback={() => {}} />
     </div>
   );
 }

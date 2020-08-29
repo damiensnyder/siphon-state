@@ -254,6 +254,15 @@ class HelperBar extends React.Component {
       nextButton = null;
     }
 
+    if (!this.props.gs.started) {
+      return (
+        <button className={priorityStyle}
+            onClick={() => this.props.callback('ready')}>
+          {this.readyButtonLabel()}
+        </button>
+      )
+    }
+
     return (
       <div className={styles.outerWrapper}>
         {this.state.helpIsVisible ? this.explanationJsx.bind(this)() : null}
