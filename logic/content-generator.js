@@ -25,9 +25,9 @@ var ContentGenerator = /** @class */ (function () {
         var newPol = this.unused.pop();
         this.made++;
         newPol.party = party;
-        newPol.url = newPol.name.replace(' ', '-').toLowerCase();
-        newPol.url = newPol.url.replace(/[,.]/, '');
-        newPol.name = newPol.name + " " + toRomanNumerals(this.resets);
+        newPol.url = newPol.name.split(/ /).join('-');
+        newPol.url = newPol.url.split(/[,.]/).join('').toLowerCase();
+        newPol.name = newPol.name + toRomanNumerals(this.resets);
         newPol.baseSupport = 5;
         newPol.support = newPol.baseSupport;
         return newPol;
@@ -58,9 +58,9 @@ function toRomanNumerals(num) {
         return "";
     }
     if (num == 2) {
-        return "Jr.";
+        return " Jr.";
     }
-    var result = "";
+    var result = " ";
     for (var i = 0; i < ARABIC.length; i++) {
         if (Math.floor(num / ARABIC[i]) > 0) {
             result += ROMAN[i];
