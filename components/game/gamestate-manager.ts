@@ -147,21 +147,15 @@ class GamestateManager {
   }
 
   handleAd(polIndex: number): void {
-    this.ownParty().funds -= 3 + this.gs.rounds;
-    if (this.gs.pols[polIndex].adsBought === undefined) {
-      this.gs.pols[polIndex].adsBought = 0;
-    }
     this.gs.pols[polIndex].adsBought++;
+    this.ownParty().funds -= this.gs.pols[polIndex].adsBought;
     this.gs.pols[polIndex].support++;
     this.actionQueue.adQueue.push(polIndex);
   }
   
   handleSmear(polIndex: number): void {
-    this.ownParty().funds -= 2 + this.gs.rounds;
-    if (this.gs.pols[polIndex].adsBought === undefined) {
-      this.gs.pols[polIndex].adsBought = 0;
-    }
     this.gs.pols[polIndex].adsBought++;
+    this.ownParty().funds -= this.gs.pols[polIndex].adsBought;
     this.gs.pols[polIndex].support--;
     this.actionQueue.smearQueue.push(polIndex);
   }
@@ -230,7 +224,7 @@ class GamestateManager {
   }
 
   handleUndoAd(polIndex: number): void {
-    this.ownParty().funds += 3 + this.gs.rounds;
+    this.ownParty().funds += this.gs.pols[polIndex].adsBought;
     this.gs.pols[polIndex].adsBought--;
     this.gs.pols[polIndex].support--;
     this.actionQueue.adQueue.splice(
@@ -238,7 +232,7 @@ class GamestateManager {
   }
 
   handleUndoSmear(polIndex: number): void {
-    this.ownParty().funds += 2 + this.gs.rounds;
+    this.ownParty().funds += this.gs.pols[polIndex].adsBought;
     this.gs.pols[polIndex].adsBought--;
     this.gs.pols[polIndex].support++;
     this.actionQueue.smearQueue.splice(

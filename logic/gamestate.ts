@@ -169,6 +169,7 @@ class GameState {
           const tiebreaker: number = returningPerParty[partyIndex] /
               (this.parties.length * prov.seats * 2);
           newPol.support = party.baseSupport + tiebreaker;
+          newPol.adsBought = 0;
 
           this.pols.push(newPol);
           prov.candidates.push(this.pols.length - 1);
@@ -433,7 +434,8 @@ class GameState {
     if (pol.party === partyIndex &&
         party.funds >= pol.adsBought + 1 &&
         this.stage === 1) {
-      party.funds -= pol.adsBought + 1;
+      pol.adsBought++;
+      party.funds -= pol.adsBought;
       this.pols[polIndex].support += 1;
     }
   }
@@ -445,8 +447,10 @@ class GameState {
     if (pol.party !== partyIndex &&
         party.funds >= pol.adsBought + 1 &&
         pol.support >= 1 &&
-        this.stage === 1) {
-      party.funds -= pol.adsBought + 1;
+        this.stage === 1 &&
+        this.rounds !== 0) {
+      pol.adsBought++;
+      party.funds -= pol.adsBought;
       this.pols[polIndex].support -= 1;
     }
   }

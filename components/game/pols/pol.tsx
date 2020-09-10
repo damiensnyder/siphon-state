@@ -94,22 +94,13 @@ function buttonsJsx(props) {
 
   if (props.gs.stage === 1 && isCandidate) {
     if (props.pol.party === props.gs.pov) {
-      if (ownParty.funds >= 3 + props.gs.rounds) {
-        if (props.pol.hasOwnProperty('adsBought')) {
-          buttons.push(
-            <button className={general.actionBtn}
-                onClick={() => props.callback('ad', props.polIndex)}>
-              Buy ad
-            </button>
-          );
-        } else {
-          buttons.push(
-            <button className={general.actionBtn}
-                onClick={() => props.callback('ad', props.polIndex)}>
-              Buy ad: {formatMoneyString(3 + props.gs.rounds)}
-            </button>
-          );
-        }
+      if (ownParty.funds >= 1 + props.pol.adsBought) {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('ad', props.polIndex)}>
+            Buy ad: {formatMoneyString(1 + props.pol.adsBought)}
+          </button>
+        );
       }
       if (props.pol.adsBought > 0) {
         buttons.push(
@@ -120,22 +111,13 @@ function buttonsJsx(props) {
         );
       }
     } else {
-      if (ownParty.funds >= 2 + props.gs.rounds) {
-        if (props.pol.hasOwnProperty('adsBought')) {
-          buttons.push(
-            <button className={general.actionBtn}
-                onClick={() => props.callback('smear', props.polIndex)}>
-              Smear
-            </button>
-          );
-        } else {
-          buttons.push(
-            <button className={general.actionBtn}
-                onClick={() => props.callback('smear', props.polIndex)}>
-              Smear: {formatMoneyString(2 + props.gs.rounds)}
-            </button>
-          );
-        }
+      if (ownParty.funds >= 1 + props.pol.adsBought) {
+        buttons.push(
+          <button className={general.actionBtn}
+              onClick={() => props.callback('smear', props.polIndex)}>
+            Smear: {formatMoneyString( 1 + props.pol.adsBought)}
+          </button>
+        );
       }
       if (props.pol.adsBought > 0) {
         buttons.push(
@@ -221,7 +203,7 @@ function buttonsJsx(props) {
           Undo
         </button>
       );
-    } else if (ownParty.funds >= 25 + 10 * props.gs.rounds) {
+    } else if (ownParty.funds >= 20 + 10 * props.gs.rounds) {
       if (props.pol.hasOwnProperty('flipped')) {
         buttons.push(
           <button className={general.actionBtn}
@@ -233,7 +215,7 @@ function buttonsJsx(props) {
         buttons.push(
           <button className={general.actionBtn}
               onClick={() => props.callback('bribe', props.polIndex)}>
-            Bribe: {formatMoneyString(25 + 10 * props.gs.rounds)}
+            Bribe: {formatMoneyString(20 + 10 * props.gs.rounds)}
           </button>
         );
       }

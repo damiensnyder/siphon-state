@@ -120,6 +120,7 @@ var GameState = /** @class */ (function () {
                     var tiebreaker = returningPerParty[partyIndex] /
                         (_this.parties.length * prov.seats * 2);
                     newPol.support = party.baseSupport + tiebreaker;
+                    newPol.adsBought = 0;
                     _this.pols.push(newPol);
                     prov.candidates.push(_this.pols.length - 1);
                     returningPerParty[partyIndex]++;
@@ -140,11 +141,8 @@ var GameState = /** @class */ (function () {
             var previousSupport = Math.round(party.baseSupport);
             var partyPriority = (partyIndex - _this.priority +
                 _this.parties.length) % _this.parties.length;
-            if (previousSupport < 5) {
+            if (previousSupport < 3) {
                 previousSupport++;
-            }
-            else if (previousSupport > 5) {
-                previousSupport--;
             }
             party.baseSupport = previousSupport +
                 partyPriority / (_this.parties.length * 2);
@@ -375,7 +373,8 @@ var GameState = /** @class */ (function () {
         if (pol.party === partyIndex &&
             party.funds >= pol.adsBought + 1 &&
             this.stage === 1) {
-            party.funds -= pol.adsBought + 1;
+            pol.adsBought++;
+            party.funds -= pol.adsBought;
             this.pols[polIndex].support += 1;
         }
     };
@@ -387,7 +386,8 @@ var GameState = /** @class */ (function () {
             party.funds >= pol.adsBought + 1 &&
             pol.support >= 1 &&
             this.stage === 1) {
-            party.funds -= pol.adsBought + 1;
+            pol.adsBought++;
+            party.funds -= pol.adsBought;
             this.pols[polIndex].support -= 1;
         }
     };

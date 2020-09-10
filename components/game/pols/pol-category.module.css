@@ -5,9 +5,10 @@
   flex-flow: column;
   justify-content: flex-start;
   align-items: stretch;
-  padding: 16px;
+  padding-top: 16px;
+  /*padding: 16px;
 
-  background-color: #555;
+  background-color: #555;*/
   border-radius: 6px;
 }
 
