@@ -166,9 +166,11 @@ var GameRoom = /** @class */ (function () {
                 });
                 player.actionQueue.adQueue.forEach(function (action) {
                     _this.gs.ad(playerIndex, action);
+                    _this.gs.resetAdsBought(playerIndex);
                 });
                 player.actionQueue.smearQueue.forEach(function (action) {
                     _this.gs.smear(playerIndex, action);
+                    _this.gs.resetAdsBought(-1);
                 });
             });
         }

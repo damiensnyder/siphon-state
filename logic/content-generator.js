@@ -28,8 +28,6 @@ var ContentGenerator = /** @class */ (function () {
         newPol.url = newPol.name.split(/ /).join('-');
         newPol.url = newPol.url.split(/[,.]/).join('').toLowerCase();
         newPol.name = newPol.name + toRomanNumerals(this.resets);
-        newPol.baseSupport = 5;
-        newPol.support = newPol.baseSupport;
         return newPol;
     };
     ContentGenerator.prototype.deal = function () {
