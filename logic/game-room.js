@@ -161,20 +161,20 @@ var GameRoom = /** @class */ (function () {
         }
         if (this.gs.stage === 1) {
             this.players.forEach(function (player, playerIndex) {
-                player.actionQueue.bribeQueue.forEach(function (action) {
-                    _this.gs.bribe(playerIndex, action);
+                _this.players.forEach(function (player, playerIndex) {
+                    player.actionQueue.bribeQueue.forEach(function (action) {
+                        _this.gs.bribe(playerIndex, action);
+                    });
+                    player.actionQueue.adQueue.forEach(function (action) {
+                        _this.gs.ad(playerIndex, action);
+                    });
                 });
+                _this.gs.resetAdsBought(true);
                 player.actionQueue.smearQueue.forEach(function (action) {
                     _this.gs.smear(playerIndex, action);
                 });
                 _this.gs.resetAdsBought(false);
             });
-            this.players.forEach(function (player, playerIndex) {
-                player.actionQueue.adQueue.forEach(function (action) {
-                    _this.gs.ad(playerIndex, action);
-                });
-            });
-            this.gs.resetAdsBought(true);
         }
         else if (this.gs.stage === 2) {
             this.players.forEach(function (player, playerIndex) {

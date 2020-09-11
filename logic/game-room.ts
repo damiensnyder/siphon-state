@@ -200,20 +200,20 @@ class GameRoom {
 
     if (this.gs.stage === 1) {
       this.players.forEach((player, playerIndex) => {
+      this.players.forEach((player, playerIndex) => {
         player.actionQueue.bribeQueue.forEach((action) => {
           this.gs.bribe(playerIndex, action);
         });
-        player.actionQueue.smearQueue.forEach((action) => {
-          this.gs.smear(playerIndex, action);
-        });
-        this.gs.resetAdsBought(false);
-      });
-      this.players.forEach((player, playerIndex) => {
         player.actionQueue.adQueue.forEach((action) => {
           this.gs.ad(playerIndex, action);
         });
       });
       this.gs.resetAdsBought(true);
+        player.actionQueue.smearQueue.forEach((action) => {
+          this.gs.smear(playerIndex, action);
+        });
+        this.gs.resetAdsBought(false);
+      });
     } else if (this.gs.stage === 2) {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.voteQueue.forEach((action) => {
