@@ -5,10 +5,8 @@
   flex-flow: column;
   justify-content: flex-start;
   align-items: stretch;
-  padding-top: 16px;
-  /*padding: 16px;
-
-  background-color: #555;*/
+  padding: 16px;
+  
   border-radius: 6px;
 }
 
