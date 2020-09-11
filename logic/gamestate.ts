@@ -268,14 +268,25 @@ class GameState {
     });
   }
 
-  // Set the ads bought for all politicians to 0. Remove all pols from the
-  // given party with no ads bought.
-  resetAdsBought(removeUnsupportedFromParty: number): void {
+  // Set the ads bought for all politicians to 0. If removeUnfundedPols is
+  // true, remove all politicians with no ads bought unless the province has
+  // no politicians with ads bought.
+  resetAdsBought(removeUnfundedPols: boolean): void {
     this.provs.forEach((prov: Prov) => {
-      prov.candidates = prov.candidates.filter((polIndex: number) => {
-        return this.pols[polIndex].adsBought > 0 ||
-            this.pols[polIndex].party !== removeUnsupportedFromParty;
+      // Check if there are any politicians with funding in the province
+      let allUnfunded = true;
+      prov.candidates.forEach((polIndex: number) => {
+        if (this.pols[polIndex].adsBought) {
+          allUnfunded = false;
+        }
       });
+      // Remove unfunded politicians if appropriate
+      if (removeUnfundedPols && !allUnfunded) {
+        prov.candidates = prov.candidates.filter((polIndex: number) => {
+          return this.pols[polIndex].adsBought > 0;
+        });
+      }
+      // Reset all politicians to have 0 ads bought
       prov.candidates.forEach((polIndex: number) => {
         this.pols[polIndex].adsBought = 0;
       });

@@ -217,19 +217,26 @@ var GameState = /** @class */ (function () {
             }
         });
     };
-    // Set the ads bought for all politicians to 0. If removePolsWithoutAds is
-    // set to a party index, remove any pols from that party with no ads bought.
-    GameState.prototype.resetAdsBought = function (removeUnsupportedFromParty) {
+    // Set the ads bought for all politicians to 0. If removeUnfundedPols is
+    // true, remove all politicians with no ads bought unless the province has
+    // no politicians with ads bought.
+    GameState.prototype.resetAdsBought = function (removeUnfundedPols) {
         var _this = this;
         this.provs.forEach(function (prov) {
-            prov.candidates = prov.candidates.filter(function (polIndex) {
-                if (_this.pols[polIndex].adsBought === 0 &&
-                    _this.pols[polIndex].party === removeUnsupportedFromParty) {
-                    //console.log(`Removing ${polIndex} ${removeUnsupportedFromParty}`);
+            // Check if there are any politicians with funding in the province
+            var allUnfunded = true;
+            prov.candidates.forEach(function (polIndex) {
+                if (_this.pols[polIndex].adsBought) {
+                    allUnfunded = false;
                 }
-                return _this.pols[polIndex].adsBought > 0 ||
-                    _this.pols[polIndex].party !== removeUnsupportedFromParty;
             });
+            // Remove unfunded politicians if appropriate
+            if (removeUnfundedPols && !allUnfunded) {
+                prov.candidates = prov.candidates.filter(function (polIndex) {
+                    return _this.pols[polIndex].adsBought > 0;
+                });
+            }
+            // Reset all politicians to have 0 ads bought
             prov.candidates.forEach(function (polIndex) {
                 _this.pols[polIndex].adsBought = 0;
             });
@@ -377,7 +384,6 @@ var GameState = /** @class */ (function () {
         if (pol.party === partyIndex &&
             party.funds >= pol.adsBought + 1 &&
             this.stage === 1) {
-            // console.log(`Ad bought ${partyIndex} ${polIndex}`)
             pol.adsBought++;
             party.funds -= pol.adsBought;
             this.pols[polIndex].support += 1;
