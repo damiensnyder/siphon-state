@@ -218,11 +218,15 @@ var GameState = /** @class */ (function () {
         });
     };
     // Set the ads bought for all politicians to 0. If removePolsWithoutAds is
-    // true, remove any pols with no ads bought.
+    // set to a party index, remove any pols from that party with no ads bought.
     GameState.prototype.resetAdsBought = function (removeUnsupportedFromParty) {
         var _this = this;
         this.provs.forEach(function (prov) {
             prov.candidates = prov.candidates.filter(function (polIndex) {
+                if (_this.pols[polIndex].adsBought === 0 &&
+                    _this.pols[polIndex].party === removeUnsupportedFromParty) {
+                    //console.log(`Removing ${polIndex} ${removeUnsupportedFromParty}`);
+                }
                 return _this.pols[polIndex].adsBought > 0 ||
                     _this.pols[polIndex].party !== removeUnsupportedFromParty;
             });
@@ -373,6 +377,7 @@ var GameState = /** @class */ (function () {
         if (pol.party === partyIndex &&
             party.funds >= pol.adsBought + 1 &&
             this.stage === 1) {
+            // console.log(`Ad bought ${partyIndex} ${polIndex}`)
             pol.adsBought++;
             party.funds -= pol.adsBought;
             this.pols[polIndex].support += 1;
@@ -385,7 +390,8 @@ var GameState = /** @class */ (function () {
         if (pol.party !== partyIndex &&
             party.funds >= pol.adsBought + 1 &&
             pol.support >= 1 &&
-            this.stage === 1) {
+            this.stage === 1 &&
+            this.rounds !== 0) {
             pol.adsBought++;
             party.funds -= pol.adsBought;
             this.pols[polIndex].support -= 1;

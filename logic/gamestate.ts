@@ -268,8 +268,8 @@ class GameState {
     });
   }
 
-  // Set the ads bought for all politicians to 0. If removePolsWithoutAds is
-  // true, remove any pols with no ads bought.
+  // Set the ads bought for all politicians to 0. Remove all pols from the
+  // given party with no ads bought.
   resetAdsBought(removeUnsupportedFromParty: number): void {
     this.provs.forEach((prov: Prov) => {
       prov.candidates = prov.candidates.filter((polIndex: number) => {

@@ -205,12 +205,11 @@ class GameRoom {
         });
         player.actionQueue.adQueue.forEach((action) => {
           this.gs.ad(playerIndex, action);
-          this.gs.resetAdsBought(playerIndex);
         });
         player.actionQueue.smearQueue.forEach((action) => {
           this.gs.smear(playerIndex, action);
-          this.gs.resetAdsBought(-1);
         });
+        this.gs.resetAdsBought(playerIndex);
       });
     } else if (this.gs.stage === 2) {
       this.players.forEach((player, playerIndex) => {
