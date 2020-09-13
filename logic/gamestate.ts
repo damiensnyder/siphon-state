@@ -447,7 +447,7 @@ class GameState {
         this.stage === 1) {
       pol.adsBought++;
       party.funds -= pol.adsBought;
-      this.pols[polIndex].support += 1;
+      this.pols[polIndex].support++;
     }
   }
 
@@ -462,7 +462,7 @@ class GameState {
         this.rounds !== 0) {
       pol.adsBought++;
       party.funds -= pol.adsBought;
-      this.pols[polIndex].support -= 1;
+      this.pols[polIndex].support--;
     }
   }
 

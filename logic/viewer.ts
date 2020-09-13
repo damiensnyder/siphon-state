@@ -12,6 +12,9 @@ interface ActionQueue {
   pmChoice?: boolean;
 }
 
+const NUMERIC_SUBQUEUES: string[] = ["adQueue", "smearQueue", "brubeQueue",
+  "hitQueue", "voteQueue", "flipQueue"]
+
 // @ts-ignore
 class Viewer {
   pov: number;
@@ -52,9 +55,41 @@ class Viewer {
     if (readyInfo === false || readyInfo === true) {
       this.callback(this, 'ready', readyInfo);
     } else {
-      this.actionQueue = readyInfo;
-      this.callback(this, 'ready', true);
+      if (this.isValidActionQueue(readyInfo)) {
+        this.actionQueue = readyInfo;
+        this.callback(this, 'ready', true);
+      }
     }
+  }
+
+  // Return false if the action queue is not an object. If it is an object,
+  // replace all subqueues that are not arrays with arrays. Remove items with
+  // invalid types from arrays passed in.
+  isValidActionQueue(readyInfo: ActionQueue): boolean {
+    if (typeof(readyInfo) !== "object") {
+      return false;
+    }
+
+    if (Array.isArray(readyInfo.payQueue)) {
+      readyInfo.payQueue = readyInfo.payQueue.filter((payment) => {
+        return Number.isSafeInteger(payment.partyIndex) &&
+            Number.isSafeInteger(payment.amount);
+      });
+    } else {
+      readyInfo.payQueue = [];
+    }
+    NUMERIC_SUBQUEUES.forEach((queueName: string) => {
+      if (Array.isArray(readyInfo[queueName])) {
+        readyInfo[queueName] = readyInfo[queueName].filter((item: number) => {
+          return Number.isSafeInteger(item);
+        });
+      } else {
+        readyInfo[queueName] = [];
+      }
+    });
+    readyInfo.pmChoice = readyInfo.pmChoice === true;
+
+    return true;
   }
 
   reset(): void {
