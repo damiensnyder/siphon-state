@@ -30,3 +30,45 @@
 
   font-size: 20px;
 }
+
+@media only screen and
+    (min-device-width: 500px) and
+    (max-device-width: 800px) {
+  .outerWrapper {
+    margin-top: 12px;
+  }
+
+  .helpText {
+    margin: 0 12px;
+    font-size: 16px;
+  }
+
+  .buttonsRow {
+    margin: 12px;
+  }
+
+  .bigButton {
+    min-width: 80px;
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-device-width: 500px) {
+  .outerWrapper {
+    margin-top: 8px;
+  }
+
+  .helpText {
+    margin: 0 8px;
+    font-size: 16px;
+  }
+
+  .buttonsRow {
+    margin: 8px;
+  }
+
+  .bigButton {
+    min-width: 60px;
+    font-size: 16px;
+  }
+}

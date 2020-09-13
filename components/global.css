@@ -43,20 +43,12 @@ select {
     (min-device-width: 500px) and
     (max-device-width: 800px) {
   body {
-    font-size: 14px;
-  }
-
-  select {
-    border-radius: 4px;
+    font-size: 16px;
   }
 }
 
 @media only screen and (max-device-width: 500px) {
   body {
-    font-size: 12px;
-  }
-
-  select {
-    border-radius: 4px;
+    font-size: 14px;
   }
 }

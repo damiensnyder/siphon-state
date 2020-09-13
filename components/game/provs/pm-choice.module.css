@@ -36,3 +36,39 @@
 .chosen {
   color: #9999dd;
 }
+
+@media only screen and
+    (min-device-width: 500px) and
+    (max-device-width: 800px) {
+
+}
+
+@media only screen and (max-device-width: 500px) {
+  .outerWrapper {
+    margin-top: 8px;
+    padding: 8px;
+    font-size: 18px;
+  }
+
+  .buttonRow {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .chooserText {
+    margin-bottom: 8px;
+  }
+
+  .addendum {
+    margin-top: 8px;
+  }
+
+  .optionButton {
+    width: 100%;
+    max-width: none;
+    padding: 4px;
+    margin: 4px 0;
+  }
+}

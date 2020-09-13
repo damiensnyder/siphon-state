@@ -17,3 +17,10 @@
   align-items: stretch;
   overflow-y: scroll;
 }
+
+@media only screen and (max-device-width: 800px) {
+  .provInner {
+    position: relative;
+    justify-content: flex-start;
+  }
+}

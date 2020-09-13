@@ -39,6 +39,8 @@
 
 @media only screen and (max-device-width: 800px) {
   #root {
+    position: relative;
+    width: 100%;
     flex-flow: column;
   }
 
