@@ -20,6 +20,16 @@
   align-items: center;
 }
 
+/* Horizontal on desktop, vertical on laptop */
+.responsiveHorizWrapper {
+  width: 100%;
+
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .spacer {
   margin: 8px;
 }
@@ -114,4 +124,86 @@
   background-color: #333;
   border: none;
   border-radius: 6px;
+}
+
+@media only screen and
+(min-device-width: 500px) and
+(max-device-width: 800px) {
+  .spacer {
+    margin: 6px;
+  }
+
+  .responsiveHorizWrapper {
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .menu {
+    margin: 12px;
+    padding: 6px;
+    border-radius: 6px;
+  }
+
+  .containerLevel5 {
+    margin: 6px;
+    padding: 2px 0;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  .inactiveBtn {
+    border-radius: 4px;
+  }
+
+  .actionBtn {
+    border-radius: 4px;
+  }
+
+  .settingsInput {
+    margin-left: 6px;
+    width: 45px;
+    padding: 0 2px;
+    border-radius: 4px;
+  }
+}
+
+@media only screen and (max-device-width: 500px) {
+  .spacer {
+    margin: 4px;
+  }
+
+  .responsiveHorizWrapper {
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .menu {
+    margin: 8px;
+    padding: 4px;
+    border-radius: 4px;
+  }
+
+  .containerLevel5 {
+    margin: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  .inactiveBtn {
+    border-radius: 4px;
+  }
+
+  .actionBtn {
+    border-radius: 4px;
+  }
+
+  .settingsInput {
+    margin-left: 4px;
+    width: 30px;
+    padding: 0 2px;
+    border-radius: 4px;
+  }
 }

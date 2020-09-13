@@ -33,3 +33,37 @@
 .gameInfo {
   text-align: left;
 }
+
+@media only screen and
+(min-device-width: 500px) and
+(max-device-width: 800px) {
+  #activeGamesWindow {
+    max-height: 200px;
+    margin: 12px;
+  }
+
+  .gameItemOuter {
+    margin: 2px 0;
+  }
+
+  .gameItemInner {
+    padding: 4px;
+    border-radius: 4px;
+  }
+}
+
+@media only screen and (max-device-width: 500px) {
+  #activeGamesWindow {
+    max-height: 150px;
+    margin: 8px;
+  }
+
+  .gameItemOuter {
+    margin: 2px 0;
+  }
+
+  .gameItemInner {
+    padding: 4px;
+    border-radius: 4px;
+  }
+}
