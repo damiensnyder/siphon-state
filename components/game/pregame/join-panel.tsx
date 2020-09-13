@@ -58,7 +58,7 @@ class JoinPanel extends React.Component {
   render() {
     return (
       <div className={general.outerWrapper + ' ' +
-          general.horizWrapper + ' ' +
+          general.responsiveHorizWrapper + ' ' +
           styles.panelContainer}>
         <div className={general.menu}>
           <TextInput label={"Party name:"}
