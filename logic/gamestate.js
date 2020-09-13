@@ -386,7 +386,7 @@ var GameState = /** @class */ (function () {
             this.stage === 1) {
             pol.adsBought++;
             party.funds -= pol.adsBought;
-            this.pols[polIndex].support += 1;
+            this.pols[polIndex].support++;
         }
     };
     // Smear the given politician, decreasing their support.
@@ -400,7 +400,7 @@ var GameState = /** @class */ (function () {
             this.rounds !== 0) {
             pol.adsBought++;
             party.funds -= pol.adsBought;
-            this.pols[polIndex].support -= 1;
+            this.pols[polIndex].support--;
         }
     };
     // Bribe the given politician, making them a member of your party.

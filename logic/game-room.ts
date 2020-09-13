@@ -199,7 +199,8 @@ class GameRoom {
     }
 
     if (this.gs.stage === 1) {
-      this.players.forEach((player, playerIndex) => {
+      // Execute all bribes and ads first, then smears, so player ordering
+      // doesn't affect which smears get executed.
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.bribeQueue.forEach((action) => {
           this.gs.bribe(playerIndex, action);
@@ -209,6 +210,7 @@ class GameRoom {
         });
       });
       this.gs.resetAdsBought(true);
+      this.players.forEach((player, playerIndex) => {
         player.actionQueue.smearQueue.forEach((action) => {
           this.gs.smear(playerIndex, action);
         });

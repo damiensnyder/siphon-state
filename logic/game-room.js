@@ -160,16 +160,18 @@ var GameRoom = /** @class */ (function () {
             });
         }
         if (this.gs.stage === 1) {
+            // Execute all bribes and ads first, then smears, so player ordering
+            // doesn't affect which smears get executed.
             this.players.forEach(function (player, playerIndex) {
-                _this.players.forEach(function (player, playerIndex) {
-                    player.actionQueue.bribeQueue.forEach(function (action) {
-                        _this.gs.bribe(playerIndex, action);
-                    });
-                    player.actionQueue.adQueue.forEach(function (action) {
-                        _this.gs.ad(playerIndex, action);
-                    });
+                player.actionQueue.bribeQueue.forEach(function (action) {
+                    _this.gs.bribe(playerIndex, action);
                 });
-                _this.gs.resetAdsBought(true);
+                player.actionQueue.adQueue.forEach(function (action) {
+                    _this.gs.ad(playerIndex, action);
+                });
+            });
+            this.gs.resetAdsBought(true);
+            this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.smearQueue.forEach(function (action) {
                     _this.gs.smear(playerIndex, action);
                 });
