@@ -23,13 +23,13 @@ const RACE_NO_DECLINE: string[] = [
   "To win races, you can buy ads for your own candidates (highlighted in " +
   "blue), or smear your opponents' candidates. Buying ads increases a " +
   "politician's support, and smearing decreases it (but not below zero).",
-  "At the end of each round, buying ads and smearing get more expensive. " +
-  "You can see how much money you have left next to your party's name. " +
-  "(Click \"Hide\" to hide these help messages)"
+  "Smearing or buying an ad gets more expensive each time you do it in a " +
+  "round. You can see how much money you have left next to your party's " +
+  "name. (Click \"Hide\" to hide these help messages)"
 ];
 const RACE_ONE_DECLINE: string[] = [
   "At the end of each round, the nation sinks deeper into disarray. The " +
-  "first thing to go is loyalty. Each party can now bribe one politician " +
+  "first thing to go is loyalty. Each party can now bribe {} " +
   "from another party. Check each province to find who you can bribe.",
   "Once you bribe a politician, any time that politician is an official, " +
   "you can 'flip' them and they become a member of your own party and you " +
@@ -162,6 +162,9 @@ class HelperBar extends React.Component {
         return RACE_NO_DECLINE;
       }
       if (this.props.gs.decline == 1) {
+        RACE_ONE_DECLINE[0] = RACE_ONE_DECLINE[0].replace('{}',
+            '' + this.props.gs.rounds + ' politician' +
+            (this.props.gs.rounds > 0 ? 's' : ''));
         return RACE_ONE_DECLINE;
       }
       if (this.props.gs.suspender != this.props.gs.pov) {
