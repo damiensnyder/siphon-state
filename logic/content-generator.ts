@@ -14,8 +14,8 @@ interface Pol {
   name: string,
   url: string,
   party: number,
-  baseSupport: number,
-  support: number
+  support?: number,
+  adsBought?: number
 }
 
 interface Prov {
@@ -50,8 +50,6 @@ class ContentGenerator {
     newPol.url = newPol.name.split(/ /).join('-');
     newPol.url = newPol.url.split(/[,.]/).join('').toLowerCase();
     newPol.name = newPol.name + toRomanNumerals(this.resets);
-    newPol.baseSupport = 5;
-    newPol.support = newPol.baseSupport;
     return newPol;
   }
 

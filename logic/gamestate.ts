@@ -71,7 +71,7 @@ class GameState {
       connected: true,
       funds: 0,
       votes: 0,
-      baseSupport: 5,
+      baseSupport: 3,
       sympathetic: [],
       bribed: [],
       hitAvailable: false,
@@ -124,9 +124,9 @@ class GameState {
     this.rounds = 0;
     this.decline += 1;
 
-    // Give all parties $7.5M, and bonus money to the prime minister's party.
+    // Give all parties $6M, and bonus money to the prime minister's party.
     this.parties.forEach((party: Party) => {
-      party.funds += 75;
+      party.funds += 60;
     });
 
     this.updateBaseSupport();
@@ -154,12 +154,10 @@ class GameState {
       const returningCandidates = [];
       let returningPerParty = Array(this.parties.length).fill(0);
       prov.candidates.forEach((polIndex: number) => {
-        if (this.officials.includes(polIndex)) {
-          returningCandidates.push(polIndex);
-          const polParty = this.pols[polIndex].party
-          this.pols[polIndex].support = this.parties[polParty].baseSupport;
-          returningPerParty[polParty] += 1;
-        }
+        const pol: Pol = this.pols[polIndex];
+        returningCandidates.push(polIndex);
+        pol.support = this.parties[pol.party].baseSupport;
+        returningPerParty[pol.party] += 1;
       });
       prov.candidates = returningCandidates;
 
@@ -168,9 +166,10 @@ class GameState {
       this.parties.forEach((party: Party, partyIndex: number) => {
         while (returningPerParty[partyIndex] < prov.seats) {
           const newPol: Pol = this.contentGenerator.newPol(partyIndex);
-          const priorityNudge: number = returningPerParty[partyIndex] /
+          const tiebreaker: number = returningPerParty[partyIndex] /
               (this.parties.length * prov.seats * 2);
-          newPol.support = party.baseSupport + priorityNudge;
+          newPol.support = party.baseSupport + tiebreaker;
+          newPol.adsBought = 0;
 
           this.pols.push(newPol);
           prov.candidates.push(this.pols.length - 1);
@@ -194,10 +193,8 @@ class GameState {
       const partyPriority: number = (partyIndex - this.priority +
           this.parties.length) % this.parties.length;
 
-      if (previousSupport < 5) {
+      if (previousSupport < 3) {
         previousSupport++;
-      } else if (previousSupport > 5) {
-        previousSupport--;
       }
       party.baseSupport = previousSupport +
           partyPriority / (this.parties.length * 2);
@@ -268,6 +265,31 @@ class GameState {
           i--;
         }
       }
+    });
+  }
+
+  // Set the ads bought for all politicians to 0. If removeUnfundedPols is
+  // true, remove all politicians with no ads bought unless the province has
+  // no politicians with ads bought.
+  resetAdsBought(removeUnfundedPols: boolean): void {
+    this.provs.forEach((prov: Prov) => {
+      // Check if there are any politicians with funding in the province
+      let allUnfunded = true;
+      prov.candidates.forEach((polIndex: number) => {
+        if (this.pols[polIndex].adsBought) {
+          allUnfunded = false;
+        }
+      });
+      // Remove unfunded politicians if appropriate
+      if (removeUnfundedPols && !allUnfunded) {
+        prov.candidates = prov.candidates.filter((polIndex: number) => {
+          return this.pols[polIndex].adsBought > 0;
+        });
+      }
+      // Reset all politicians to have 0 ads bought
+      prov.candidates.forEach((polIndex: number) => {
+        this.pols[polIndex].adsBought = 0;
+      });
     });
   }
 
@@ -390,7 +412,7 @@ class GameState {
         this.suspender === this.pols[this.primeMinister].party) {
       this.ended = true;
     } else if (this.suspender !== null) {
-      this.parties[this.suspender].baseSupport = 2;   // becomes 3 before race
+      this.parties[this.suspender].baseSupport = -1;   // becomes 0 before race
       this.parties[this.suspender].funds = 0;
     }
 
@@ -418,22 +440,29 @@ class GameState {
 
   // Buy an ad for the given politician, increasing their support.
   ad(partyIndex: number, polIndex: number): void {
-    if (this.pols[polIndex].party === partyIndex &&
-        this.parties[partyIndex].funds >= (3 + this.rounds) &&
+    const party: Party = this.parties[partyIndex];
+    const pol: Pol = this.pols[polIndex];
+    if (pol.party === partyIndex &&
+        party.funds >= pol.adsBought + 1 &&
         this.stage === 1) {
-      this.parties[partyIndex].funds -= (3 + this.rounds);
-      this.pols[polIndex].support += 1;
+      pol.adsBought++;
+      party.funds -= pol.adsBought;
+      this.pols[polIndex].support++;
     }
   }
 
   // Smear the given politician, decreasing their support.
   smear(partyIndex: number, polIndex: number): void {
-    if (this.pols[polIndex].party !== partyIndex &&
-        this.parties[partyIndex].funds >= 2 + this.rounds &&
-        this.pols[polIndex].support >= 1 &&
-        this.stage === 1) {
-      this.parties[partyIndex].funds -= 2 + this.rounds;
-      this.pols[polIndex].support -= 1;
+    const party: Party = this.parties[partyIndex];
+    const pol: Pol = this.pols[polIndex];
+    if (pol.party !== partyIndex &&
+        party.funds >= pol.adsBought + 1 &&
+        pol.support >= 1 &&
+        this.stage === 1 &&
+        this.rounds !== 0) {
+      pol.adsBought++;
+      party.funds -= pol.adsBought;
+      this.pols[polIndex].support--;
     }
   }
 
@@ -441,11 +470,11 @@ class GameState {
   bribe(partyIndex: number, polIndex: number): void {
     const party: Party = this.parties[partyIndex];
     if (party.sympathetic.length > 0 && 
-        party.funds >= 25 + 10 * this.rounds && 
+        party.funds >= 20 + 10 * this.rounds &&
         party.sympathetic.includes(polIndex)) {
       party.bribed.push(polIndex);
       party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
-      party.funds -= 25 + 10 * this.rounds;
+      party.funds -= 20 + 10 * this.rounds;
     }
   }
 

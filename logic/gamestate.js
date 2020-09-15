@@ -28,7 +28,7 @@ var GameState = /** @class */ (function () {
             connected: true,
             funds: 0,
             votes: 0,
-            baseSupport: 5,
+            baseSupport: 3,
             sympathetic: [],
             bribed: [],
             hitAvailable: false,
@@ -79,9 +79,9 @@ var GameState = /** @class */ (function () {
         this.stage = 1;
         this.rounds = 0;
         this.decline += 1;
-        // Give all parties $7.5M, and bonus money to the prime minister's party.
+        // Give all parties $6M, and bonus money to the prime minister's party.
         this.parties.forEach(function (party) {
-            party.funds += 75;
+            party.funds += 60;
         });
         this.updateBaseSupport();
         this.givePmBonus();
@@ -106,12 +106,10 @@ var GameState = /** @class */ (function () {
             var returningCandidates = [];
             var returningPerParty = Array(_this.parties.length).fill(0);
             prov.candidates.forEach(function (polIndex) {
-                if (_this.officials.includes(polIndex)) {
-                    returningCandidates.push(polIndex);
-                    var polParty = _this.pols[polIndex].party;
-                    _this.pols[polIndex].support = _this.parties[polParty].baseSupport;
-                    returningPerParty[polParty] += 1;
-                }
+                var pol = _this.pols[polIndex];
+                returningCandidates.push(polIndex);
+                pol.support = _this.parties[pol.party].baseSupport;
+                returningPerParty[pol.party] += 1;
             });
             prov.candidates = returningCandidates;
             // Give each party new politicians in the province until they have one
@@ -119,9 +117,10 @@ var GameState = /** @class */ (function () {
             _this.parties.forEach(function (party, partyIndex) {
                 while (returningPerParty[partyIndex] < prov.seats) {
                     var newPol = _this.contentGenerator.newPol(partyIndex);
-                    var priorityNudge = returningPerParty[partyIndex] /
+                    var tiebreaker = returningPerParty[partyIndex] /
                         (_this.parties.length * prov.seats * 2);
-                    newPol.support = party.baseSupport + priorityNudge;
+                    newPol.support = party.baseSupport + tiebreaker;
+                    newPol.adsBought = 0;
                     _this.pols.push(newPol);
                     prov.candidates.push(_this.pols.length - 1);
                     returningPerParty[partyIndex]++;
@@ -142,11 +141,8 @@ var GameState = /** @class */ (function () {
             var previousSupport = Math.round(party.baseSupport);
             var partyPriority = (partyIndex - _this.priority +
                 _this.parties.length) % _this.parties.length;
-            if (previousSupport < 5) {
+            if (previousSupport < 3) {
                 previousSupport++;
-            }
-            else if (previousSupport > 5) {
-                previousSupport--;
             }
             party.baseSupport = previousSupport +
                 partyPriority / (_this.parties.length * 2);
@@ -219,6 +215,31 @@ var GameState = /** @class */ (function () {
                     i--;
                 }
             }
+        });
+    };
+    // Set the ads bought for all politicians to 0. If removeUnfundedPols is
+    // true, remove all politicians with no ads bought unless the province has
+    // no politicians with ads bought.
+    GameState.prototype.resetAdsBought = function (removeUnfundedPols) {
+        var _this = this;
+        this.provs.forEach(function (prov) {
+            // Check if there are any politicians with funding in the province
+            var allUnfunded = true;
+            prov.candidates.forEach(function (polIndex) {
+                if (_this.pols[polIndex].adsBought) {
+                    allUnfunded = false;
+                }
+            });
+            // Remove unfunded politicians if appropriate
+            if (removeUnfundedPols && !allUnfunded) {
+                prov.candidates = prov.candidates.filter(function (polIndex) {
+                    return _this.pols[polIndex].adsBought > 0;
+                });
+            }
+            // Reset all politicians to have 0 ads bought
+            prov.candidates.forEach(function (polIndex) {
+                _this.pols[polIndex].adsBought = 0;
+            });
         });
     };
     // Advance to the next round of the race. If it has been 3 rounds, advance to
@@ -334,7 +355,7 @@ var GameState = /** @class */ (function () {
             this.ended = true;
         }
         else if (this.suspender !== null) {
-            this.parties[this.suspender].baseSupport = 2; // becomes 3 before race
+            this.parties[this.suspender].baseSupport = -1; // becomes 0 before race
             this.parties[this.suspender].funds = 0;
         }
         // If there was no winner, advance to the next prov and begin nomination.
@@ -358,32 +379,39 @@ var GameState = /** @class */ (function () {
     };
     // Buy an ad for the given politician, increasing their support.
     GameState.prototype.ad = function (partyIndex, polIndex) {
-        if (this.pols[polIndex].party === partyIndex &&
-            this.parties[partyIndex].funds >= (3 + this.rounds) &&
+        var party = this.parties[partyIndex];
+        var pol = this.pols[polIndex];
+        if (pol.party === partyIndex &&
+            party.funds >= pol.adsBought + 1 &&
             this.stage === 1) {
-            this.parties[partyIndex].funds -= (3 + this.rounds);
-            this.pols[polIndex].support += 1;
+            pol.adsBought++;
+            party.funds -= pol.adsBought;
+            this.pols[polIndex].support++;
         }
     };
     // Smear the given politician, decreasing their support.
     GameState.prototype.smear = function (partyIndex, polIndex) {
-        if (this.pols[polIndex].party !== partyIndex &&
-            this.parties[partyIndex].funds >= 2 + this.rounds &&
-            this.pols[polIndex].support >= 1 &&
-            this.stage === 1) {
-            this.parties[partyIndex].funds -= 2 + this.rounds;
-            this.pols[polIndex].support -= 1;
+        var party = this.parties[partyIndex];
+        var pol = this.pols[polIndex];
+        if (pol.party !== partyIndex &&
+            party.funds >= pol.adsBought + 1 &&
+            pol.support >= 1 &&
+            this.stage === 1 &&
+            this.rounds !== 0) {
+            pol.adsBought++;
+            party.funds -= pol.adsBought;
+            this.pols[polIndex].support--;
         }
     };
     // Bribe the given politician, making them a member of your party.
     GameState.prototype.bribe = function (partyIndex, polIndex) {
         var party = this.parties[partyIndex];
         if (party.sympathetic.length > 0 &&
-            party.funds >= 25 + 10 * this.rounds &&
+            party.funds >= 20 + 10 * this.rounds &&
             party.sympathetic.includes(polIndex)) {
             party.bribed.push(polIndex);
             party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
-            party.funds -= 25 + 10 * this.rounds;
+            party.funds -= 20 + 10 * this.rounds;
         }
     };
     // Transfer the symp from their old party to their new party.

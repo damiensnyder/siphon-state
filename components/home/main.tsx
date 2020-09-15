@@ -13,7 +13,7 @@ function HomeView(): React.ReactNode {
   return (
     <div id={styles.mainBody}>
       <h1>Siphon State</h1>
-      <div className={general.horizWrapper}>
+      <div className={general.responsiveHorizWrapper}>
         <CreateMenu />
         <JoinMenu />
       </div>

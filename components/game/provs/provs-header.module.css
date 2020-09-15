@@ -51,3 +51,35 @@
 .closedTab:hover {
   background-color: #333;
 }
+
+@media only screen and
+    (min-device-width: 500px) and
+    (max-device-width: 800px) {
+  .outerHeader {
+    margin-bottom: 8px;
+  }
+
+  .pointer {
+    display: none;
+  }
+
+  .tabOuter {
+    padding: 4px;
+    font-size: 18px;
+  }
+}
+
+@media only screen and (max-device-width: 500px) {
+  .outerHeader {
+    margin-bottom: 8px;
+  }
+
+  .pointer {
+    display: none;
+  }
+
+  .tabOuter {
+    padding: 4px;
+    font-size: 16px;
+  }
+}

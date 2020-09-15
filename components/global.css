@@ -38,3 +38,17 @@ select {
   background-color: #333;
   color: #ccc;
 }
+
+@media only screen and
+    (min-device-width: 500px) and
+    (max-device-width: 800px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-device-width: 500px) {
+  body {
+    font-size: 14px;
+  }
+}
