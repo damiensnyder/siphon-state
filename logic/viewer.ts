@@ -1,6 +1,6 @@
 interface ActionQueue {
   payQueue: {
-    partyIndex: number,
+    target: number,
     amount: number
   }[];
   adQueue?: number[];
@@ -72,7 +72,7 @@ class Viewer {
 
     if (Array.isArray(readyInfo.payQueue)) {
       readyInfo.payQueue = readyInfo.payQueue.filter((payment) => {
-        return Number.isSafeInteger(payment.partyIndex) &&
+        return Number.isSafeInteger(payment.target) &&
             Number.isSafeInteger(payment.amount);
       });
     } else {

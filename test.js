@@ -55,6 +55,9 @@ function twoPartiesTwoDecline() {
     }, function () { });
     addParties(game.gs, 2);
     game.gs.decline = 2;
+    game.gs.parties.forEach(function (party) {
+        party.hitAvailable = true;
+    });
     App.gameManager.addTestGame(game);
 }
 function threePartiesStart() {

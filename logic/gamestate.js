@@ -370,7 +370,7 @@ var GameState = /** @class */ (function () {
     */
     // Pay the given amount of funds from party 1 to party 2.
     GameState.prototype.pay = function (partyIndex, paymentInfo) {
-        if (this.parties[partyIndex].funds > paymentInfo.amount &&
+        if (this.parties[partyIndex].funds >= paymentInfo.amount &&
             paymentInfo.target < this.parties.length &&
             paymentInfo.target >= 0) {
             this.parties[partyIndex].funds -= paymentInfo.amount;

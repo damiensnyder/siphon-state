@@ -64,6 +64,9 @@ function twoPartiesTwoDecline(): void {
 
   addParties(game.gs, 2);
   game.gs.decline = 2;
+  game.gs.parties.forEach((party) => {
+    party.hitAvailable = true;
+  });
   App.gameManager.addTestGame(game);
 }
 

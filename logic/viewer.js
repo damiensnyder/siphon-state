@@ -46,7 +46,7 @@ var Viewer = /** @class */ (function () {
         }
         if (Array.isArray(readyInfo.payQueue)) {
             readyInfo.payQueue = readyInfo.payQueue.filter(function (payment) {
-                return Number.isSafeInteger(payment.partyIndex) &&
+                return Number.isSafeInteger(payment.target) &&
                     Number.isSafeInteger(payment.amount);
             });
         }

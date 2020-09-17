@@ -430,7 +430,7 @@ class GameState {
 
   // Pay the given amount of funds from party 1 to party 2.
   pay(partyIndex: number, paymentInfo): void {
-    if (this.parties[partyIndex].funds > paymentInfo.amount && 
+    if (this.parties[partyIndex].funds >= paymentInfo.amount &&
         paymentInfo.target < this.parties.length && 
         paymentInfo.target >= 0) {
       this.parties[partyIndex].funds -= paymentInfo.amount;
@@ -497,8 +497,8 @@ class GameState {
 
   // Call a hit the given politician, removing them from the game.
   hit(partyIndex: number, polIndex: number) {
-    const party = this.parties[partyIndex];
-    let cost = this.stage >= 2 ? 50 : 25;
+    const party: Party = this.parties[partyIndex];
+    let cost: number = this.stage >= 2 ? 50 : 25;
     if (partyIndex == this.priority && this.primeMinister != null) {
       cost += 25;
     }
@@ -508,7 +508,7 @@ class GameState {
       if (this.officials.includes(polIndex)) {
         this.officials.splice(this.officials.indexOf(polIndex), 1);
       }
-      this.provs.forEach((prov) => {
+      this.provs.forEach((prov: Prov) => {
         if (prov.candidates.includes(polIndex)) {
           prov.candidates.splice(prov.candidates.indexOf(polIndex), 1);
           party.funds -= cost;

@@ -140,11 +140,6 @@ var GameRoom = /** @class */ (function () {
     };
     GameRoom.prototype.executeAllActions = function () {
         var _this = this;
-        this.players.forEach(function (player, playerIndex) {
-            player.actionQueue.payQueue.forEach(function (action) {
-                _this.gs.pay(playerIndex, action);
-            });
-        });
         if (this.gs.stage >= 2) {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.flipQueue.forEach(function (action) {
@@ -182,6 +177,11 @@ var GameRoom = /** @class */ (function () {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.voteQueue.forEach(function (action) {
                     _this.gs.vote(playerIndex, action);
+                });
+            });
+            this.players.forEach(function (player, playerIndex) {
+                player.actionQueue.payQueue.forEach(function (action) {
+                    _this.gs.pay(playerIndex, action);
                 });
             });
         }

@@ -176,12 +176,6 @@ class GameRoom {
   }
 
   executeAllActions(): void {
-    this.players.forEach((player, playerIndex) => {
-      player.actionQueue.payQueue.forEach((action) => {
-        this.gs.pay(playerIndex, action);
-      });
-    });
-  
     if (this.gs.stage >= 2) {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.flipQueue.forEach((action) => {
@@ -220,6 +214,11 @@ class GameRoom {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.voteQueue.forEach((action) => {
           this.gs.vote(playerIndex, action);
+        });
+      });
+      this.players.forEach((player, playerIndex) => {
+        player.actionQueue.payQueue.forEach((action) => {
+          this.gs.pay(playerIndex, action);
         });
       });
     } else {
