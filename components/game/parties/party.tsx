@@ -1,6 +1,6 @@
 import React from "react";
 
-import Payment from "./payment";
+import Offer from "./offer";
 import general from "../../general.module.css";
 import styles from "./parties.module.css";
 
@@ -18,10 +18,12 @@ function ownFundsJsx(amount: number) {
   );
 }
 
-function votesJsx(votes: number) {
+function offersJsx(offers) {
+  let totalAmount: number = 0;
+  offers.forEach((offer) => {totalAmount += offer.amount});
   return (
     <span className={styles.funds}>
-      Votes: {votes}
+      Offered you: {"$" + (totalAmount / 10) + "M"}
     </span>
   );
 }
@@ -40,7 +42,7 @@ function replaceBtnJsx(props: PartyProps) {
 function paymentJsx(props: PartyProps) {
   if (props.gs.pov != props.index && props.gs.pov >= 0) {
     return (
-      <Payment index={props.index}
+      <Offer index={props.index}
           gs={props.gs}
           ownParty={props.gs.parties[props.gs.pov]}
           callback={props.callback} />
@@ -61,9 +63,11 @@ function Party(props: PartyProps) {
   }
 
   const showReplace: boolean = props.gs.pov === undefined && !self.connected;
-  const showVotes: boolean = props.gs.stage == 2;
+  const showOffers: boolean = self.offers.length > 0 &&
+      self.offers[0].fromParty != props.gs.pov;
   const showPayment: boolean = props.gs.started &&
       !props.gs.ended &&
+      props.gs.stage == 2 &&
       props.gs.pov !== undefined &&
       !props.gs.parties[props.gs.pov].ready;
   const showFunds: boolean = props.gs.started &&
@@ -80,7 +84,7 @@ function Party(props: PartyProps) {
         <div className={styles.abbrAndVotes}>
           <span className={styles.partyAbbr}>{self.abbr}</span>
           <span className={styles.votes}>
-            {showVotes ? votesJsx(self.votes) : null}
+            {showOffers ? offersJsx(self.offers) : null}
           </span>
         </div>
       </div>

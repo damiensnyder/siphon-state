@@ -1,8 +1,4 @@
 interface ActionQueue {
-  payQueue: {
-    target: number,
-    amount: number
-  }[];
   adQueue?: number[];
   smearQueue?: number[];
   bribeQueue?: number[];
@@ -10,6 +6,12 @@ interface ActionQueue {
   voteQueue?: number[];
   flipQueue?: number[];
   pmChoice?: boolean;
+}
+
+interface OfferInfo {
+  target: number,
+  amount: number,
+  fromParty: number
 }
 
 class GamestateManager {
@@ -35,7 +37,7 @@ class GamestateManager {
       'ready': this.handleReady,
       'disconnect': this.handleDisconnect,
       'flip': this.handleFlip,
-      'pay': this.handlePay,
+      'offer': this.handleOffer,
       'ad': this.handleAd,
       'smear': this.handleSmear,
       'hit': this.handleHit,
@@ -43,12 +45,12 @@ class GamestateManager {
       'vote': this.handleVote,
       'choose': this.handleChoose,
       'unflip': this.handleUndoFlip,
-      'unpay': this.handleUndoPay,
       'unad': this.handleUndoAd,
       'unsmear': this.handleUndoSmear,
       'unhit': this.handleUndoHit,
       'unbribe': this.handleUndoBribe,
       'unvote': this.handleUndoVote,
+      'newoffer': this.handleNewOffer,
       'newreplace': this.handleNewReplace,
       'newready': this.handleNewReady,
       'newdisconnect': this.handleNewDisconnect
@@ -63,9 +65,7 @@ class GamestateManager {
     this.gs = gs;
 
     // Reset the action queue
-    this.actionQueue = {
-      payQueue: []
-    }
+    this.actionQueue = {};
     if (gs.stage === 1) {
       this.actionQueue.adQueue = [];
       this.actionQueue.smearQueue = [];
@@ -139,11 +139,8 @@ class GamestateManager {
     this.actionQueue.flipQueue.push(polIndex);
   }
 
-  handlePay(paymentInfo: {target: number, amount: number}): void {
-    this.ownParty().funds -= paymentInfo.amount;
-    this.gs.parties[paymentInfo.target].funds += paymentInfo.amount;
-    this.gs.parties[paymentInfo.target].paid = true;
-    this.actionQueue.payQueue.push(paymentInfo);
+  handleOffer(offerInfo: {target: number, amount: number}): void {
+    this.ownParty().funds -= offerInfo.amount;
   }
 
   handleAd(polIndex: number): void {
@@ -207,22 +204,6 @@ class GamestateManager {
         this.actionQueue.flipQueue.indexOf[flipInfo.polIndex], 1);
   }
 
-  handleUndoPay(partyIndex: number): void {
-    // Remove from pay queue
-    let paymentIndex: number = 0;
-    this.actionQueue.payQueue.forEach((payment, i) => {
-      if (payment.target === partyIndex) {
-        paymentIndex = i;
-      }
-    });
-    
-    this.ownParty().funds += this.actionQueue.payQueue[paymentIndex].amount;
-    this.gs.parties[partyIndex].funds -=
-        this.actionQueue.payQueue[paymentIndex].amount;
-    this.gs.parties[partyIndex].paid = false;
-    this.actionQueue.payQueue.splice(paymentIndex, 1);
-  }
-
   handleUndoAd(polIndex: number): void {
     this.ownParty().funds += this.gs.pols[polIndex].adsBought;
     this.gs.pols[polIndex].adsBought--;
@@ -258,6 +239,10 @@ class GamestateManager {
     this.ownParty().votes++;
     this.actionQueue.voteQueue.splice(
         this.actionQueue.voteQueue.indexOf(polIndex), 1);
+  }
+
+  handleNewOffer(offerInfo: OfferInfo): void {
+    this.gs.parties[offerInfo.fromParty].offers.push(offerInfo);
   }
 
   handleNewReplace(partyIndex): void {

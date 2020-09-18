@@ -11,6 +11,7 @@ interface Party {
   baseSupport: number,
   sympathetic: number[],
   bribed: number[],
+  offers: any[],
   hitAvailable: boolean,
   pmChoice: boolean
 }
@@ -18,6 +19,7 @@ interface Party {
 interface HiddenInfo {
   bribed: number[][],
   sympathetic: number[][],
+  offers: any[][],
   funds: number[],
   contentGenerator: typeof Generator
 }
@@ -73,6 +75,7 @@ class GameState {
       votes: 0,
       baseSupport: 3,
       sympathetic: [],
+      offers: [],
       bribed: [],
       hitAvailable: false,
       pmChoice: false
@@ -117,6 +120,19 @@ class GameState {
     // there is one) or party after the last party to have priority.
     if (this.primeMinister != null) {
       this.priority = this.pols[this.primeMinister].party;
+
+      this.parties.forEach((party: Party, partyIndex: number) => {
+        if (partyIndex == this.priority) {
+          party.offers.forEach((offer) => {
+            this.parties[offer.target].funds += offer.amount;
+          });
+        } else {
+          party.offers.forEach((offer) => {
+            this.parties[partyIndex].funds += offer.amount;
+          });
+        }
+        party.offers = [];
+      });
     } else {
       this.priority = (this.priority + 1) % this.parties.length;
     }
@@ -428,14 +444,18 @@ class GameState {
   ========================
   */
 
-  // Pay the given amount of funds from party 1 to party 2.
-  pay(partyIndex: number, paymentInfo): void {
-    if (this.parties[partyIndex].funds > paymentInfo.amount && 
-        paymentInfo.target < this.parties.length && 
-        paymentInfo.target >= 0) {
-      this.parties[partyIndex].funds -= paymentInfo.amount;
-      this.parties[paymentInfo.target].funds += paymentInfo.amount;
+  // Offer the given amount of funds to the target if the party offering wins
+  // the prime minister (and the prime minister doesn't get flipped). Returns
+  // true if the offer is valid, false otherwise.
+  offer(partyIndex: number, offerInfo): boolean {
+    if (offerInfo.amount <= this.parties[partyIndex].funds + 60 &&
+        offerInfo.target < this.parties.length &&
+        offerInfo.target >= 0) {
+      this.parties[partyIndex].funds -= offerInfo.amount;
+      this.parties[partyIndex].offers.push(offerInfo);
+      return true;
     }
+    return false;
   }
 
   // Buy an ad for the given politician, increasing their support.
@@ -497,8 +517,8 @@ class GameState {
 
   // Call a hit the given politician, removing them from the game.
   hit(partyIndex: number, polIndex: number) {
-    const party = this.parties[partyIndex];
-    let cost = this.stage >= 2 ? 50 : 25;
+    const party: Party = this.parties[partyIndex];
+    let cost: number = this.stage >= 2 ? 50 : 25;
     if (partyIndex == this.priority && this.primeMinister != null) {
       cost += 25;
     }
@@ -508,7 +528,7 @@ class GameState {
       if (this.officials.includes(polIndex)) {
         this.officials.splice(this.officials.indexOf(polIndex), 1);
       }
-      this.provs.forEach((prov) => {
+      this.provs.forEach((prov: Prov) => {
         if (prov.candidates.includes(polIndex)) {
           prov.candidates.splice(prov.candidates.indexOf(polIndex), 1);
           party.funds -= cost;
@@ -544,21 +564,27 @@ class GameState {
     // Delete the hidden information of other players
     const bribed: number[][] = [];
     const sympathetic: number[][] = [];
+    const offers: any[][] = [];
     const funds: number[] = [];
-    for (let i = 0; i < this.parties.length; i++) {
-      bribed.push(this.parties[i].bribed);
-      sympathetic.push(this.parties[i].sympathetic);
-      funds.push(this.parties[i].funds);
-      if (i !== pov) {
-        delete this.parties[i].bribed;
-        delete this.parties[i].sympathetic;
-        delete this.parties[i].funds;
+    this.parties.forEach((party: Party, partyIndex: number) => {
+      bribed.push(party.bribed);
+      sympathetic.push(party.sympathetic);
+      offers.push(party.offers);
+      funds.push(party.funds);
+      if (partyIndex !== pov) {
+        delete party.bribed;
+        delete party.sympathetic;
+        party.offers = party.offers.filter((offer: any) => {
+          return offer.target == pov;
+        });
+        delete party.funds;
       }
-    }
+    });
 
     return {
       bribed: bribed,
       sympathetic: sympathetic,
+      offers: offers,
       funds: funds,
       contentGenerator: contentGenerator
     }
@@ -569,11 +595,12 @@ class GameState {
     this.pov = undefined;
     this.contentGenerator = hiddenInfo.contentGenerator;
 
-    for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].bribed = hiddenInfo.bribed[i];
-      this.parties[i].sympathetic = hiddenInfo.sympathetic[i];
-      this.parties[i].funds = hiddenInfo.funds[i];
-    }
+    this.parties.forEach((party: Party, partyIndex: number) => {
+      party.bribed = hiddenInfo.bribed[partyIndex];
+      party.sympathetic = hiddenInfo.sympathetic[partyIndex];
+      party.offers = hiddenInfo.offers[partyIndex];
+      party.funds = hiddenInfo.funds[partyIndex];
+    });
   }
 }
 

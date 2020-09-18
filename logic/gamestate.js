@@ -30,6 +30,7 @@ var GameState = /** @class */ (function () {
             votes: 0,
             baseSupport: 3,
             sympathetic: [],
+            offers: [],
             bribed: [],
             hitAvailable: false,
             pmChoice: false
@@ -68,10 +69,24 @@ var GameState = /** @class */ (function () {
     ====
     */
     GameState.prototype.beginRace = function () {
+        var _this = this;
         // Increase decline and give priority to the prime minister's party (if
         // there is one) or party after the last party to have priority.
         if (this.primeMinister != null) {
             this.priority = this.pols[this.primeMinister].party;
+            this.parties.forEach(function (party, partyIndex) {
+                if (partyIndex == _this.priority) {
+                    party.offers.forEach(function (offer) {
+                        _this.parties[offer.target].funds += offer.amount;
+                    });
+                }
+                else {
+                    party.offers.forEach(function (offer) {
+                        _this.parties[partyIndex].funds += offer.amount;
+                    });
+                }
+                party.offers = [];
+            });
         }
         else {
             this.priority = (this.priority + 1) % this.parties.length;
@@ -368,14 +383,18 @@ var GameState = /** @class */ (function () {
     ACTIONS PLAYERS CAN TAKE
     ========================
     */
-    // Pay the given amount of funds from party 1 to party 2.
-    GameState.prototype.pay = function (partyIndex, paymentInfo) {
-        if (this.parties[partyIndex].funds > paymentInfo.amount &&
-            paymentInfo.target < this.parties.length &&
-            paymentInfo.target >= 0) {
-            this.parties[partyIndex].funds -= paymentInfo.amount;
-            this.parties[paymentInfo.target].funds += paymentInfo.amount;
+    // Offer the given amount of funds to the target if the party offering wins
+    // the prime minister (and the prime minister doesn't get flipped). Returns
+    // true if the offer is valid, false otherwise.
+    GameState.prototype.offer = function (partyIndex, offerInfo) {
+        if (offerInfo.amount <= this.parties[partyIndex].funds + 60 &&
+            offerInfo.target < this.parties.length &&
+            offerInfo.target >= 0) {
+            this.parties[partyIndex].funds -= offerInfo.amount;
+            this.parties[partyIndex].offers.push(offerInfo);
+            return true;
         }
+        return false;
     };
     // Buy an ad for the given politician, increasing their support.
     GameState.prototype.ad = function (partyIndex, polIndex) {
@@ -473,20 +492,26 @@ var GameState = /** @class */ (function () {
         // Delete the hidden information of other players
         var bribed = [];
         var sympathetic = [];
+        var offers = [];
         var funds = [];
-        for (var i = 0; i < this.parties.length; i++) {
-            bribed.push(this.parties[i].bribed);
-            sympathetic.push(this.parties[i].sympathetic);
-            funds.push(this.parties[i].funds);
-            if (i !== pov) {
-                delete this.parties[i].bribed;
-                delete this.parties[i].sympathetic;
-                delete this.parties[i].funds;
+        this.parties.forEach(function (party, partyIndex) {
+            bribed.push(party.bribed);
+            sympathetic.push(party.sympathetic);
+            offers.push(party.offers);
+            funds.push(party.funds);
+            if (partyIndex !== pov) {
+                delete party.bribed;
+                delete party.sympathetic;
+                party.offers = party.offers.filter(function (offer) {
+                    return offer.target == pov;
+                });
+                delete party.funds;
             }
-        }
+        });
         return {
             bribed: bribed,
             sympathetic: sympathetic,
+            offers: offers,
             funds: funds,
             contentGenerator: contentGenerator
         };
@@ -495,11 +520,12 @@ var GameState = /** @class */ (function () {
     GameState.prototype.unsetPov = function (hiddenInfo) {
         this.pov = undefined;
         this.contentGenerator = hiddenInfo.contentGenerator;
-        for (var i = 0; i < this.parties.length; i++) {
-            this.parties[i].bribed = hiddenInfo.bribed[i];
-            this.parties[i].sympathetic = hiddenInfo.sympathetic[i];
-            this.parties[i].funds = hiddenInfo.funds[i];
-        }
+        this.parties.forEach(function (party, partyIndex) {
+            party.bribed = hiddenInfo.bribed[partyIndex];
+            party.sympathetic = hiddenInfo.sympathetic[partyIndex];
+            party.offers = hiddenInfo.offers[partyIndex];
+            party.funds = hiddenInfo.funds[partyIndex];
+        });
     };
     return GameState;
 }());
