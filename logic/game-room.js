@@ -147,6 +147,19 @@ var GameRoom = /** @class */ (function () {
     };
     GameRoom.prototype.executeAllActions = function () {
         var _this = this;
+        this.players.forEach(function (player) {
+            if (player.actionQueue == null) {
+                player.actionQueue = {
+                    adQueue: [],
+                    smearQueue: [],
+                    bribeQueue: [],
+                    hitQueue: [],
+                    voteQueue: [],
+                    flipQueue: [],
+                    pmChoice: false
+                };
+            }
+        });
         if (this.gs.stage >= 2) {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.flipQueue.forEach(function (action) {
@@ -192,6 +205,9 @@ var GameRoom = /** @class */ (function () {
                 _this.gs.choose(playerIndex, player.actionQueue.pmChoice);
             });
         }
+        this.players.forEach(function (player) {
+            player.actionQueue = null;
+        });
     };
     GameRoom.prototype.rematch = function () {
         this.players.forEach(function (player) { player.reset(); });

@@ -190,6 +190,20 @@ class GameRoom {
   }
 
   executeAllActions(): void {
+    this.players.forEach((player: typeof Viewer) => {
+      if (player.actionQueue == null) {
+        player.actionQueue = {
+          adQueue: [],
+          smearQueue: [],
+          bribeQueue: [],
+          hitQueue: [],
+          voteQueue: [],
+          flipQueue: [],
+          pmChoice: false
+        };
+      }
+    });
+
     if (this.gs.stage >= 2) {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.flipQueue.forEach((action) => {
@@ -235,6 +249,10 @@ class GameRoom {
         this.gs.choose(playerIndex, player.actionQueue.pmChoice);
       });
     }
+
+    this.players.forEach((player: typeof Viewer) => {
+      player.actionQueue = null;
+    });
   }
 
   rematch(): void {

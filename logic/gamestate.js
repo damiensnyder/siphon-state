@@ -39,7 +39,17 @@ var GameState = /** @class */ (function () {
     // Returns true if all parties are ready, false otherwise.
     GameState.prototype.allReady = function () {
         for (var i = 0; i < this.parties.length; i++) {
-            if (!this.parties[i].ready) {
+            // Auto-ready in situations with no valid actions.
+            var party = this.parties[i];
+            var inVotingNoActions = party.votes == 0 &&
+                !party.hitAvailable &&
+                this.stage == 2 &&
+                party.bribed.length == 0;
+            var inChoiceNoActions = !party.hitAvailable &&
+                this.stage == 3 &&
+                party.bribed.length == 0 &&
+                this.pols[this.primeMinister].party != i;
+            if (!party.ready && !inVotingNoActions && !inChoiceNoActions) {
                 return false;
             }
         }

@@ -85,7 +85,18 @@ class GameState {
   // Returns true if all parties are ready, false otherwise.
   allReady(): boolean {
     for (let i = 0; i < this.parties.length; i++) {
-      if (!this.parties[i].ready) {
+      // Auto-ready in situations with no valid actions.
+      const party: Party = this.parties[i];
+      const inVotingNoActions: boolean = party.votes == 0 &&
+          !party.hitAvailable &&
+          this.stage == 2 &&
+          party.bribed.length == 0;
+      const inChoiceNoActions: boolean = !party.hitAvailable &&
+          this.stage == 3 &&
+          party.bribed.length == 0 &&
+          this.pols[this.primeMinister].party != i;
+
+      if (!party.ready && !inVotingNoActions && !inChoiceNoActions) {
         return false;
       }
     }
