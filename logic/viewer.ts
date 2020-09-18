@@ -31,7 +31,7 @@ class Viewer {
     this.pov = pov;
     this.socket.on('ready', (readyInfo) => this.ready.bind(this)(readyInfo));
     this.socket.on('msg', (msg) => this.callback(this, 'msg', msg));
-    this.socket.on('offer', (offer) => this.offer.bind(this));
+    this.socket.on('offer', (offer) => this.offer.bind(this)(offer));
 
     this.socket.removeAllListeners('join');
     this.socket.removeAllListeners('replace');
@@ -51,7 +51,6 @@ class Viewer {
   offer(offerInfo: any) {
     if (Number.isSafeInteger(offerInfo.target) &&
         Number.isSafeInteger(offerInfo.amount)) {
-      offerInfo.fromParty = this.pov;
       this.callback(this, 'offer', offerInfo);
     }
   }

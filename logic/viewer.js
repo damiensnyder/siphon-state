@@ -14,7 +14,7 @@ var Viewer = /** @class */ (function () {
         this.pov = pov;
         this.socket.on('ready', function (readyInfo) { return _this.ready.bind(_this)(readyInfo); });
         this.socket.on('msg', function (msg) { return _this.callback(_this, 'msg', msg); });
-        this.socket.on('offer', function (offer) { return _this.offer.bind(_this); });
+        this.socket.on('offer', function (offer) { return _this.offer.bind(_this)(offer); });
         this.socket.removeAllListeners('join');
         this.socket.removeAllListeners('replace');
     };
@@ -28,9 +28,9 @@ var Viewer = /** @class */ (function () {
         this.socket.removeAllListeners('msg');
     };
     Viewer.prototype.offer = function (offerInfo) {
+        console.log("received " + offerInfo);
         if (Number.isSafeInteger(offerInfo.target) &&
             Number.isSafeInteger(offerInfo.amount)) {
-            offerInfo.fromParty = this.pov;
             this.callback(this, 'offer', offerInfo);
         }
     };

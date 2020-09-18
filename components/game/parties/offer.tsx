@@ -14,7 +14,7 @@ class Offer extends React.Component {
   props: OfferProps;
   state: {
     amount: number,
-    paid: boolean
+    offered: boolean
   };
 
   constructor(props: OfferProps) {
@@ -22,7 +22,7 @@ class Offer extends React.Component {
 
     this.state = {
       amount: 0,
-      paid: false
+      offered: false
     };
   }
 
@@ -80,27 +80,19 @@ class Offer extends React.Component {
   }
 
   render() {
-    const unofferAction = () => {
-      this.setState({
-        paid: false,
-        amount: 0
-      });
-      this.props.callback('unoffer', this.props.index);
-    };
-
-    if (this.state.paid) {
+    if (this.state.offered) {
       return (
         <div className={styles.paymentOuter}>
           <span className={styles.spaced}>
-            Offered: {formatMoneyString(this.state.amount)}
+            Offering: {formatMoneyString(this.state.amount)}
           </span>
         </div>
       );
     }
 
-    if (!this.props.gs.started
-        || this.props.gs.ended
-        || this.props.ownParty == undefined) {
+    if (!this.props.gs.started ||
+        this.props.gs.ended ||
+        this.props.ownParty == undefined) {
       return null;
     }
 

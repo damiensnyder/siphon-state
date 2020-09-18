@@ -18,10 +18,12 @@ function ownFundsJsx(amount: number) {
   );
 }
 
-function votesJsx(votes: number) {
+function offersJsx(offers) {
+  let totalAmount: number = 0;
+  offers.forEach((offer) => {totalAmount += offer.amount});
   return (
     <span className={styles.funds}>
-      Votes: {votes}
+      Offered you: {"$" + (totalAmount / 10) + "M"}
     </span>
   );
 }
@@ -61,7 +63,8 @@ function Party(props: PartyProps) {
   }
 
   const showReplace: boolean = props.gs.pov === undefined && !self.connected;
-  const showVotes: boolean = props.gs.stage == 2;
+  const showOffers: boolean = self.offers.length > 0 &&
+      self.offers[0].fromParty != props.gs.pov;
   const showPayment: boolean = props.gs.started &&
       !props.gs.ended &&
       props.gs.stage == 2 &&
@@ -81,7 +84,7 @@ function Party(props: PartyProps) {
         <div className={styles.abbrAndVotes}>
           <span className={styles.partyAbbr}>{self.abbr}</span>
           <span className={styles.votes}>
-            {showVotes ? votesJsx(self.votes) : null}
+            {showOffers ? offersJsx(self.offers) : null}
           </span>
         </div>
       </div>

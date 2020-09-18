@@ -128,10 +128,12 @@ class GameView extends React.Component {
       });
     }
 
-    if (type == "join" || type == "replace" || type == "msg") {
+    const TYPES_TO_EMIT: string[] = ["join", "replace", "msg", "offer"];
+
+    if (TYPES_TO_EMIT.includes(type)) {
       this.socket.emit(type, data);
-    } else if (type == 'ready') {
-      this.socket.emit('ready', this.gamestateManager.currentReady());
+    } else if (type == "ready") {
+      this.socket.emit(type, this.gamestateManager.currentReady());
     }
   }
 

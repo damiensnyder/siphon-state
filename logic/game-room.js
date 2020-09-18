@@ -106,7 +106,8 @@ var GameRoom = /** @class */ (function () {
     };
     GameRoom.prototype.handleOffer = function (viewer, offerInfo) {
         if (this.gs.offer(viewer.pov, offerInfo)) {
-            this.players[offerInfo.fromParty].socket.emit('newoffer', offerInfo);
+            offerInfo.fromParty = viewer.pov;
+            this.players[offerInfo.target].socket.emit('newoffer', offerInfo);
         }
     };
     GameRoom.prototype.handleReady = function (viewer, isReady) {

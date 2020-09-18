@@ -14,7 +14,7 @@ interface PartyInfo {
 interface OfferInfo {
   target: number,
   amount: number,
-  fromParty: number
+  fromParty?: number
 }
 
 // @ts-ignore
@@ -147,9 +147,10 @@ class GameRoom {
     }
   }
 
-  handleOffer(viewer: typeof Viewer, offerInfo: OfferInfo) {
+  handleOffer(viewer: typeof Viewer, offerInfo: OfferInfo): void {
     if (this.gs.offer(viewer.pov, offerInfo)) {
-      this.players[offerInfo.fromParty].socket.emit('newoffer', offerInfo);
+      offerInfo.fromParty = viewer.pov;
+      this.players[offerInfo.target].socket.emit('newoffer', offerInfo);
     }
   }
 
