@@ -28,7 +28,6 @@ var Viewer = /** @class */ (function () {
         this.socket.removeAllListeners('msg');
     };
     Viewer.prototype.offer = function (offerInfo) {
-        console.log("received " + offerInfo);
         if (Number.isSafeInteger(offerInfo.target) &&
             Number.isSafeInteger(offerInfo.amount)) {
             this.callback(this, 'offer', offerInfo);

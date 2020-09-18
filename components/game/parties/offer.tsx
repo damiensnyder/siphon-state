@@ -34,7 +34,7 @@ class Offer extends React.Component {
 
     const offerAction = () => {
       this.setState({
-        paid: true
+        offered: true
       });
       this.props.callback('offer', {
         target: this.props.index,

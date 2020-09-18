@@ -392,10 +392,8 @@ var GameState = /** @class */ (function () {
             offerInfo.target >= 0) {
             this.parties[partyIndex].funds -= offerInfo.amount;
             this.parties[partyIndex].offers.push(offerInfo);
-            console.log("succeeded: " + partyIndex + " " + offerInfo);
             return true;
         }
-        console.log("failed: " + partyIndex + " " + offerInfo);
         return false;
     };
     // Buy an ad for the given politician, increasing their support.
@@ -505,7 +503,7 @@ var GameState = /** @class */ (function () {
                 delete party.bribed;
                 delete party.sympathetic;
                 party.offers = party.offers.filter(function (offer) {
-                    return offer.target == partyIndex;
+                    return offer.target == pov;
                 });
                 delete party.funds;
             }

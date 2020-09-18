@@ -575,7 +575,7 @@ class GameState {
         delete party.bribed;
         delete party.sympathetic;
         party.offers = party.offers.filter((offer: any) => {
-          return offer.target == partyIndex;
+          return offer.target == pov;
         });
         delete party.funds;
       }
