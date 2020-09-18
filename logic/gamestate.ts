@@ -120,8 +120,17 @@ class GameState {
     if (this.primeMinister != null) {
       this.priority = this.pols[this.primeMinister].party;
 
-      this.parties[this.priority].offers.forEach(() => {
-        // do this but also remember to give back money from bad offers
+      this.parties.forEach((party: Party, partyIndex: number) => {
+        if (partyIndex == this.priority) {
+          party.offers.forEach((offer) => {
+            this.parties[offer.target].funds += offer.amount;
+          });
+        } else {
+          party.offers.forEach((offer) => {
+            this.parties[partyIndex].funds += offer.amount;
+          });
+        }
+        party.offers = [];
       });
     } else {
       this.priority = (this.priority + 1) % this.parties.length;
@@ -555,16 +564,16 @@ class GameState {
     const bribed: number[][] = [];
     const sympathetic: number[][] = [];
     const funds: number[] = [];
-    for (let i = 0; i < this.parties.length; i++) {
-      bribed.push(this.parties[i].bribed);
-      sympathetic.push(this.parties[i].sympathetic);
-      funds.push(this.parties[i].funds);
-      if (i !== pov) {
-        delete this.parties[i].bribed;
-        delete this.parties[i].sympathetic;
-        delete this.parties[i].funds;
+    this.parties.forEach((party: Party, partyIndex: number) => {
+      bribed.push(party.bribed);
+      sympathetic.push(party.sympathetic);
+      funds.push(party.funds);
+      if (partyIndex !== pov) {
+        delete party.bribed;
+        delete party.sympathetic;
+        delete party.funds;
       }
-    }
+    });
 
     return {
       bribed: bribed,
@@ -579,11 +588,11 @@ class GameState {
     this.pov = undefined;
     this.contentGenerator = hiddenInfo.contentGenerator;
 
-    for (let i = 0; i < this.parties.length; i++) {
-      this.parties[i].bribed = hiddenInfo.bribed[i];
-      this.parties[i].sympathetic = hiddenInfo.sympathetic[i];
-      this.parties[i].funds = hiddenInfo.funds[i];
-    }
+    this.parties.forEach((party: Party, partyIndex: number) => {
+      party.bribed = hiddenInfo.bribed[partyIndex];
+      party.sympathetic = hiddenInfo.sympathetic[partyIndex];
+      party.funds = hiddenInfo.funds[partyIndex];
+    });
   }
 }
 
