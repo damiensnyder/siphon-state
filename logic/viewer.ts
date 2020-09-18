@@ -1,8 +1,4 @@
 interface ActionQueue {
-  payQueue: {
-    target: number,
-    amount: number
-  }[];
   adQueue?: number[];
   smearQueue?: number[];
   bribeQueue?: number[];
@@ -35,6 +31,7 @@ class Viewer {
     this.pov = pov;
     this.socket.on('ready', (readyInfo) => this.ready.bind(this)(readyInfo));
     this.socket.on('msg', (msg) => this.callback(this, 'msg', msg));
+    this.socket.on('offer', (offer) => this.offer.bind(this));
 
     this.socket.removeAllListeners('join');
     this.socket.removeAllListeners('replace');
@@ -49,6 +46,14 @@ class Viewer {
 
   end(): void {
     this.socket.removeAllListeners('msg');
+  }
+
+  offer(offerInfo: any) {
+    if (Number.isSafeInteger(offerInfo.target) &&
+        Number.isSafeInteger(offerInfo.amount)) {
+      offerInfo.fromParty = this.pov;
+      this.callback(this, 'offer', offerInfo);
+    }
   }
 
   ready(readyInfo: boolean | ActionQueue): void {
@@ -70,14 +75,6 @@ class Viewer {
       return false;
     }
 
-    if (Array.isArray(readyInfo.payQueue)) {
-      readyInfo.payQueue = readyInfo.payQueue.filter((payment) => {
-        return Number.isSafeInteger(payment.target) &&
-            Number.isSafeInteger(payment.amount);
-      });
-    } else {
-      readyInfo.payQueue = [];
-    }
     NUMERIC_SUBQUEUES.forEach((queueName: string) => {
       if (Array.isArray(readyInfo[queueName])) {
         readyInfo[queueName] = readyInfo[queueName].filter((item: number) => {

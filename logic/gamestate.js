@@ -30,6 +30,7 @@ var GameState = /** @class */ (function () {
             votes: 0,
             baseSupport: 3,
             sympathetic: [],
+            offers: [],
             bribed: [],
             hitAvailable: false,
             pmChoice: false
@@ -368,14 +369,18 @@ var GameState = /** @class */ (function () {
     ACTIONS PLAYERS CAN TAKE
     ========================
     */
-    // Pay the given amount of funds from party 1 to party 2.
-    GameState.prototype.pay = function (partyIndex, paymentInfo) {
-        if (this.parties[partyIndex].funds >= paymentInfo.amount &&
-            paymentInfo.target < this.parties.length &&
-            paymentInfo.target >= 0) {
-            this.parties[partyIndex].funds -= paymentInfo.amount;
-            this.parties[paymentInfo.target].funds += paymentInfo.amount;
+    // Offer the given amount of funds to the target if the party offering wins
+    // the prime minister (and the prime minister doesn't get flipped). Returns
+    // true if the offer is valid, false otherwise.
+    GameState.prototype.offer = function (partyIndex, offerInfo) {
+        if (offerInfo.amount <= this.parties[partyIndex].funds + 60 &&
+            offerInfo.target < this.parties.length &&
+            offerInfo.target >= 0) {
+            this.parties[partyIndex].funds -= offerInfo.amount;
+            this.parties[partyIndex].offers.push(offerInfo);
+            return true;
         }
+        return false;
     };
     // Buy an ad for the given politician, increasing their support.
     GameState.prototype.ad = function (partyIndex, polIndex) {

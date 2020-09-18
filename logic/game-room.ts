@@ -11,6 +11,12 @@ interface PartyInfo {
   abbr: string
 }
 
+interface OfferInfo {
+  target: number,
+  amount: number,
+  fromParty: number
+}
+
 // @ts-ignore
 class GameRoom {
   settings: typeof Settings;
@@ -44,6 +50,7 @@ class GameRoom {
       'join': this.handleJoin.bind(this),
       'replace': this.handleReplace.bind(this),
       'ready': this.handleReady.bind(this),
+      'offer': this.handleOffer.bind(this),
       'msg': this.handleMsg.bind(this),
       'disconnect': this.handleDisconnect.bind(this)
     }
@@ -140,6 +147,12 @@ class GameRoom {
     }
   }
 
+  handleOffer(viewer: typeof Viewer, offerInfo: OfferInfo) {
+    if (this.gs.offer(viewer.pov, offerInfo)) {
+      this.players[offerInfo.fromParty].socket.emit('newoffer', offerInfo);
+    }
+  }
+
   handleReady(viewer: typeof Viewer, isReady: boolean): void {
     this.gs.parties[viewer.pov].ready = isReady;
     viewer.socket.broadcast.emit('newready', {
@@ -214,11 +227,6 @@ class GameRoom {
       this.players.forEach((player, playerIndex) => {
         player.actionQueue.voteQueue.forEach((action) => {
           this.gs.vote(playerIndex, action);
-        });
-      });
-      this.players.forEach((player, playerIndex) => {
-        player.actionQueue.payQueue.forEach((action) => {
-          this.gs.pay(playerIndex, action);
         });
       });
     } else {

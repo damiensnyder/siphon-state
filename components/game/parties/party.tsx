@@ -1,6 +1,6 @@
 import React from "react";
 
-import Payment from "./payment";
+import Offer from "./offer";
 import general from "../../general.module.css";
 import styles from "./parties.module.css";
 
@@ -40,7 +40,7 @@ function replaceBtnJsx(props: PartyProps) {
 function paymentJsx(props: PartyProps) {
   if (props.gs.pov != props.index && props.gs.pov >= 0) {
     return (
-      <Payment index={props.index}
+      <Offer index={props.index}
           gs={props.gs}
           ownParty={props.gs.parties[props.gs.pov]}
           callback={props.callback} />
@@ -64,6 +64,7 @@ function Party(props: PartyProps) {
   const showVotes: boolean = props.gs.stage == 2;
   const showPayment: boolean = props.gs.started &&
       !props.gs.ended &&
+      props.gs.stage == 2 &&
       props.gs.pov !== undefined &&
       !props.gs.parties[props.gs.pov].ready;
   const showFunds: boolean = props.gs.started &&

@@ -11,6 +11,7 @@ interface Party {
   baseSupport: number,
   sympathetic: number[],
   bribed: number[],
+  offers: any[],
   hitAvailable: boolean,
   pmChoice: boolean
 }
@@ -73,6 +74,7 @@ class GameState {
       votes: 0,
       baseSupport: 3,
       sympathetic: [],
+      offers: [],
       bribed: [],
       hitAvailable: false,
       pmChoice: false
@@ -117,6 +119,10 @@ class GameState {
     // there is one) or party after the last party to have priority.
     if (this.primeMinister != null) {
       this.priority = this.pols[this.primeMinister].party;
+
+      this.parties[this.priority].offers.forEach(() => {
+        // do this but also remember to give back money from bad offers
+      });
     } else {
       this.priority = (this.priority + 1) % this.parties.length;
     }
@@ -428,14 +434,18 @@ class GameState {
   ========================
   */
 
-  // Pay the given amount of funds from party 1 to party 2.
-  pay(partyIndex: number, paymentInfo): void {
-    if (this.parties[partyIndex].funds >= paymentInfo.amount &&
-        paymentInfo.target < this.parties.length && 
-        paymentInfo.target >= 0) {
-      this.parties[partyIndex].funds -= paymentInfo.amount;
-      this.parties[paymentInfo.target].funds += paymentInfo.amount;
+  // Offer the given amount of funds to the target if the party offering wins
+  // the prime minister (and the prime minister doesn't get flipped). Returns
+  // true if the offer is valid, false otherwise.
+  offer(partyIndex: number, offerInfo): boolean {
+    if (offerInfo.amount <= this.parties[partyIndex].funds + 60 &&
+        offerInfo.target < this.parties.length &&
+        offerInfo.target >= 0) {
+      this.parties[partyIndex].funds -= offerInfo.amount;
+      this.parties[partyIndex].offers.push(offerInfo);
+      return true;
     }
+    return false;
   }
 
   // Buy an ad for the given politician, increasing their support.

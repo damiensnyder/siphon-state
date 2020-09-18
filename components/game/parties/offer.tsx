@@ -3,21 +3,21 @@ import React from "react";
 import general from "../../general.module.css";
 import styles from "./parties.module.css";
 
-interface PaymentProps {
+interface OfferProps {
   gs: any,
   ownParty: any,
   callback: any,
   index: number
 }
 
-class Payment extends React.Component {
-  props: PaymentProps;
+class Offer extends React.Component {
+  props: OfferProps;
   state: {
     amount: number,
     paid: boolean
   };
 
-  constructor(props: PaymentProps) {
+  constructor(props: OfferProps) {
     super(props);
 
     this.state = {
@@ -26,25 +26,26 @@ class Payment extends React.Component {
     };
   }
 
-  payButtonJsx() {
-    if (this.state.amount > this.props.ownParty.funds
+  offerButtonJsx() {
+    if (this.state.amount > this.props.ownParty.funds + 60
         || this.state.amount == 0) {
-      return <span className={styles.spaced}>Pay:</span>;
+      return <span className={styles.spaced}>Offer:</span>;
     }
 
-    const payAction = () => {
+    const offerAction = () => {
       this.setState({
         paid: true
       });
-      this.props.callback('pay', {
-        target: this.props.index, amount: this.state.amount
+      this.props.callback('offer', {
+        target: this.props.index,
+        amount: this.state.amount
       });
     }
 
     return (
       <button className={general.actionBtn + ' ' + styles.spaced}
-          onClick={payAction}>
-        Pay
+          onClick={offerAction}>
+        Offer
       </button>
     );
   }
@@ -53,7 +54,7 @@ class Payment extends React.Component {
     const label = value > 0 ? "+" : "-";
 
     if (this.state.amount + value < 0
-        || this.state.amount + value > this.props.ownParty.funds) {
+        || this.state.amount + value > this.props.ownParty.funds + 60) {
       return (
         <button className={general.actionBtn + ' ' +
             styles.incrementBtn + ' ' +
@@ -79,38 +80,33 @@ class Payment extends React.Component {
   }
 
   render() {
-    const unpayAction = () => {
+    const unofferAction = () => {
       this.setState({
         paid: false,
         amount: 0
       });
-      this.props.callback('unpay', this.props.index);
+      this.props.callback('unoffer', this.props.index);
     };
 
     if (this.state.paid) {
       return (
         <div className={styles.paymentOuter}>
           <span className={styles.spaced}>
-            Paying: {formatMoneyString(this.state.amount)}
+            Offered: {formatMoneyString(this.state.amount)}
           </span>
-          <button className={general.actionBtn}
-              onClick={unpayAction}>
-            Undo
-          </button>
         </div>
       );
     }
 
     if (!this.props.gs.started
         || this.props.gs.ended
-        || this.props.ownParty == undefined
-        || this.props.ownParty.funds == 0) {
+        || this.props.ownParty == undefined) {
       return null;
     }
 
     return (
       <div className={styles.paymentOuter}>
-        {this.payButtonJsx.bind(this)()}
+        {this.offerButtonJsx.bind(this)()}
         <div className={styles.digitWrapper}>
           {this.incrementButtonJsx.bind(this)(10)}
           {Math.floor(this.state.amount / 10)}
@@ -136,4 +132,4 @@ function formatMoneyString(amount: number): string {
   }
 }
 
-export default Payment;
+export default Offer;

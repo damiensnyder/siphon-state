@@ -23,6 +23,7 @@ var GameRoom = /** @class */ (function () {
             'join': this.handleJoin.bind(this),
             'replace': this.handleReplace.bind(this),
             'ready': this.handleReady.bind(this),
+            'offer': this.handleOffer.bind(this),
             'msg': this.handleMsg.bind(this),
             'disconnect': this.handleDisconnect.bind(this)
         };
@@ -103,6 +104,11 @@ var GameRoom = /** @class */ (function () {
             this.broadcastSystemMsg(viewer.socket, "Player '" + this.gs.parties[target].name + "' has been replaced.");
         }
     };
+    GameRoom.prototype.handleOffer = function (viewer, offerInfo) {
+        if (this.gs.offer(viewer.pov, offerInfo)) {
+            this.players[offerInfo.fromParty].socket.emit('newoffer', offerInfo);
+        }
+    };
     GameRoom.prototype.handleReady = function (viewer, isReady) {
         this.gs.parties[viewer.pov].ready = isReady;
         viewer.socket.broadcast.emit('newready', {
@@ -177,11 +183,6 @@ var GameRoom = /** @class */ (function () {
             this.players.forEach(function (player, playerIndex) {
                 player.actionQueue.voteQueue.forEach(function (action) {
                     _this.gs.vote(playerIndex, action);
-                });
-            });
-            this.players.forEach(function (player, playerIndex) {
-                player.actionQueue.payQueue.forEach(function (action) {
-                    _this.gs.pay(playerIndex, action);
                 });
             });
         }
