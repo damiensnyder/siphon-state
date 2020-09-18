@@ -19,6 +19,7 @@ interface Party {
 interface HiddenInfo {
   bribed: number[][],
   sympathetic: number[][],
+  offers: any[][],
   funds: number[],
   contentGenerator: typeof Generator
 }
@@ -563,14 +564,19 @@ class GameState {
     // Delete the hidden information of other players
     const bribed: number[][] = [];
     const sympathetic: number[][] = [];
+    const offers: any[][] = [];
     const funds: number[] = [];
     this.parties.forEach((party: Party, partyIndex: number) => {
       bribed.push(party.bribed);
       sympathetic.push(party.sympathetic);
+      offers.push(party.offers);
       funds.push(party.funds);
       if (partyIndex !== pov) {
         delete party.bribed;
         delete party.sympathetic;
+        party.offers = party.offers.filter((offer: any) => {
+          return offer.target == partyIndex;
+        });
         delete party.funds;
       }
     });
@@ -578,6 +584,7 @@ class GameState {
     return {
       bribed: bribed,
       sympathetic: sympathetic,
+      offers: offers,
       funds: funds,
       contentGenerator: contentGenerator
     }
@@ -591,6 +598,7 @@ class GameState {
     this.parties.forEach((party: Party, partyIndex: number) => {
       party.bribed = hiddenInfo.bribed[partyIndex];
       party.sympathetic = hiddenInfo.sympathetic[partyIndex];
+      party.offers = hiddenInfo.offers[partyIndex];
       party.funds = hiddenInfo.funds[partyIndex];
     });
   }

@@ -242,7 +242,7 @@ class GamestateManager {
   }
 
   handleNewOffer(offerInfo: OfferInfo): void {
-    this.gs.parties[offerInfo.fromParty].offering = offerInfo.amount;
+    this.gs.parties[offerInfo.fromParty].offers.push(offerInfo);
   }
 
   handleNewReplace(partyIndex): void {
