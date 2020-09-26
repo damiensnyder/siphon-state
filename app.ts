@@ -12,7 +12,7 @@ const nextApp = nextJs({dev: process.env.NODE_ENV != 'production'});
 const nextHandler = nextApp.getRequestHandler();
 
 // @ts-ignore
-const GameManager = new (require('./logic/room-manager').GameManager)(io);
+const GameManager = new (require('./logic/rooms-manager').GameManager)(io);
 
 nextApp.prepare().then(() => {
   expressApp.post('/create', (req, res) => {
