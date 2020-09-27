@@ -165,7 +165,7 @@ class GamestateManager {
   }
 
   handleBribe(polIndex: number): void {
-    this.ownParty().funds -= 25 + 10 * this.gs.rounds;
+    this.ownParty().funds -= 25;
     this.gs.pols[polIndex].flipped = true;
     this.actionQueue.bribeQueue.push(polIndex);
   }
@@ -228,7 +228,7 @@ class GamestateManager {
   }
 
   handleUndoBribe(polIndex: number): void {
-    this.ownParty().funds += 25 + 10 * this.gs.rounds;
+    this.ownParty().funds += 25;
     this.gs.pols[polIndex].flipped = false;
     this.actionQueue.bribeQueue.splice(
         this.actionQueue.bribeQueue.indexOf(polIndex));

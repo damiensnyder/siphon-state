@@ -151,9 +151,9 @@ class GameState {
     this.rounds = 0;
     this.decline += 1;
 
-    // Give all parties $6M, and bonus money to the prime minister's party.
+    // Give all parties $2M
     this.parties.forEach((party: Party) => {
-      party.funds += 60;
+      party.funds += 20;
     });
 
     this.updateBaseSupport();
@@ -326,6 +326,10 @@ class GameState {
     this.rounds++;
     if (this.rounds === 3) {
       this.beginVoting();
+    } else {
+      this.parties.forEach((party) => {
+        party.funds += 20;
+      });
     }
   }
 
@@ -459,7 +463,7 @@ class GameState {
   // the prime minister (and the prime minister doesn't get flipped). Returns
   // true if the offer is valid, false otherwise.
   offer(partyIndex: number, offerInfo): boolean {
-    if (offerInfo.amount <= this.parties[partyIndex].funds + 60 &&
+    if (offerInfo.amount <= this.parties[partyIndex].funds + 20 &&
         offerInfo.target < this.parties.length &&
         offerInfo.target >= 0) {
       this.parties[partyIndex].funds -= offerInfo.amount;
@@ -500,12 +504,13 @@ class GameState {
   // Bribe the given politician, making them a member of your party.
   bribe(partyIndex: number, polIndex: number): void {
     const party: Party = this.parties[partyIndex];
-    if (party.sympathetic.length > 0 && 
-        party.funds >= 20 + 10 * this.rounds &&
-        party.sympathetic.includes(polIndex)) {
+    if (party.sympathetic.length > 0 &&
+        party.sympathetic.includes(polIndex) &&
+        party.funds >= 25 &&
+        this.rounds >= 1) {
       party.bribed.push(polIndex);
       party.sympathetic.splice(party.sympathetic.indexOf(polIndex), 1);
-      party.funds -= 20 + 10 * this.rounds;
+      party.funds -= 25;
     }
   }
 

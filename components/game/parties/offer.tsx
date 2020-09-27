@@ -27,7 +27,7 @@ class Offer extends React.Component {
   }
 
   offerButtonJsx() {
-    if (this.state.amount > this.props.ownParty.funds + 60
+    if (this.state.amount > this.props.ownParty.funds + 20
         || this.state.amount == 0) {
       return <span className={styles.spaced}>Offer:</span>;
     }
@@ -53,8 +53,8 @@ class Offer extends React.Component {
   incrementButtonJsx(value) {
     const label = value > 0 ? "+" : "-";
 
-    if (this.state.amount + value < 0
-        || this.state.amount + value > this.props.ownParty.funds + 60) {
+    if (this.state.amount + value < 0 ||
+        this.state.amount + value > this.props.ownParty.funds + 20) {
       return (
         <button className={general.actionBtn + ' ' +
             styles.incrementBtn + ' ' +
