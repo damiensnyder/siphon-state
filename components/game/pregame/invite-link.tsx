@@ -52,7 +52,7 @@ class InviteLink extends React.Component {
                       ref={this.linkArea}
                       className={styles.gameLink}
                       onChange={() => {}} // suppresses warning
-                      value={'https://www.siphonstate.com/game/' +
+                      value={'http://www.siphonstate.com/game/' +
                              this.props.gameCode}>
             </textarea>
             <button className={general.actionBtn + ' ' + general.priorityBtn}
