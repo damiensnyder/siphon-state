@@ -31,12 +31,16 @@ class ContentGenerator {
   unused: any[];
 
   constructor(nation: string) {
-    this.made = 0;
-    this.resets = 0;
-    this.provs = this.shuffle(JSON.parse(fs.readFileSync(provsPath))[nation]);
+    const provsInfo: any = JSON.parse(fs.readFileSync(provsPath));
+    if (!provsInfo.hasOwnProperty(nation)) {
+      nation = "Kenderland";
+    }
+    this.provs = this.shuffle(provsInfo[nation]);
     this.provs.forEach((prov) => {
       prov.candidates = [];
     });
+    this.made = 0;
+    this.resets = 0;
     this.deal();
   }
 

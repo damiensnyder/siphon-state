@@ -32,16 +32,23 @@ class RoomsManager {
     const settings: Settings = req.body.settings;
     settings.gameCode = gameCode;
 
-    if (settings.name.length === 0) {
-      settings.name = "My Game";
-    }
+    if (settings != null &&
+        typeof(settings.name) == "string" &&
+        typeof(settings.private) == "boolean" &&
+        typeof(settings.nation) == "string") {
+      if (settings.name.length === 0) {
+        settings.name = "My Game";
+      }
 
-    this.activeGames[gameCode] = new GameRoom(this.io,
-        settings,
-        this.callback.bind(this));
-    res.status = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({gameCode: gameCode}));
+      this.activeGames[gameCode] = new GameRoom(this.io,
+          settings,
+          this.callback.bind(this));
+      res.status = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({gameCode: gameCode}));
+    } else {
+      res.redirect('/');
+    }
   }
   
   addTestGame(gameRoom) {

@@ -9,7 +9,7 @@ var nextJs = require('next');
 var nextApp = nextJs({ dev: process.env.NODE_ENV != 'production' });
 var nextHandler = nextApp.getRequestHandler();
 // @ts-ignore
-var GameManager = new (require('./logic/room-manager').GameManager)(io);
+var GameManager = new (require('./logic/rooms-manager').GameManager)(io);
 nextApp.prepare().then(function () {
     expressApp.post('/create', function (req, res) {
         // @ts-ignore

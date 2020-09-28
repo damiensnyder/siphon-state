@@ -10,12 +10,16 @@ var ARABIC = [3000, 2000, 1000, 900, 800, 700, 600, 500, 400, 300,
     200, 100, 90, 80, 70, 60, 50, 40, 30, 20, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 var ContentGenerator = /** @class */ (function () {
     function ContentGenerator(nation) {
-        this.made = 0;
-        this.resets = 0;
-        this.provs = this.shuffle(JSON.parse(fs.readFileSync(provsPath))[nation]);
+        var provsInfo = JSON.parse(fs.readFileSync(provsPath));
+        if (!provsInfo.hasOwnProperty(nation)) {
+            nation = "Kenderland";
+        }
+        this.provs = this.shuffle(provsInfo[nation]);
         this.provs.forEach(function (prov) {
             prov.candidates = [];
         });
+        this.made = 0;
+        this.resets = 0;
         this.deal();
     }
     ContentGenerator.prototype.newPol = function (party) {

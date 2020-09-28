@@ -1,4 +1,4 @@
-var Settings = require('./room-manager').Settings;
+var Settings = require('./rooms-manager').Settings;
 // @ts-ignore
 var GameState = require('./gamestate').GameState;
 // @ts-ignore
